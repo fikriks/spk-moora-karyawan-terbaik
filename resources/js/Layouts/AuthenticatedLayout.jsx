@@ -1,104 +1,443 @@
+// resources/js/Layouts/AuthenticatedLayout.jsx
 import ApplicationLogo from "@/Components/ApplicationLogo";
 import Dropdown from "@/Components/Dropdown";
 import NavLink from "@/Components/NavLink";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import { notifySuccess, notifyError } from "@/Utils/useSweetAlert";
-import { Link, usePage } from "@inertiajs/react";
+import { Link, usePage, router } from "@inertiajs/react";
 import { useEffect, useState } from "react";
 
-export default function AuthenticatedLayout({ header, children }) {
-    const user = usePage().props.auth?.user;
-    const [showingNavigationDropdown, setShowingNavigationDropdown] =
-        useState(false);
+// Heroicons via react-icons (modern, gratis, tersedia di Figma)
+import {
+    HiOutlineHome,
+    HiOutlineShieldCheck,
+    HiOutlineUsers,
+    HiOutlineLogout,
+    HiOutlineDocumentText,
+    HiOutlineAdjustments,
+    HiOutlineClipboardList,
+} from "react-icons/hi";
 
-    // helper: cek role admin
-    const isAdmin = user?.role === "admin";
+/**
+ * Layout utama yang menampilkan sidebar (desktop + mobile) dan topbar untuk mobile.
+ * Perbaikan utama: semua aksi logout dikirim menggunakan Inertia (router.post)
+ * sehingga CSRF token ditangani oleh Inertia dan menghindari HTTP 419 Page Expired.
+ */
+export default function AuthenticatedLayout({ header, children }) {
+    // Ambil user & flash dari Inertia page props
+    const user = usePage().props.auth?.user;
     const { flash } = usePage().props;
+    // dukung dua bentuk role check: string 'role' atau array 'roles'
+    const isAdmin =
+        user?.role === "admin" ||
+        (Array.isArray(user?.roles) && user.roles.includes("admin")) ||
+        (!!user?.roles &&
+            typeof user.roles === "string" &&
+            user.roles === "admin");
+
+    // Kontrol sidebar
+    const [sidebarOpen, setSidebarOpen] = useState(true); // desktop default: open
+    const [mobileOpen, setMobileOpen] = useState(false);
 
     useEffect(() => {
-        if (flash?.success) {
-            notifySuccess(flash.success);
-        }
-        if (flash?.error) {
-            notifyError(flash.error);
-        }
+        if (flash?.success) notifySuccess(flash.success);
+        if (flash?.error) notifyError(flash.error);
     }, [flash]);
 
+    // Struktur menu yang simpel — mudah dikembangkan
+    const menu = [
+        { name: "Dashboard", href: route("dashboard"), visible: true },
+        // { name: "Leaves", href: route("leave.index"), visible: true },
+        // {
+        //     name: "Admin Leaves",
+        //     href: route("admin.leaves.index"),
+        //     visible: isAdmin,
+        // },
+        { name: "Criteria", href: route("criteria.index"), visible: isAdmin },
+        {
+            name: "User Management",
+            href: route("users.index"),
+            visible: isAdmin,
+        },
+        { name: "Admin", href: route("admin.index"), visible: isAdmin },
+    ];
+
+    // helper untuk cek active route (aman karena route().current expect route name string)
+    const isActive = (href) => {
+        try {
+            if (!href) return false;
+            return route().current(href?.replace(/\..*$/, "") + "*");
+        } catch {
+            return false;
+        }
+    };
+
+    const toggleSidebar = () => setSidebarOpen((s) => !s);
+
+    // Fungsi helper logout (programmatic) jika mau pakai tombol biasa
+    const doLogout = (e) => {
+        e?.preventDefault?.();
+        // router.post akan memicu request POST melalui Inertia, CSRF di-handle otomatis
+        router.post(route("logout"));
+    };
+
     return (
-        <div className="min-h-screen bg-gray-100">
-            <nav className="border-b border-gray-100 bg-white">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="flex h-16 justify-between">
-                        <div className="flex">
-                            <div className="flex shrink-0 items-center">
-                                <Link href="/">
-                                    <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800" />
-                                </Link>
-                            </div>
+        <div className="min-h-screen flex bg-gray-50 text-gray-800">
+            {/* Mobile Sidebar (overlay) */}
+            <div
+                className={`fixed inset-0 z-40 lg:hidden transition-opacity ${
+                    mobileOpen ? "pointer-events-auto" : "pointer-events-none"
+                }`}
+                aria-hidden={!mobileOpen}
+            >
+                <div
+                    className={`absolute inset-0 bg-black/40 transition-opacity ${
+                        mobileOpen ? "opacity-100" : "opacity-0"
+                    }`}
+                    onClick={() => setMobileOpen(false)}
+                />
+                <aside
+                    className={`fixed left-0 top-0 bottom-0 w-72 bg-white shadow-md transform transition-transform ${
+                        mobileOpen ? "translate-x-0" : "-translate-x-full"
+                    }`}
+                >
+                    <div className="flex items-center justify-between px-4 h-16 border-b">
+                        <Link href="/">
+                            <ApplicationLogo className="h-8 w-auto text-gray-800" />
+                        </Link>
+                        <button
+                            aria-label="Close menu"
+                            onClick={() => setMobileOpen(false)}
+                            className="p-2 rounded hover:bg-gray-100"
+                        >
+                            {/* X icon (tetap SVG untuk tombol close) */}
+                            <svg
+                                className="h-5 w-5"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path
+                                    fillRule="evenodd"
+                                    d="M6.293 6.293a1 1 0 011.414 0L10 8.586l2.293-2.293a1 1 0 111.414 1.414L11.414 10l2.293 2.293a1 1 0 01-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 01-1.414-1.414L8.586 10 6.293 7.707a1 1 0 010-1.414z"
+                                    clipRule="evenodd"
+                                />
+                            </svg>
+                        </button>
+                    </div>
 
-                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                {!isAdmin && (
-                                    <NavLink
-                                        href={route("dashboard")}
-                                        active={route().current("dashboard")}
+                    <nav className="p-4 space-y-1">
+                        {menu.map(
+                            (item) =>
+                                item.visible && (
+                                    <Link
+                                        key={item.name}
+                                        href={item.href}
+                                        className={`flex items-center gap-3 rounded px-3 py-2 text-sm font-medium hover:bg-gray-100 transition-colors ${
+                                            isActive(item.href)
+                                                ? "bg-gray-100"
+                                                : ""
+                                        }`}
+                                        onClick={() => setMobileOpen(false)}
                                     >
-                                        Dashboard
-                                    </NavLink>
-                                )}
+                                        <MenuIcon name={item.name} />
+                                        <span>{item.name}</span>
+                                    </Link>
+                                )
+                        )}
 
-                                {/* Tampilkan menu Admin jika user admin */}
-                                {isAdmin && (
-                                    <>
-                                        <NavLink
-                                            href={route("admin.index")}
-                                            active={route().current("admin.*")}
-                                        >
-                                            Admin
-                                        </NavLink>
+                        <div className="border-t mt-2 pt-2">
+                            {/* Profile link */}
+                            <Link
+                                href={route("profile.edit")}
+                                className="block px-3 py-2 rounded text-sm hover:bg-gray-100"
+                                onClick={() => setMobileOpen(false)}
+                            >
+                                Profile
+                            </Link>
 
-                                        <div className="flex items-center">
-                                            <div className="ml-4 text-sm text-gray-500">
-                                                •
-                                            </div>
-                                            <NavLink
-                                                href={route("users.index")}
-                                                active={route().current(
-                                                    "users.*"
-                                                )}
+                            {/* Logout: gunakan Inertia Link method="post" supaya CSRF tidak bikin 419 */}
+                            <Link
+                                href={route("logout")}
+                                method="post"
+                                as="button"
+                                className="w-full text-left px-3 py-2 rounded text-sm hover:bg-gray-100"
+                                onClick={() => setMobileOpen(false)}
+                            >
+                                <span className="inline-flex items-center gap-3">
+                                    <HiOutlineLogout className="h-5 w-5 text-red-600" />
+                                    <span>Log Out</span>
+                                </span>
+                            </Link>
+                        </div>
+                    </nav>
+                </aside>
+            </div>
+
+            {/* Desktop Sidebar */}
+            <aside
+                className={`hidden lg:flex lg:flex-col lg:shrink-0 transition-all duration-200 ${
+                    sidebarOpen ? "w-64" : "w-20"
+                } bg-white border-r`}
+                aria-label="Sidebar"
+            >
+                {/* TOP */}
+                <div
+                    className={`flex h-16 items-center justify-center px-4 border-b ${
+                        sidebarOpen ? "justify-between" : "justify-center"
+                    }`}
+                >
+                    <Link href="/" className="flex items-center gap-2">
+                        <ApplicationLogo className="h-8 w-auto transition-all" />
+                        {sidebarOpen && (
+                            <span className="font-semibold text-lg transition-opacity duration-200">
+                                My App
+                            </span>
+                        )}
+                    </Link>
+                </div>
+
+                {/* NAV: render menu hanya saat sidebarOpen */}
+                {sidebarOpen ? (
+                    <nav className="flex-1 overflow-y-auto px-2 py-4 space-y-1">
+                        {/* MENU UTAMA */}
+                        {menu.map(
+                            (item) =>
+                                item.visible && (
+                                    <Link
+                                        key={item.name}
+                                        href={item.href}
+                                        className={`flex items-center gap-3 rounded px-3 py-2 text-sm font-medium hover:bg-gray-100 transition-colors ${
+                                            isActive(item.href)
+                                                ? "bg-gray-100"
+                                                : ""
+                                        }`}
+                                    >
+                                        <span className="shrink-0">
+                                            <MenuIcon name={item.name} />
+                                        </span>
+                                        <span className="transition-opacity duration-200">
+                                            {item.name}
+                                        </span>
+                                    </Link>
+                                )
+                        )}
+
+                        {/* TOMBOL LOGOUT DI SIDEBAR (desktop expanded) */}
+                        <Link
+                            href={route("logout")}
+                            method="post"
+                            as="button"
+                            className="mt-4 flex w-full items-center gap-3 rounded px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                        >
+                            <HiOutlineLogout className="h-5 w-5 text-red-600" />
+                            <span>Log Out</span>
+                        </Link>
+                    </nav>
+                ) : (
+                    /* Saat sidebar collapse: tetap sediakan area kosong supaya layout balance.
+                       Logout icon disediakan di area profile bawah supaya user tetap bisa logout. */
+                    <div className="flex-1" />
+                )}
+
+                {/* BOTTOM: profile area */}
+                <div className="px-3 py-4 border-t">
+                    <div className="flex items-center gap-3 justify-between">
+                        {/* profile avatar - selalu terlihat */}
+                        <div className="flex-shrink-0">
+                            <Dropdown>
+                                <Dropdown.Trigger>
+                                    <button
+                                        className={`relative overflow-hidden rounded-full ${
+                                            sidebarOpen
+                                                ? "h-9 w-9"
+                                                : "h-10 w-10 mx-auto"
+                                        } bg-gray-200 flex items-center justify-center`}
+                                    >
+                                        {user?.profile_photo_url ? (
+                                            <img
+                                                src={user.profile_photo_url}
+                                                alt={user?.name}
+                                                className="h-full w-full object-cover"
+                                            />
+                                        ) : (
+                                            <span className="text-sm font-medium text-gray-700">
+                                                {user?.name?.slice(0, 1) ?? "U"}
+                                            </span>
+                                        )}
+                                    </button>
+                                </Dropdown.Trigger>
+
+                                <Dropdown.Content>
+                                    <Dropdown.Link href={route("profile.edit")}>
+                                        Profile
+                                    </Dropdown.Link>
+
+                                    {isAdmin && (
+                                        <>
+                                            <Dropdown.Link
+                                                href={route("admin.index")}
                                             >
-                                                User Management
-                                            </NavLink>
-                                        </div>
-                                    </>
-                                )}
-                            </div>
+                                                Admin Dashboard
+                                            </Dropdown.Link>
+                                            <Dropdown.Link
+                                                href={route("users.index")}
+                                            >
+                                                Manage Users
+                                            </Dropdown.Link>
+                                        </>
+                                    )}
+
+                                    {/* Ini sudah menggunakan method="post" di Dropdown.Link (Inertia-aware) */}
+                                    <Dropdown.Link
+                                        href={route("logout")}
+                                        method="post"
+                                        as="button"
+                                    >
+                                        Log Out
+                                    </Dropdown.Link>
+                                </Dropdown.Content>
+                            </Dropdown>
                         </div>
 
-                        <div className="hidden sm:ms-6 sm:flex sm:items-center">
-                            <div className="relative ms-3">
+                        {sidebarOpen && (
+                            <div className="flex-1 ms-3">
+                                <div className="font-medium">{user?.name}</div>
+                                <div className="text-xs text-gray-500">
+                                    {user?.email}
+                                </div>
+                            </div>
+                        )}
+
+                        {sidebarOpen && (
+                            <div className="ms-auto">
+                                <svg
+                                    className="h-4 w-4 text-gray-500"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M19 9l-7 7-7-7"
+                                    />
+                                </svg>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Jika sidebar dalam keadaan collapse, tampilkan logout icon kecil di bawah avatar */}
+                    {!sidebarOpen && (
+                        <div className="mt-3 flex justify-center">
+                            <button
+                                onClick={doLogout}
+                                aria-label="Log Out"
+                                className="inline-flex items-center justify-center rounded p-2 hover:bg-gray-100"
+                            >
+                                <HiOutlineLogout className="h-5 w-5 text-red-600" />
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </aside>
+
+            {/* Toggle button placed BETWEEN sidebar and main content (left edge) */}
+            <div className="hidden lg:flex items-start">
+                <button
+                    onClick={toggleSidebar}
+                    aria-label={
+                        sidebarOpen ? "Collapse sidebar" : "Expand sidebar"
+                    }
+                    className={`-ml-1 rounded-r-md bg-white border border-l-0 border-gray-200 shadow-sm hover:bg-gray-50 flex items-center justify-center transition-transform ${
+                        sidebarOpen ? "h-10 w-6" : "h-10 w-6"
+                    }`}
+                >
+                    {sidebarOpen ? (
+                        <svg
+                            className="h-4 w-4 text-gray-600"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M15 19l-7-7 7-7"
+                            />
+                        </svg>
+                    ) : (
+                        <svg
+                            className="h-4 w-4 text-gray-600"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M9 5l7 7-7 7"
+                            />
+                        </svg>
+                    )}
+                </button>
+            </div>
+
+            {/* Main content area */}
+            <div className="flex-1 flex flex-col">
+                {/* Top bar for mobile (dan small screens) */}
+                <header className="lg:hidden bg-white border-b">
+                    <div className="flex items-center justify-between px-4 h-14">
+                        <div className="flex items-center gap-3">
+                            <button
+                                onClick={() => setMobileOpen(true)}
+                                className="p-2 rounded hover:bg-gray-100"
+                                aria-label="Open menu"
+                            >
+                                {/* mobile hamburger */}
+                                <svg
+                                    className="h-6 w-6"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                >
+                                    <path
+                                        d="M4 6h16M4 12h16M4 18h16"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    />
+                                </svg>
+                            </button>
+                            <Link href="/" className="flex items-center gap-2">
+                                <ApplicationLogo className="h-8 w-auto" />
+                                <span className="text-sm font-semibold">
+                                    My App
+                                </span>
+                            </Link>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                            <div className="hidden sm:flex sm:items-center">
                                 <Dropdown>
                                     <Dropdown.Trigger>
-                                        <span className="inline-flex rounded-md">
-                                            <button
-                                                type="button"
-                                                className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
+                                        <button className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 hover:text-gray-700">
+                                            {user?.name}
+                                            <svg
+                                                className="-me-0.5 ms-2 h-4 w-4"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 20 20"
+                                                fill="currentColor"
                                             >
-                                                {user?.name}
-
-                                                <svg
-                                                    className="-me-0.5 ms-2 h-4 w-4"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor"
-                                                >
-                                                    <path
-                                                        fillRule="evenodd"
-                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                        clipRule="evenodd"
-                                                    />
-                                                </svg>
-                                            </button>
-                                        </span>
+                                                <path
+                                                    fillRule="evenodd"
+                                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                    clipRule="evenodd"
+                                                />
+                                            </svg>
+                                        </button>
                                     </Dropdown.Trigger>
 
                                     <Dropdown.Content>
@@ -107,8 +446,6 @@ export default function AuthenticatedLayout({ header, children }) {
                                         >
                                             Profile
                                         </Dropdown.Link>
-
-                                        {/* Link ke admin page di dropdown jika admin */}
                                         {isAdmin && (
                                             <>
                                                 <Dropdown.Link
@@ -123,7 +460,6 @@ export default function AuthenticatedLayout({ header, children }) {
                                                 </Dropdown.Link>
                                             </>
                                         )}
-
                                         <Dropdown.Link
                                             href={route("logout")}
                                             method="post"
@@ -135,123 +471,67 @@ export default function AuthenticatedLayout({ header, children }) {
                                 </Dropdown>
                             </div>
                         </div>
-
-                        <div className="-me-2 flex items-center sm:hidden">
-                            <button
-                                onClick={() =>
-                                    setShowingNavigationDropdown(
-                                        (prev) => !prev
-                                    )
-                                }
-                                className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none"
-                            >
-                                <svg
-                                    className="h-6 w-6"
-                                    stroke="currentColor"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        className={
-                                            !showingNavigationDropdown
-                                                ? "inline-flex"
-                                                : "hidden"
-                                        }
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M4 6h16M4 12h16M4 18h16"
-                                    />
-                                    <path
-                                        className={
-                                            showingNavigationDropdown
-                                                ? "inline-flex"
-                                                : "hidden"
-                                        }
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M6 18L18 6M6 6l12 12"
-                                    />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Mobile menu */}
-                <div
-                    className={
-                        (showingNavigationDropdown ? "block" : "hidden") +
-                        " sm:hidden"
-                    }
-                >
-                    <div className="space-y-1 pb-3 pt-2">
-                        <ResponsiveNavLink
-                            href={route("dashboard")}
-                            active={route().current("dashboard")}
-                        >
-                            Dashboard
-                        </ResponsiveNavLink>
-
-                        {isAdmin && (
-                            <>
-                                <ResponsiveNavLink
-                                    href={route("admin.index")}
-                                    active={route().current("admin.*")}
-                                >
-                                    Admin
-                                </ResponsiveNavLink>
-                                <ResponsiveNavLink
-                                    href={route("users.index")}
-                                    active={route().current("users.*")}
-                                >
-                                    User Management
-                                </ResponsiveNavLink>
-                            </>
-                        )}
-                    </div>
-
-                    <div className="border-t border-gray-200 pb-1 pt-4">
-                        <div className="px-4">
-                            <div className="text-base font-medium text-gray-800">
-                                {user?.name}
-                            </div>
-                            <div className="text-sm font-medium text-gray-500">
-                                {user?.email}
-                            </div>
-                        </div>
-
-                        <div className="mt-3 space-y-1">
-                            <ResponsiveNavLink href={route("profile.edit")}>
-                                Profile
-                            </ResponsiveNavLink>
-                            {isAdmin && (
-                                <ResponsiveNavLink href={route("admin.index")}>
-                                    Admin Dashboard
-                                </ResponsiveNavLink>
-                            )}
-                            <ResponsiveNavLink
-                                method="post"
-                                href={route("logout")}
-                                as="button"
-                            >
-                                Log Out
-                            </ResponsiveNavLink>
-                        </div>
-                    </div>
-                </div>
-            </nav>
-
-            {header && (
-                <header className="bg-white shadow">
-                    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                        {header}
                     </div>
                 </header>
-            )}
 
-            <main>{children}</main>
+                {/* Optional header */}
+                {header && (
+                    <div className="bg-white border-b">
+                        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+                            {header}
+                        </div>
+                    </div>
+                )}
+
+                <main className="flex-1">
+                    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                        {children}
+                    </div>
+                </main>
+            </div>
         </div>
+    );
+}
+
+/**
+ * MenuIcon: helper kecil untuk render icon berdasarkan nama menu.
+ * Menggunakan Heroicons (react-icons/hi) — modern & tersedia di Figma.
+ */
+function MenuIcon({ name }) {
+    if (name === "Dashboard") {
+        return <HiOutlineHome className="h-5 w-5 text-gray-600" />;
+    }
+
+    if (name === "Leaves") {
+        return <HiOutlineDocumentText className="h-5 w-5 text-gray-600" />;
+    }
+
+    if (name === "Admin Leaves") {
+        return <HiOutlineClipboardList className="h-5 w-5 text-gray-600" />;
+    }
+
+    if (name === "Criteria") {
+        return <HiOutlineAdjustments className="h-5 w-5 text-gray-600" />;
+    }
+
+    if (name === "User Management") {
+        return <HiOutlineUsers className="h-5 w-5 text-gray-600" />;
+    }
+
+    if (name === "Admin") {
+        return <HiOutlineShieldCheck className="h-5 w-5 text-gray-600" />;
+    }
+
+    // fallback icon sederhana (kotak)
+    return (
+        <svg
+            className="h-5 w-5 text-gray-600"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+        >
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+        </svg>
     );
 }

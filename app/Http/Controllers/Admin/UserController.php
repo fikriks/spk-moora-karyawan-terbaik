@@ -12,12 +12,26 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        return Inertia::render('Admin/Users/Index', [
-        'users' => User::all(),
+    public function index(Request $request)
+{
+    $q = trim($request->input('q', ''));
+
+    $users = User::query()
+        ->when($q, function ($query, $q) {
+            $query->where(function ($q2) use ($q) {
+                $q2->where('name', 'like', "%{$q}%")
+                   ->orWhere('email', 'like', "%{$q}%");
+            });
+        })
+        ->orderBy('name')
+        ->paginate(10)
+        ->withQueryString();
+
+    return Inertia::render('Admin/Users/Index', [
+        'users' => $users,
     ]);
-    }
+}
+
 
     /**
      * Show the form for creating a new resource.

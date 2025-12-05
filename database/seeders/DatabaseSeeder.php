@@ -23,5 +23,9 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin',
             'password' => bcrypt('Admin123'), // Ganti dengan password yang diinginkan
         ]);
+        $this->call([
+            RolesAndPermissionsSeeder::class,
+            CriterionSeeder::class,
+        ]);
     }
 }
