@@ -46,18 +46,25 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->validate([
-        'name' => 'required',
-        'email' => 'required|email|unique:users',
-        'role' => 'required',
-        'password' => 'required|min:6'
-    ]);
+       $validated = $request->validate([
+    'name' => 'required',
+    'email' => 'required|email|unique:users',
+    'role' => 'required|exists:roles,name',
+    'password' => 'required|min:6'
+]);
+// dd($validated);
+$user = User::create([
+    'name' => $validated['name'],
+    'email' => $validated['email'],
+    'password' => bcrypt($validated['password']),
+]);
 
-    $data['password'] = bcrypt($data['password']);
+$user->assignRole($validated['role']);
 
-    User::create($data);
+return redirect()
+    ->route('users.index')
+    ->with('success', 'User created');
 
-    return redirect()->route('users.index')->with('success', 'User created');
     }
 
     /**
@@ -97,6 +104,7 @@ class UserController extends Controller
     }
 
     $user->update($data);
+    $user->syncRoles([$data['role']]);
 
     return redirect()->route('users.index')->with('success', 'User updated');
 }

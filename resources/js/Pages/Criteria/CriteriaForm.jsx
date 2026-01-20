@@ -43,7 +43,7 @@ export default function CriteriaForm({
             form.post(onSubmitRoute, options);
         } else {
             // put/patch — send method override
-            form.post(onSubmitRoute, {
+            form.put(onSubmitRoute, {
                 ...options,
                 data: form.data,
                 _method: method,
@@ -75,7 +75,6 @@ export default function CriteriaForm({
                     </p>
                 )}
             </div>
-
             {/* Nama */}
             <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700">
@@ -100,7 +99,6 @@ export default function CriteriaForm({
                     </p>
                 )}
             </div>
-
             {/* Tipe */}
             <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700">
@@ -128,7 +126,6 @@ export default function CriteriaForm({
                     </p>
                 )}
             </div>
-
             {/* Bobot */}
             <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700">
@@ -152,11 +149,9 @@ export default function CriteriaForm({
                     </p>
                 )}
                 <p className="mt-1 text-xs text-gray-500">
-                    Masukkan bobot relatif (mis. <code>0.25</code>). Jika
-                    menggunakan AHP, field ini bisa diisi otomatis.
+                    Masukkan bobot relatif (mis. <code>0.25</code>).
                 </p>
             </div>
-
             {/* Urutan */}
             <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700">
@@ -175,7 +170,6 @@ export default function CriteriaForm({
                     </p>
                 )}
             </div>
-
             {/* Deskripsi */}
             <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700">
@@ -200,7 +194,6 @@ export default function CriteriaForm({
                     </p>
                 )}
             </div>
-
             {/* Actions */}
             <div className="flex items-center justify-end gap-3">
                 <button

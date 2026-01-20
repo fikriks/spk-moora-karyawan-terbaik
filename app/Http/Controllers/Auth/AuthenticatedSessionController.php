@@ -40,7 +40,7 @@ class AuthenticatedSessionController extends Controller
         $path = parse_url($intended, PHP_URL_PATH) ?: '';
 
         // jika intended menuju admin/* tetapi user bukan admin -> abaikan intended
-            if (str_starts_with($path, '/admin') && Auth::user()?->role !== 'admin') {
+            if (str_starts_with($path, '/admin') && auth()->user()?->hasRole('admin')) {
                 $intended = null;
             }
     }
@@ -51,9 +51,10 @@ class AuthenticatedSessionController extends Controller
     }
 
     // jika user admin -> kirim ke admin
-    if (Auth::user()?->role === 'admin') {
+    if (auth()->user()?->hasRole('admin')) {
         return redirect()->route('admin.index');
     }
+
 
     // default user biasa
     return redirect()->route('dashboard');

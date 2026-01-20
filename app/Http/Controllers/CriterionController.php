@@ -73,7 +73,13 @@ class CriterionController extends Controller
      */
     public function update(Request $request, Criterion $criterion)
     {
-        $criterion->update($request->validated());
+        $criterion->update($request->validate([
+            // 'code' => 'required|string|max:10|unique:criteria,code,' . $criterion->id,
+            'name' => 'required|string|max:255',
+            'type' => 'required|in:benefit,cost',
+            'weight' => 'required|numeric|min:0',
+            'order' => 'required|integer|min:0',
+        ]));
 
         return redirect()->route('criteria.index')->with('success', 'Kriteria berhasil diperbarui.');
     }

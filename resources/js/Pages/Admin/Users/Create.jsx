@@ -7,7 +7,7 @@ export default function Create() {
     const { data, setData, post, processing, errors } = useForm({
         name: "",
         email: "",
-        role: "user",
+        role: "penilai",
         password: "",
     });
 
@@ -115,7 +115,14 @@ export default function Create() {
                                 : "border-gray-200 focus:ring-indigo-500"
                         }`}
                     >
-                        <option value="user">User</option>
+                        <option value="operator">Operator</option>
+                        <option value="penilai">Penilai</option>
+                        <option value="kasubag_kepegawaian">
+                            Kasubag Kepegawaian
+                        </option>
+                        <option value="ketua_pengadilan">
+                            Ketua Pengadilan
+                        </option>
                         <option value="admin">Admin</option>
                     </select>
                     {errors.role && (

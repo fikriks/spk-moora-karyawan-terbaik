@@ -27,13 +27,21 @@ export default function AuthenticatedLayout({ header, children }) {
     // Ambil user & flash dari Inertia page props
     const user = usePage().props.auth?.user;
     const { flash } = usePage().props;
-    // dukung dua bentuk role check: string 'role' atau array 'roles'
-    const isAdmin =
-        user?.role === "admin" ||
-        (Array.isArray(user?.roles) && user.roles.includes("admin")) ||
-        (!!user?.roles &&
-            typeof user.roles === "string" &&
-            user.roles === "admin");
+
+    const isAdmin = user?.roles?.includes("admin");
+    const isOperator = user?.roles?.includes("operator");
+    const isPenilai = user?.roles?.includes("penilai");
+    const isKasubag = user?.roles?.includes("kasubag_kepegawaian");
+    const isKetua = user?.roles?.includes("ketua_pengadilan");
+    console.log("isAdmin:", isAdmin);
+    console.log("isOperator: ", isOperator);
+    console.log(user);
+    // console.log(hasRole);
+
+    // const isPenilai = user?.roles[0].name === "penilai";
+    // const isKasubag = user?.roles[0].name === "kasubag_kepegawaian";
+
+    // const isKetua = user?.roles[0].name === "ketua_pengadilan";
 
     // Kontrol sidebar
     const [sidebarOpen, setSidebarOpen] = useState(true); // desktop default: open
@@ -46,7 +54,19 @@ export default function AuthenticatedLayout({ header, children }) {
 
     // Struktur menu yang simpel — mudah dikembangkan
     const menu = [
-        { name: "Dashboard", href: route("dashboard"), visible: true },
+        { name: "Dashboard", href: route("dashboard"), visible: isOperator },
+        // {
+        //     name: "Dashboard",
+        //     href: route("dashboard.penilai"),
+        //     visible: isPenilai,
+        // },
+        // {
+        //     name: "Dashboard",
+        //     href: route("dashboard.kasubag"),
+        //     visible: isKasubag,
+        // },
+        // { name: "Dashboard", href: route("dashboard.ketua"), visible: isKetua },
+        { name: "Dashboard", href: route("admin.index"), visible: isAdmin },
         // { name: "Leaves", href: route("leave.index"), visible: true },
         // {
         //     name: "Admin Leaves",
@@ -59,7 +79,6 @@ export default function AuthenticatedLayout({ header, children }) {
             href: route("users.index"),
             visible: isAdmin,
         },
-        { name: "Admin", href: route("admin.index"), visible: isAdmin },
     ];
 
     // helper untuk cek active route (aman karena route().current expect route name string)
@@ -142,7 +161,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                         <MenuIcon name={item.name} />
                                         <span>{item.name}</span>
                                     </Link>
-                                )
+                                ),
                         )}
 
                         <div className="border-t mt-2 pt-2">
@@ -219,7 +238,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                             {item.name}
                                         </span>
                                     </Link>
-                                )
+                                ),
                         )}
 
                         {/* TOMBOL LOGOUT DI SIDEBAR (desktop expanded) */}

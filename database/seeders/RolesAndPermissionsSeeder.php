@@ -17,17 +17,24 @@ class RolesAndPermissionsSeeder extends Seeder
     {
          // permissions (contoh)
         Permission::firstOrCreate(['name' => 'manage users']);
-        Permission::firstOrCreate(['name' => 'approve leave']);
+        Permission::firstOrCreate(['name' => 'approve alternatives']);
         Permission::firstOrCreate(['name' => 'manage criteria']);
+        Permission::firstOrCreate(['name' => 'manage alternatives']);
+        Permission::firstOrCreate(['name' => 'manage assessments']);
 
         // roles
         $admin = Role::firstOrCreate(['name' => 'admin']);
-        $atasan = Role::firstOrCreate(['name' => 'atasan']);
-        $user  = Role::firstOrCreate(['name' => 'karyawan']);
+        $operator = Role::firstOrCreate(['name' => 'operator']);
+        $penilai  = Role::firstOrCreate(['name' => 'penilai']);
+        $kasubag  = Role::firstOrCreate(['name' => 'kasubag_kepegawaian']);
+        $ketua  = Role::firstOrCreate(['name' => 'ketua_pengadilan']);
 
         // assign permission ke role
-        $admin->givePermissionTo(['manage users','manage criteria','approve leave']);
-        $atasan->givePermissionTo(['approve leave']);
+        $admin->givePermissionTo(['manage users','manage criteria','approve alternatives']);
+        $operator->givePermissionTo(['manage alternatives']);
+        $penilai->givePermissionTo(['manage assessments']);
+        $kasubag->givePermissionTo(['approve alternatives']);
+        $ketua->givePermissionTo(['approve alternatives']);
 
         // contoh assign role ke user id=1
         $u = User::find(1);
