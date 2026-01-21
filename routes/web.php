@@ -1,10 +1,16 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController as DashboardAdminController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\Admin\LeaveController as AdminLeaveController;
 use App\Http\Controllers\CriterionController;
+use App\Http\Controllers\Operator\DashboardController as DashboardOperatorController;
+use App\Http\Controllers\Penilai\DashboardController as DashboardPenilaiController;
+use App\Http\Controllers\Kasubag\DashboardController as DashboardKasubagController;
+use App\Http\Controllers\Ketua\DashboardController as DashboardKetuaController;
+use App\Http\Controllers\Operator\AlternativeController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -35,11 +41,30 @@ Route::middleware(['auth', 'verified'])->group(function () {
      * - Untuk proteksi lebih granular (mis. manage users), kita tambahkan permission middleware
      *   pada resource users. Jika kamu ingin admin tetap bisa semua aksi, cukup pakai role:admin.
      */
+    Route::middleware(['role:operator'])->prefix('operator')->group(function () {
+
+        Route::get('/', [DashboardOperatorController::class, 'index'])->name('operator.index');
+        Route::resource('/alternative', AlternativeController::class)->names('operator.alternative');
+    });
+
+    Route::middleware(['role:penilai'])->prefix('penilai')->group(function () {
+
+        Route::get('/', [DashboardPenilaiController::class, 'index'])->name('penilai.index');
+    });
+
+    Route::middleware(['role:kasubag'])->prefix('kasubag')->group(function () {
+
+        Route::get('/', [DashboardKasubagController::class, 'index'])->name('kasubag.index');
+    });
+
+    Route::middleware(['role:ketua'])->prefix('ketua')->group(function () {
+
+        Route::get('/', [DashboardKetuaController::class, 'index'])->name('ketua.index');
+    });
+    
     Route::middleware(['role:admin'])->prefix('admin')->group(function () {
 
-        Route::get('/', function () {
-            return Inertia::render('Admin/Index');
-        })->name('admin.index');
+        Route::get('/', [DashboardAdminController::class, 'index'])->name('admin.index');
 
         // Jika semua action users hanya boleh dilakukan admin:
         // Route::resource('users', UserController::class);
@@ -48,6 +73,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // tapi tiap aksi resource juga butuh permission 'manage users' (opsional).
         Route::resource('users', UserController::class)
             ->middleware(['permission:manage users']);
+        Route::resource('alternative', AlternativeController::class)->names('admin.alternative')->middleware('permission:approve alternatives');
     });
 
 });

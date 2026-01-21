@@ -16,7 +16,13 @@ import {
     HiOutlineDocumentText,
     HiOutlineAdjustments,
     HiOutlineClipboardList,
+    HiOutlineBookmark,
+    HiOutlineNewspaper,
 } from "react-icons/hi";
+import {
+    HiOutlineAdjustmentsHorizontal,
+    HiOutlineDocumentCheck,
+} from "react-icons/hi2";
 
 /**
  * Layout utama yang menampilkan sidebar (desktop + mobile) dan topbar untuk mobile.
@@ -54,29 +60,67 @@ export default function AuthenticatedLayout({ header, children }) {
 
     // Struktur menu yang simpel — mudah dikembangkan
     const menu = [
-        { name: "Dashboard", href: route("dashboard"), visible: isOperator },
-        // {
-        //     name: "Dashboard",
-        //     href: route("dashboard.penilai"),
-        //     visible: isPenilai,
-        // },
-        // {
-        //     name: "Dashboard",
-        //     href: route("dashboard.kasubag"),
-        //     visible: isKasubag,
-        // },
-        // { name: "Dashboard", href: route("dashboard.ketua"), visible: isKetua },
+        //OPERATOR MENU SIDEBAR
+        {
+            name: "Dashboard",
+            href: route("operator.index"),
+            visible: isOperator,
+        },
+        {
+            name: "Alternative",
+            href: route("operator.alternative.index"),
+            visible: isOperator,
+        },
+        //PENILAI MENU SIDEBAR
+        {
+            name: "Dashboard",
+            href: route("penilai.index"),
+            visible: isPenilai,
+        },
+        //KASUBAG MENU SIDEBAR
+        {
+            name: "Dashboard",
+            href: route("kasubag.index"),
+            visible: isKasubag,
+        },
+        {
+            name: "Alternative",
+            href: "",
+            visible: isKasubag,
+        },
+        {
+            name: "Reports",
+            href: "",
+            visible: isKasubag,
+        },
+        //KETUA MENU SIDEBAR
+        { name: "Dashboard", href: route("ketua.index"), visible: isKetua },
+        {
+            name: "Reports",
+            href: "",
+            visible: isKetua,
+        },
+        //ADMIN MENU SIDEBAR
         { name: "Dashboard", href: route("admin.index"), visible: isAdmin },
-        // { name: "Leaves", href: route("leave.index"), visible: true },
-        // {
-        //     name: "Admin Leaves",
-        //     href: route("admin.leaves.index"),
-        //     visible: isAdmin,
-        // },
-        { name: "Criteria", href: route("criteria.index"), visible: isAdmin },
         {
             name: "User Management",
             href: route("users.index"),
+            visible: isAdmin,
+        },
+        {
+            name: "Alternative",
+            href: route("admin.alternative.index"),
+            visible: isAdmin,
+        },
+        { name: "Criteria", href: route("criteria.index"), visible: isAdmin },
+        {
+            name: "Assessments",
+            href: "",
+            visible: isAdmin,
+        },
+        {
+            name: "Results",
+            href: "",
             visible: isAdmin,
         },
     ];
@@ -521,11 +565,11 @@ function MenuIcon({ name }) {
         return <HiOutlineHome className="h-5 w-5 text-gray-600" />;
     }
 
-    if (name === "Leaves") {
+    if (name === "Alternative") {
         return <HiOutlineDocumentText className="h-5 w-5 text-gray-600" />;
     }
 
-    if (name === "Admin Leaves") {
+    if (name === "Assessments") {
         return <HiOutlineClipboardList className="h-5 w-5 text-gray-600" />;
     }
 
@@ -539,6 +583,12 @@ function MenuIcon({ name }) {
 
     if (name === "Admin") {
         return <HiOutlineShieldCheck className="h-5 w-5 text-gray-600" />;
+    }
+    if (name === "Results") {
+        return <HiOutlineDocumentCheck className="h-5 w-5 text-gray-600" />;
+    }
+    if (name === "Reports") {
+        return <HiOutlineNewspaper className="h-5 w-5 text-gray-600" />;
     }
 
     // fallback icon sederhana (kotak)
