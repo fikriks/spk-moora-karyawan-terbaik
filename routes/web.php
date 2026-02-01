@@ -11,6 +11,7 @@ use App\Http\Controllers\Penilai\DashboardController as DashboardPenilaiControll
 use App\Http\Controllers\Kasubag\DashboardController as DashboardKasubagController;
 use App\Http\Controllers\Ketua\DashboardController as DashboardKetuaController;
 use App\Http\Controllers\Operator\AlternativeController;
+use App\Http\Controllers\Operator\NilaiController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -45,6 +46,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/', [DashboardOperatorController::class, 'index'])->name('operator.index');
         Route::resource('/alternative', AlternativeController::class)->names('operator.alternative');
+        Route::resource('/nilai', NilaiController::class)->names('operator.nilai');
     });
 
     Route::middleware(['role:penilai'])->prefix('penilai')->group(function () {

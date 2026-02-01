@@ -2,44 +2,40 @@ import React from "react";
 import { useForm } from "@inertiajs/react";
 
 /**
- * AlternativeForm
+ * NilaiForm
  *
  * props:
  * - initial: object awal (untuk edit)
- * - onSubmitRoute: route string (mis. route('alternative.store') atau '/alternative')
+ * - alternatifs: array [{id, name}]
+ * - kriterias: array [{id, name}]
+ * - onSubmitRoute: route string
  * - method: 'post' | 'put' | 'patch' (default 'post')
  * - submitLabel: teks tombol submit (default: 'Simpan')
  */
-export default function AlternativeForm({
+export default function NilaiForm({
     initial = {},
+    alternatifs = [],
+    kriterias = [],
     onSubmitRoute,
     method = "post",
     submitLabel = "Simpan",
 }) {
     const form = useForm({
-        nip: initial.nip || "",
-        name: initial.name || "",
-        jabatan: initial.jabatan || "",
+        alternative_id: initial.alternative_id || "",
+        criteria_id: initial.criteria_id || "",
+        nilai: initial.nilai || "",
     });
-
+    // console.log(nilai);
     const submit = (e) => {
         e.preventDefault();
 
         const options = {
             method,
-            onSuccess: () => {
-                // optional: reset form if creating
-            },
-            onError: () => {
-                // errors handled via form.errors automatically
-            },
         };
 
-        // use appropriate call depending on method
-        if (method && method.toLowerCase() === "post") {
+        if (method.toLowerCase() === "post") {
             form.post(onSubmitRoute, options);
         } else {
-            // put/patch — send method override
             form.put(onSubmitRoute, {
                 ...options,
                 data: form.data,
@@ -50,73 +46,89 @@ export default function AlternativeForm({
 
     return (
         <form onSubmit={submit} className="mx-auto max-w-2xl space-y-6">
-            {/* NIP */}
+            {/* Alternatif */}
             <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700">
-                    NIP
+                    Alternatif <span className="text-red-500">*</span>
                 </label>
-                <input
-                    type="text"
-                    value={form.data.nip}
-                    onChange={(e) => form.setData("nip", e.target.value)}
+                <select
+                    value={form.data.alternative_id}
+                    onChange={(e) =>
+                        form.setData("alternative_id", e.target.value)
+                    }
                     className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none ${
-                        form.errors.nip
+                        form.errors.alternative_id
                             ? "border-red-300 focus:ring-red-500"
                             : "border-gray-200 focus:ring-indigo-500"
                     }`}
-                    placeholder="Masukkan NIP"
-                />
-                {form.errors.nip && (
+                    required
+                >
+                    <option value="">-- Pilih Alternatif --</option>
+                    {alternatifs.map((a) => (
+                        <option key={a.id} value={a.id}>
+                            {a.name}
+                        </option>
+                    ))}
+                </select>
+                {form.errors.alternative_id && (
                     <p className="mt-1 text-sm text-red-600">
-                        {form.errors.nip}
+                        {form.errors.alternative_id}
                     </p>
                 )}
             </div>
-            {/* Nama */}
+
+            {/* Kriteria */}
             <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700">
-                    Nama <span className="text-red-500">*</span>
+                    Kriteria <span className="text-red-500">*</span>
                 </label>
-                <input
-                    type="text"
-                    value={form.data.name}
-                    onChange={(e) => form.setData("name", e.target.value)}
+                <select
+                    value={form.data.criteria_id}
+                    onChange={(e) =>
+                        form.setData("criteria_id", e.target.value)
+                    }
                     className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none ${
-                        form.errors.name
+                        form.errors.criteria_id
                             ? "border-red-300 focus:ring-red-500"
                             : "border-gray-200 focus:ring-indigo-500"
                     }`}
-                    placeholder="Masukkan nama"
                     required
-                    autoFocus
-                />
-                {form.errors.name && (
+                >
+                    <option value="">-- Pilih Kriteria --</option>
+                    {kriterias.map((k) => (
+                        <option key={k.id} value={k.id}>
+                            {k.name}
+                        </option>
+                    ))}
+                </select>
+                {form.errors.criteria_id && (
                     <p className="mt-1 text-sm text-red-600">
-                        {form.errors.name}
+                        {form.errors.criteria_id}
                     </p>
                 )}
             </div>
-            {/* Jabatan */}
+
+            {/* Nilai */}
             <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700">
-                    Jabatan <span className="text-red-500">*</span>
+                    Nilai <span className="text-red-500">*</span>
                 </label>
                 <input
-                    type="text"
-                    value={form.data.jabatan}
-                    onChange={(e) => form.setData("jabatan", e.target.value)}
+                    type="number"
+                    step="any"
+                    value={form.data.nilai}
+                    onChange={(e) => form.setData("nilai", e.target.value)}
                     className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none ${
-                        form.errors.jabatan
+                        form.errors.nilai
                             ? "border-red-300 focus:ring-red-500"
                             : "border-gray-200 focus:ring-indigo-500"
                     }`}
-                    placeholder="Masukkan jabatan"
+                    placeholder="Masukkan nilai"
                     required
-                    autoFocus
                 />
-                {form.errors.jabatan && (
+                {form.errors.nilai && (
                     <p className="mt-1 text-sm text-red-600">
-                        {form.errors.jabatan}
+                        {form.errors.nilai}
                     </p>
                 )}
             </div>

@@ -5,36 +5,36 @@ import AlternativeForm from "./AlternativeForm";
 import { notifySuccess, notifyError } from "@/Utils/useSweetAlert";
 
 export default function Edit() {
-    const { criterion, flash } = usePage().props;
+    const { alternative, flash } = usePage().props;
 
     // route update (sesuaikan nama route di Laravel)
-    const submitRoute = route("criteria.update", criterion.id);
+    const submitRoute = route("operator.alternative.update", alternative.id);
 
     // optional: callback setelah sukses — AlternativeForm harus memanggil onSuccess jika tersedia
     function handleSuccess() {
-        notifySuccess("Kriteria berhasil diperbarui!");
+        notifySuccess("Alternative berhasil diperbarui!");
         // redirect kembali ke index (opsional)
-        router.get(route("criteria.index"));
+        router.get(route("operator.alternative.index"));
     }
 
     return (
         <div className="p-6">
-            <Head title={`Edit Kriteria: ${criterion?.name ?? ""}`} />
+            <Head title={`Edit Alternative: ${alternative?.name ?? ""}`} />
 
             {/* Header */}
             <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h1 className="text-2xl font-semibold text-gray-800">
-                        Edit Kriteria
+                        Edit Alternative
                     </h1>
                     <p className="text-sm text-gray-500">
-                        Perbarui data kriteria yang sudah ada.
+                        Perbarui data alternative yang sudah ada.
                     </p>
                 </div>
 
                 <div className="flex items-center gap-3">
                     <Link
-                        href={route("criteria.index")}
+                        href={route("operator.alternative.index")}
                         className="inline-flex items-center rounded-md border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
                     >
                         ← Kembali ke Daftar
@@ -55,10 +55,10 @@ export default function Edit() {
             Note: if you want handleSuccess to run after submit, update AlternativeForm to accept an `onSuccess` prop
             and call it inside its onSuccess handler. */}
                 <AlternativeForm
-                    initial={criterion}
+                    initial={alternative}
                     onSubmitRoute={submitRoute}
                     method="put"
-                    submitLabel="Perbarui Kriteria"
+                    submitLabel="Perbarui Alternative"
                 />
             </div>
         </div>

@@ -39,9 +39,9 @@ export default function AuthenticatedLayout({ header, children }) {
     const isPenilai = user?.roles?.includes("penilai");
     const isKasubag = user?.roles?.includes("kasubag_kepegawaian");
     const isKetua = user?.roles?.includes("ketua_pengadilan");
-    console.log("isAdmin:", isAdmin);
-    console.log("isOperator: ", isOperator);
-    console.log(user);
+    // console.log("isAdmin:", isAdmin);
+    // console.log("isOperator: ", isOperator);
+    // console.log(user);
     // console.log(hasRole);
 
     // const isPenilai = user?.roles[0].name === "penilai";
@@ -69,6 +69,11 @@ export default function AuthenticatedLayout({ header, children }) {
         {
             name: "Alternative",
             href: route("operator.alternative.index"),
+            visible: isOperator,
+        },
+        {
+            name: "Nilai Alternative",
+            href: route("operator.nilai.index"),
             visible: isOperator,
         },
         //PENILAI MENU SIDEBAR

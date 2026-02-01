@@ -6,7 +6,7 @@ import { confirmDialog, notifySuccess } from "@/Utils/useSweetAlert";
 
 function Index() {
     const {
-        criteria: rawCriteria,
+        alternatives: rawAlternatives,
         filters: initialFilters = {},
         flash,
     } = usePage().props;
@@ -52,20 +52,20 @@ function Index() {
      * NORMALISASI DATA (paginate atau array)
      * --------------------------- */
     const items = useMemo(() => {
-        if (!rawCriteria) return [];
-        if (Array.isArray(rawCriteria)) return rawCriteria;
-        if (Array.isArray(rawCriteria.data)) return rawCriteria.data;
+        if (!rawAlternatives) return [];
+        if (Array.isArray(rawAlternatives)) return rawAlternatives;
+        if (Array.isArray(rawAlternatives.data)) return rawAlternatives.data;
         return [];
-    }, [rawCriteria]);
+    }, [rawAlternatives]);
 
     const total = useMemo(() => {
-        if (!rawCriteria) return 0;
-        if (Array.isArray(rawCriteria)) return rawCriteria.length;
-        if (rawCriteria.total !== undefined) return rawCriteria.total;
+        if (!rawAlternatives) return 0;
+        if (Array.isArray(rawAlternatives)) return rawAlternatives.length;
+        if (rawAlternatives.total !== undefined) return rawAlternatives.total;
         return items.length;
-    }, [rawCriteria, items]);
+    }, [rawAlternatives, items]);
 
-    const meta = rawCriteria?.meta ?? rawCriteria?.paginator ?? null;
+    const meta = rawAlternatives?.meta ?? rawAlternatives?.paginator ?? null;
     const canPaginate = !!meta;
 
     /* ---------------------------
@@ -96,7 +96,7 @@ function Index() {
     function handleDelete(id, name) {
         confirmDialog(`Hapus alternative "${name}"?`).then((result) => {
             if (result.isConfirmed) {
-                router.delete(route("alternative.destroy", id), {
+                router.delete(route("operator.alternative.destroy", id), {
                     onSuccess: () => {
                         notifySuccess("Alternative berhasil dihapus!");
                     },
@@ -203,11 +203,10 @@ function Index() {
                     <table className="w-full min-w-[720px] table-auto">
                         <thead className="bg-gray-50 text-left text-xs uppercase text-gray-500">
                             <tr>
-                                <th className="px-4 py-3">Order</th>
-                                <th className="px-4 py-3">Kode</th>
+                                <th className="px-4 py-3">No</th>
+                                <th className="px-4 py-3">NIP</th>
                                 <th className="px-4 py-3">Nama</th>
-                                <th className="px-4 py-3">Tipe</th>
-                                <th className="px-4 py-3">Bobot</th>
+                                <th className="px-4 py-3">Jabatan</th>
                                 <th className="px-4 py-3 text-right">Aksi</th>
                             </tr>
                         </thead>
@@ -223,23 +222,19 @@ function Index() {
                                     </td>
                                 </tr>
                             )}
-
-                            {items.map((c) => (
+                            {items.map((c, i) => (
                                 <tr
                                     key={c.id}
                                     className="hover:bg-gray-50 transition"
                                 >
                                     <td className="px-4 py-4">
-                                        {c.order ?? "-"}
+                                        {i + 1 ?? "-"}
                                     </td>
                                     <td className="px-4 py-4">
-                                        {c.code ?? "-"}
+                                        {c.nip ?? "-"}
                                     </td>
                                     <td className="px-4 py-4">{c.name}</td>
-                                    <td className="px-4 py-4">{c.type}</td>
-                                    <td className="px-4 py-4">
-                                        {Number(c.weight ?? 0).toFixed(4)}
-                                    </td>
+                                    <td className="px-4 py-4">{c.jabatan}</td>
                                     <td className="px-4 py-4 text-right">
                                         <div className="inline-flex gap-2">
                                             <Link
@@ -291,11 +286,10 @@ function Index() {
                                             {c.name}
                                         </div>
                                         <div className="text-xs text-gray-500">
-                                            Kode: {c.code ?? "-"}
+                                            NIP: {c.nip ?? "-"}
                                         </div>
                                         <div className="text-xs text-gray-500 mt-1">
-                                            Bobot:{" "}
-                                            {Number(c.weight ?? 0).toFixed(4)}
+                                            Jabatan: {c.jabatan ?? "-"}
                                         </div>
                                     </div>
                                 </div>
@@ -333,8 +327,8 @@ function Index() {
 
                     {canPaginate ? (
                         // gunakan Pagination component (mengirim links bila tersedia)
-                        rawCriteria?.links ? (
-                            <Pagination links={rawCriteria.links} />
+                        rawAlternatives?.links ? (
+                            <Pagination links={rawAlternatives.links} />
                         ) : (
                             // fallback simple pager jika hanya meta tersedia
                             <nav className="flex items-center gap-1">
