@@ -82,6 +82,11 @@ export default function AuthenticatedLayout({ header, children }) {
             href: route("penilai.index"),
             visible: isPenilai,
         },
+        {
+            name: "Nilai Alternative",
+            href: route("penilai.nilai.index"),
+            visible: isPenilai,
+        },
         //KASUBAG MENU SIDEBAR
         {
             name: "Dashboard",
@@ -94,6 +99,11 @@ export default function AuthenticatedLayout({ header, children }) {
             visible: isKasubag,
         },
         {
+            name: "Nilai Alternative",
+            href: route("kasubag.nilai.index"),
+            visible: isKasubag,
+        },
+        {
             name: "Reports",
             href: "",
             visible: isKasubag,
@@ -103,6 +113,11 @@ export default function AuthenticatedLayout({ header, children }) {
         {
             name: "Reports",
             href: "",
+            visible: isKetua,
+        },
+        {
+            name: "Nilai Alternative",
+            href: route("ketua.nilai.index"),
             visible: isKetua,
         },
         //ADMIN MENU SIDEBAR

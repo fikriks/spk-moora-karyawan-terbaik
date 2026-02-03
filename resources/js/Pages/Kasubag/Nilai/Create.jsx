@@ -6,16 +6,15 @@ import { notifySuccess } from "@/Utils/useSweetAlert";
 
 export default function Create() {
     const { flash, alternatifs, kriterias } = usePage().props;
-    const user = usePage().props.auth?.user;
 
     // route submit NILAI
-    const submitRoute = route("operator.nilai.store");
+    const submitRoute = route("kasubag.nilai.store");
 
     function handleSuccess() {
         notifySuccess("Nilai berhasil ditambahkan!");
-        router.get(route("operator.nilai.index"));
+        router.get(route("kasubag.nilai.index"));
     }
-    console.log(user?.roles.includes("operator"));
+
     return (
         <div className="p-6">
             {/* Header */}
@@ -31,7 +30,7 @@ export default function Create() {
 
                 <div className="flex items-center gap-3">
                     <Link
-                        href={route("operator.nilai.index")}
+                        href={route("kasubag.nilai.index")}
                         className="inline-flex items-center rounded-md border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
                     >
                         ← Kembali ke Daftar Nilai
@@ -55,11 +54,6 @@ export default function Create() {
                     onSubmitRoute={submitRoute}
                     method="post"
                     submitLabel="Simpan Nilai"
-                    role={
-                        user?.roles.includes("operator")
-                            ? "operator"
-                            : user?.roles[0]
-                    }
                 />
             </div>
         </div>

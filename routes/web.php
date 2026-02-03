@@ -12,6 +12,9 @@ use App\Http\Controllers\Kasubag\DashboardController as DashboardKasubagControll
 use App\Http\Controllers\Ketua\DashboardController as DashboardKetuaController;
 use App\Http\Controllers\Operator\AlternativeController;
 use App\Http\Controllers\Operator\NilaiController;
+use App\Http\Controllers\Kasubag\NilaiController as KasubagNilaiController;
+use App\Http\Controllers\Ketua\NilaiController as KetuaNilaiController;
+use App\Http\Controllers\Penilai\NilaiController as PenilaiNilaiController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -52,16 +55,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware(['role:penilai'])->prefix('penilai')->group(function () {
 
         Route::get('/', [DashboardPenilaiController::class, 'index'])->name('penilai.index');
+        Route::resource('/nilai', PenilaiNilaiController::class)->names('penilai.nilai');
     });
 
-    Route::middleware(['role:kasubag'])->prefix('kasubag')->group(function () {
+    Route::middleware(['role:kasubag_kepegawaian'])->prefix('kasubag')->group(function () {
 
         Route::get('/', [DashboardKasubagController::class, 'index'])->name('kasubag.index');
+        Route::resource('/nilai', KasubagNilaiController::class)->names('kasubag.nilai');
     });
 
-    Route::middleware(['role:ketua'])->prefix('ketua')->group(function () {
+    Route::middleware(['role:ketua_pengadilan'])->prefix('ketua')->group(function () {
 
         Route::get('/', [DashboardKetuaController::class, 'index'])->name('ketua.index');
+        Route::resource('/nilai', KetuaNilaiController::class)->names('ketua.nilai');
     });
     
     Route::middleware(['role:admin'])->prefix('admin')->group(function () {

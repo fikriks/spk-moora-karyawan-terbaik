@@ -33,8 +33,12 @@ class RolesAndPermissionsSeeder extends Seeder
         $admin->givePermissionTo(['manage users','manage criteria','approve alternatives']);
         $operator->givePermissionTo(['manage alternatives']);
         $penilai->givePermissionTo(['manage assessments']);
+        $penilai->givePermissionTo(['manage alternatives']);
         $kasubag->givePermissionTo(['approve alternatives']);
+        $kasubag->givePermissionTo(['manage alternatives']);
+        $kasubag->givePermissionTo(['manage assessments']);
         $ketua->givePermissionTo(['approve alternatives']);
+        $ketua->givePermissionTo(['manage assessments']);
 
         // contoh assign role ke user id=1
         $u = User::find(1);
