@@ -9,11 +9,14 @@ function Index() {
         nilaiAlternatives: rawNilaiAlternatives,
         filters: initialFilters = {},
         flash,
+        auth,
     } = usePage().props;
 
-    /* ---------------------------
+    const role = auth?.user?.role;
+
+    /* =========================
      * SEARCH + DEBOUNCE
-     * --------------------------- */
+     * ========================= */
     const [query, setQuery] = useState(() => {
         try {
             const url = new URL(window.location.href);
@@ -27,7 +30,6 @@ function Index() {
     const DEBOUNCE_MS = 500;
 
     useEffect(() => {
-        setSearching(true);
         const id = setTimeout(() => {
             router.get(
                 window.location.pathname,
@@ -39,6 +41,7 @@ function Index() {
                 {
                     preserveState: true,
                     replace: true,
+                    onStart: () => setSearching(true),
                     onFinish: () => setSearching(false),
                 },
             );
@@ -48,60 +51,45 @@ function Index() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [query]);
 
-    /* ---------------------------
+    /* =========================
      * NORMALISASI DATA
-     * --------------------------- */
+     * ========================= */
     const items = useMemo(() => {
         if (!rawNilaiAlternatives) return [];
-        if (Array.isArray(rawNilaiAlternatives)) return rawNilaiAlternatives;
         if (Array.isArray(rawNilaiAlternatives.data))
             return rawNilaiAlternatives.data;
         return [];
     }, [rawNilaiAlternatives]);
 
-    const total = useMemo(() => {
-        if (!rawNilaiAlternatives) return 0;
-        if (Array.isArray(rawNilaiAlternatives))
-            return rawNilaiAlternatives.length;
-        if (rawNilaiAlternatives.total !== undefined)
-            return rawNilaiAlternatives.total;
-        return items.length;
-    }, [rawNilaiAlternatives, items]);
+    const total = rawNilaiAlternatives?.total ?? items.length;
 
-    const meta =
-        rawNilaiAlternatives?.meta ?? rawNilaiAlternatives?.paginator ?? null;
+    /* =========================
+     * RULE EDIT (TIDAK DIUBAH)
+     * ========================= */
+    const restrictedCriteriaNames = ["Tanggung Jawab", "Kerja Sama Tim"];
 
-    const canPaginate = !!meta;
+    function canEdit(role, criteriaName) {
+        if (!criteriaName) return false;
 
-    /* ---------------------------
-     * CHANGE PAGE
-     * --------------------------- */
-    function changePage(page) {
-        if (!page || (meta && page === meta.current_page)) return;
+        const isRestricted = restrictedCriteriaNames.includes(criteriaName);
 
-        router.get(
-            window.location.pathname,
-            {
-                q: query || undefined,
-                page,
-                per_page: initialFilters.per_page || undefined,
-            },
-            {
-                preserveState: true,
-                replace: true,
-                onStart: () => setSearching(true),
-                onFinish: () => setSearching(false),
-            },
-        );
+        // operator: semua KECUALI restricted
+        if (role === "operator") {
+            return !isRestricted;
+        }
+
+        // role lain: HANYA restricted
+        return isRestricted;
     }
-    // console.log(items);
-    /* ---------------------------
+
+    /* =========================
      * DELETE
-     * --------------------------- */
+     * ========================= */
     function handleDelete(id, label) {
         confirmDialog(`Hapus nilai ${label}?`).then((result) => {
             if (result.isConfirmed) {
                 router.delete(route("penilai.nilai.destroy", id), {
+                    preserveScroll: true,
                     onSuccess: () =>
                         notifySuccess("Nilai alternative berhasil dihapus"),
                 });
@@ -109,14 +97,9 @@ function Index() {
         });
     }
 
-    /* ---------------------------
-     * SEARCH LABEL
-     * --------------------------- */
-    const searchLabel = useMemo(() => {
-        return query
-            ? `Hasil pencarian untuk "${query}"`
-            : "Semua nilai alternative";
-    }, [query]);
+    const searchLabel = query
+        ? `Hasil pencarian untuk "${query}"`
+        : "Semua nilai alternative";
 
     return (
         <div className="p-6">
@@ -135,7 +118,7 @@ function Index() {
                 <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                     <Link
                         href={route("penilai.nilai.create")}
-                        className="inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700"
+                        className="inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
                     >
                         + Tambah Nilai
                     </Link>
@@ -150,7 +133,7 @@ function Index() {
                 </div>
             </div>
 
-            {/* SEARCH INFO */}
+            {/* INFO */}
             <div className="mb-4 text-sm text-gray-500">
                 {searching ? "Mencari..." : searchLabel}
                 {flash?.message && (
@@ -184,78 +167,84 @@ function Index() {
                                 </tr>
                             )}
 
-                            {items.map((item, i) => (
-                                <tr key={item.id}>
-                                    <td className="px-4 py-4">{i + 1}</td>
-                                    <td className="px-4 py-4">
-                                        {item.alternative?.name ?? "-"}
-                                    </td>
-                                    <td className="px-4 py-4">
-                                        {item.criteria?.name ?? "-"}
-                                    </td>
-                                    <td className="px-4 py-4 font-semibold">
-                                        {item.value}
-                                    </td>
-                                    <td className="px-4 py-4 text-right">
-                                        <div className="inline-flex gap-2">
-                                            <Link
-                                                href={route(
-                                                    "penilai.nilai.edit",
-                                                    item.id,
-                                                )}
-                                                className="px-3 py-1.5 rounded-md border text-sm hover:bg-gray-50"
-                                            >
-                                                Edit
-                                            </Link>
+                            {items.map((item, i) => {
+                                const allowedEdit = canEdit(
+                                    role,
+                                    item.criteria?.name,
+                                );
 
-                                            <button
-                                                onClick={() =>
-                                                    handleDelete(
-                                                        item.id,
-                                                        `${item.alternative?.name} - ${item.criteria?.name}`,
-                                                    )
-                                                }
-                                                className="px-3 py-1.5 rounded-md bg-red-600 text-white text-sm hover:bg-red-700"
-                                            >
-                                                Hapus
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
+                                return (
+                                    <tr key={item.id}>
+                                        <td className="px-4 py-4">
+                                            {(rawNilaiAlternatives.from ?? 0) +
+                                                i}
+                                        </td>
+                                        <td className="px-4 py-4">
+                                            {item.alternative?.name ?? "-"}
+                                        </td>
+                                        <td className="px-4 py-4">
+                                            {item.criteria?.name ?? "-"}
+                                        </td>
+                                        <td className="px-4 py-4 font-semibold">
+                                            {item.value}
+                                        </td>
+                                        <td className="px-4 py-4 text-right">
+                                            <div className="inline-flex gap-2">
+                                                {allowedEdit ? (
+                                                    <Link
+                                                        href={route(
+                                                            "penilai.nilai.edit",
+                                                            item.id,
+                                                        )}
+                                                        className="px-3 py-1.5 rounded-md border text-sm hover:bg-gray-50"
+                                                    >
+                                                        Edit
+                                                    </Link>
+                                                ) : (
+                                                    <button
+                                                        disabled
+                                                        className="px-3 py-1.5 rounded-md border text-sm text-gray-400 bg-gray-100 cursor-not-allowed"
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                )}
+
+                                                <button
+                                                    onClick={() =>
+                                                        handleDelete(
+                                                            item.id,
+                                                            `${item.alternative?.name} - ${item.criteria?.name}`,
+                                                        )
+                                                    }
+                                                    className="px-3 py-1.5 rounded-md bg-red-600 text-white text-sm hover:bg-red-700"
+                                                >
+                                                    Hapus
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>
 
-                {/* FOOTER */}
+                {/* FOOTER – PAGINATION FIX */}
                 <div className="flex items-center justify-between border-t px-4 py-3">
                     <div className="text-sm text-gray-600">
                         Total: {total} nilai alternative
                     </div>
 
-                    {canPaginate ? (
-                        rawNilaiAlternatives?.links ? (
+                    {rawNilaiAlternatives?.links &&
+                        rawNilaiAlternatives.links.length > 1 && (
                             <Pagination links={rawNilaiAlternatives.links} />
-                        ) : (
-                            <button
-                                onClick={() =>
-                                    changePage(meta.current_page + 1)
-                                }
-                                className="text-sm px-3 py-1 border rounded"
-                            >
-                                Next
-                            </button>
-                        )
-                    ) : (
-                        <span className="text-sm text-gray-400">—</span>
-                    )}
+                        )}
                 </div>
             </div>
         </div>
     );
 }
 
-/* Layout */
 Index.layout = (page) => (
     <AuthenticatedLayout
         header={

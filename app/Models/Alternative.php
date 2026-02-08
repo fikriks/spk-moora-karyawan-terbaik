@@ -10,4 +10,9 @@ class Alternative extends Model
     use HasFactory;
     protected $table = 'alternative';
     protected $fillable = ['nip', 'name', 'jabatan'];
+
+    public function nilais()
+    {
+        return $this->hasMany(Nilai::class);
+    }
 }

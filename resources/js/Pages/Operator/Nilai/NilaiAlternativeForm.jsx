@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useForm } from "@inertiajs/react";
 
 /**
@@ -8,10 +8,10 @@ import { useForm } from "@inertiajs/react";
  * - initial: object awal (untuk edit)
  * - alternatifs: array [{id, name}]
  * - kriterias: array [{id, name}]
- * - role: string (contoh: 'operator', 'admin', dll)
+ * - role: string (contoh: 'operator', 'admin')
  * - onSubmitRoute: route string
- * - method: 'post' | 'put' | 'patch' (default 'post')
- * - submitLabel: teks tombol submit (default: 'Simpan')
+ * - method: 'post' | 'put' | 'patch'
+ * - submitLabel: teks tombol submit
  */
 export default function NilaiForm({
     initial = {},
@@ -22,30 +22,57 @@ export default function NilaiForm({
     method = "post",
     submitLabel = "Simpan",
 }) {
+    /**
+     * =========================
+     * FORM STATE
+     * =========================
+     * NOTE:
+     * - Pakai String untuk ID → aman untuk <select>
+     */
     const form = useForm({
-        alternative_id: initial.alternative_id || "",
-        criteria_id: initial.criteria_id || "",
-        nilai: initial.nilai || "",
+        alternative_id: initial.alternative_id
+            ? String(initial.alternative_id)
+            : "",
+        criteria_id: initial.criteria_id ? String(initial.criteria_id) : "",
+        nilai: initial.nilai ?? "",
     });
 
     /**
-     * Kriteria yang dibatasi
+     * =========================
+     * RULE KETERBATASAN KRITERIA
+     * =========================
      */
     const restrictedCriteriaNames = ["Tanggung Jawab", "Kerja Sama Tim"];
 
     /**
-     * Filter kriteria berdasarkan role
+     * =========================
+     * FILTER KRITERIA BERDASARKAN ROLE
+     * =========================
+     * useMemo → stabil, tidak re-render berlebihan
      */
-    const filteredKriterias =
-        role === "operator"
-            ? kriterias.filter((k) => !restrictedCriteriaNames.includes(k.name))
-            : kriterias.filter((k) => restrictedCriteriaNames.includes(k.name));
+    const filteredKriterias = useMemo(() => {
+        if (role === "operator") {
+            return kriterias.filter((k) =>
+                restrictedCriteriaNames.includes(k.name),
+            );
+        }
+
+        // role selain operator (admin, dll)
+        return kriterias.filter(
+            (k) => !restrictedCriteriaNames.includes(k.name),
+        );
+    }, [role, kriterias]);
 
     /**
-     * Reset criteria_id jika tidak valid setelah filtering
-     * (penting untuk edit data lama / role berbeda)
+     * =========================
+     * VALIDASI criteria_id SAAT EDIT / ROLE BERUBAH
+     * =========================
+     * - Jangan reset sembarangan
+     * - Hanya reset jika benar-benar tidak valid
      */
     useEffect(() => {
+        if (!form.data.criteria_id) return;
+
         const isValid = filteredKriterias.some(
             (k) => String(k.id) === String(form.data.criteria_id),
         );
@@ -53,10 +80,12 @@ export default function NilaiForm({
         if (!isValid) {
             form.setData("criteria_id", "");
         }
-    }, [role]);
+    }, [filteredKriterias]);
 
     /**
-     * Submit handler
+     * =========================
+     * SUBMIT HANDLER
+     * =========================
      */
     const submit = (e) => {
         e.preventDefault();
@@ -65,19 +94,21 @@ export default function NilaiForm({
             form.post(onSubmitRoute);
         } else {
             form.put(onSubmitRoute, {
-                _method: method,
-                data: form.data,
+                preserveScroll: true,
             });
         }
     };
 
     return (
         <form onSubmit={submit} className="mx-auto max-w-2xl space-y-6">
-            {/* Alternatif */}
+            {/* =========================
+                ALTERNATIF
+            ========================= */}
             <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700">
                     Alternatif <span className="text-red-500">*</span>
                 </label>
+
                 <select
                     value={form.data.alternative_id}
                     onChange={(e) =>
@@ -97,6 +128,7 @@ export default function NilaiForm({
                         </option>
                     ))}
                 </select>
+
                 {form.errors.alternative_id && (
                     <p className="mt-1 text-sm text-red-600">
                         {form.errors.alternative_id}
@@ -104,11 +136,14 @@ export default function NilaiForm({
                 )}
             </div>
 
-            {/* Kriteria */}
+            {/* =========================
+                KRITERIA
+            ========================= */}
             <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700">
                     Kriteria <span className="text-red-500">*</span>
                 </label>
+
                 <select
                     value={form.data.criteria_id}
                     onChange={(e) =>
@@ -142,11 +177,14 @@ export default function NilaiForm({
                 )}
             </div>
 
-            {/* Nilai */}
+            {/* =========================
+                NILAI
+            ========================= */}
             <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700">
                     Nilai <span className="text-red-500">*</span>
                 </label>
+
                 <input
                     type="number"
                     step="any"
@@ -160,6 +198,7 @@ export default function NilaiForm({
                     placeholder="Masukkan nilai"
                     required
                 />
+
                 {form.errors.nilai && (
                     <p className="mt-1 text-sm text-red-600">
                         {form.errors.nilai}
@@ -167,7 +206,9 @@ export default function NilaiForm({
                 )}
             </div>
 
-            {/* Actions */}
+            {/* =========================
+                ACTIONS
+            ========================= */}
             <div className="flex justify-end">
                 <button
                     type="submit"

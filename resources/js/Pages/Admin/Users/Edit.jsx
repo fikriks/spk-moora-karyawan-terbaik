@@ -10,6 +10,7 @@ export default function Edit({ user }) {
         role: user.role || "user",
         password: "",
     });
+    const { roles } = usePage().props;
 
     function submit(e) {
         e.preventDefault();
@@ -110,8 +111,12 @@ export default function Edit({ user }) {
                                 : "border-gray-200 focus:ring-indigo-500"
                         }`}
                     >
-                        <option value="user">User</option>
-                        <option value="admin">Admin</option>
+                        {roles?.map((role) => (
+                            <option key={role.name} value={role.name}>
+                                {role.name.charAt(0).toUpperCase() +
+                                    role.name.slice(1)}
+                            </option>
+                        ))}
                     </select>
                     {errors.role && (
                         <p className="mt-1 text-sm text-red-600">

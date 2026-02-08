@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -80,8 +81,11 @@ return redirect()
      */
     public function edit(User $user)
     {
+        
+        $roles = Role::all();
         return Inertia::render('Admin/Users/Edit', [
-        'user' => $user
+        'user' => $user,
+        'roles' => $roles
     ]);
     }
 

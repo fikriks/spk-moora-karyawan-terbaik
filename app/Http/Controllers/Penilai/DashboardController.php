@@ -3,65 +3,55 @@
 namespace App\Http\Controllers\Penilai;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\Alternative;
+use App\Models\Criterion;
+use App\Models\Nilai;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
-        return Inertia::render('Penilai/Index');
-    }
+        // ===== BASIC COUNT =====
+        $totalAlternatif = Alternative::count();
+        $totalKriteria   = Criterion::count();
+        $totalNilaiMasuk = Nilai::count();
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+        $totalNilaiIdeal = $totalAlternatif * $totalKriteria;
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        // ===== STATUS PROSES =====
+        if ($totalNilaiMasuk === 0) {
+            $statusProses = 'Belum Dimulai';
+        } elseif ($totalNilaiMasuk < $totalNilaiIdeal) {
+            $statusProses = 'Belum Selesai';
+        } else {
+            $statusProses = 'Selesai';
+        }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+        // ===== STATUS PEGAWAI (UNTUK PENILAI) =====
+        $statusPegawai = Alternative::withCount('nilais')
+            ->get()
+            ->map(function ($alt) use ($totalKriteria) {
+                return [
+                    'id' => $alt->id,
+                    'name' => $alt->name,
+                    'jabatan' => $alt->jabatan,
+                    'nilai_masuk' => $alt->nilais_count,
+                    'status' => $alt->nilais_count >= $totalKriteria
+                        ? 'Sudah Dinilai'
+                        : 'Belum Lengkap',
+                ];
+            });
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return Inertia::render('Penilai/Index', [
+            'summary' => [
+                'totalAlternatif' => $totalAlternatif,
+                'totalKriteria'   => $totalKriteria,
+                'nilaiMasuk'      => $totalNilaiMasuk,
+                'nilaiIdeal'      => $totalNilaiIdeal,
+                'statusProses'    => $statusProses,
+            ],
+            'statusPegawai' => $statusPegawai,
+        ]);
     }
 }

@@ -3,65 +3,56 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rules\In;
+use App\Models\Alternative;
+use App\Models\Criterion;
+use App\Models\Nilai;
+use App\Models\MooraSteps;
+use App\Models\User;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        return Inertia::render('Admin/Index');
-    }
+        // ===== MASTER DATA =====
+        $totalUser       = User::count();
+        $totalAlternatif = Alternative::count();
+        $totalKriteria   = Criterion::count();
+        $totalNilaiMasuk = Nilai::count();
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+        $totalNilaiIdeal = $totalAlternatif * $totalKriteria;
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        // ===== STATUS DATA NILAI =====
+        if ($totalNilaiMasuk === 0) {
+            $statusNilai = 'Belum Ada Nilai';
+        } elseif ($totalNilaiMasuk < $totalNilaiIdeal) {
+            $statusNilai = 'Belum Lengkap';
+        } else {
+            $statusNilai = 'Lengkap';
+        }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+        // ===== STATUS MOORA =====
+        $mooraSteps = MooraSteps::pluck('step')->toArray();
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+        $statusMoora = [
+            'normalisasi' => in_array('normalisasi', $mooraSteps),
+            'optimasi'    => in_array('optimasi', $mooraSteps),
+            'ranking'     => in_array('ranking', $mooraSteps),
+        ];
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+        $mooraReady = $statusNilai === 'Lengkap';
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return Inertia::render('Admin/Index', [
+            'summary' => [
+                'totalUser'       => $totalUser,
+                'totalAlternatif' => $totalAlternatif,
+                'totalKriteria'   => $totalKriteria,
+                'nilaiMasuk'      => $totalNilaiMasuk,
+                'nilaiIdeal'      => $totalNilaiIdeal,
+                'statusNilai'     => $statusNilai,
+                'mooraReady'      => $mooraReady,
+            ],
+            'mooraStatus' => $statusMoora,
+        ]);
     }
 }

@@ -53,6 +53,18 @@ class AuthenticatedSessionController extends Controller
     // jika user admin -> kirim ke admin
     if (auth()->user()?->hasRole('admin')) {
         return redirect()->route('admin.index');
+    }elseif (auth()->user()?->hasRole('ketua_pengadilan')) {
+        // jika user ketua -> kirim ke ketua
+        return redirect()->route('ketua.index');
+    }elseif (auth()->user()?->hasRole('kasubag_kepegawaian')) {
+        // jika user kasubag -> kirim ke kasubag
+        return redirect()->route('kasubag.index');
+    }elseif (auth()->user()?->hasRole('penilai')) {
+        // jika user penilai -> kirim ke penilai
+        return redirect()->route('penilai.index');
+    }elseif (auth()->user()?->hasRole('operator')) {
+        // jika user operator -> kirim ke operator
+        return redirect()->route('operator.index');
     }
 
 

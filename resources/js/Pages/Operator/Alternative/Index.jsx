@@ -5,121 +5,92 @@ import Pagination from "@/Components/Pagination";
 import { confirmDialog, notifySuccess } from "@/Utils/useSweetAlert";
 
 function Index() {
-    const {
-        alternatives: rawAlternatives,
-        filters: initialFilters = {},
-        flash,
-    } = usePage().props;
+    const { alternatives, filters = {}, flash } = usePage().props;
 
-    /* ---------------------------
+    /* ===============================
      * SEARCH + DEBOUNCE
-     * --------------------------- */
-    const [query, setQuery] = useState(() => {
-        try {
-            const url = new URL(window.location.href);
-            return url.searchParams.get("q") || initialFilters.q || "";
-        } catch {
-            return initialFilters.q || "";
-        }
-    });
-
+     * =============================== */
+    const [query, setQuery] = useState(filters.q || "");
     const [searching, setSearching] = useState(false);
     const DEBOUNCE_MS = 500;
+    const [showImportModal, setShowImportModal] = useState(false);
+    const [importFile, setImportFile] = useState(null);
+    const [importing, setImporting] = useState(false);
+
+    function submitImport(e) {
+        e.preventDefault();
+
+        if (!importFile) return;
+
+        const formData = new FormData();
+        formData.append("file", importFile);
+
+        setImporting(true);
+
+        router.post(route("operator.alternative.import"), formData, {
+            forceFormData: true,
+            onSuccess: () => {
+                notifySuccess("Import alternative berhasil");
+                setShowImportModal(false);
+                setImportFile(null);
+            },
+            onFinish: () => setImporting(false),
+        });
+    }
 
     useEffect(() => {
-        setSearching(true);
-        const id = setTimeout(() => {
+        const timeout = setTimeout(() => {
             router.get(
                 window.location.pathname,
                 {
                     q: query || undefined,
                     page: 1,
-                    per_page: initialFilters.per_page || undefined,
+                    per_page: filters.per_page || undefined,
                 },
                 {
                     preserveState: true,
                     replace: true,
+                    onStart: () => setSearching(true),
                     onFinish: () => setSearching(false),
                 },
             );
         }, DEBOUNCE_MS);
 
-        return () => clearTimeout(id);
+        return () => clearTimeout(timeout);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [query]);
 
-    /* ---------------------------
-     * NORMALISASI DATA (paginate atau array)
-     * --------------------------- */
-    const items = useMemo(() => {
-        if (!rawAlternatives) return [];
-        if (Array.isArray(rawAlternatives)) return rawAlternatives;
-        if (Array.isArray(rawAlternatives.data)) return rawAlternatives.data;
-        return [];
-    }, [rawAlternatives]);
+    /* ===============================
+     * DATA
+     * =============================== */
+    const items = useMemo(() => alternatives?.data ?? [], [alternatives]);
 
-    const total = useMemo(() => {
-        if (!rawAlternatives) return 0;
-        if (Array.isArray(rawAlternatives)) return rawAlternatives.length;
-        if (rawAlternatives.total !== undefined) return rawAlternatives.total;
-        return items.length;
-    }, [rawAlternatives, items]);
+    const total = alternatives?.total ?? items.length;
 
-    const meta = rawAlternatives?.meta ?? rawAlternatives?.paginator ?? null;
-    const canPaginate = !!meta;
-
-    /* ---------------------------
-     * CHANGE PAGE (when using meta)
-     * --------------------------- */
-    function changePage(page) {
-        if (!page || (meta && page === meta.current_page)) return;
-
-        router.get(
-            window.location.pathname,
-            {
-                q: query || undefined,
-                page,
-                per_page: initialFilters.per_page || undefined,
-            },
-            {
-                preserveState: true,
-                replace: true,
-                onStart: () => setSearching(true),
-                onFinish: () => setSearching(false),
-            },
-        );
-    }
-
-    /* ---------------------------
-     * DELETE CRITERION
-     * --------------------------- */
+    /* ===============================
+     * DELETE
+     * =============================== */
     function handleDelete(id, name) {
         confirmDialog(`Hapus alternative "${name}"?`).then((result) => {
             if (result.isConfirmed) {
                 router.delete(route("operator.alternative.destroy", id), {
-                    onSuccess: () => {
-                        notifySuccess("Alternative berhasil dihapus!");
-                    },
-                    onError: (errors) => {
-                        // optional: log or show toast
-                        console.error(errors);
-                    },
+                    preserveScroll: true,
+                    onSuccess: () =>
+                        notifySuccess("Alternative berhasil dihapus!"),
                 });
             }
         });
     }
 
-    /* ---------------------------
-     * SEARCH LABEL
-     * --------------------------- */
-    const searchLabel = useMemo(() => {
-        return query ? `Hasil pencarian untuk "${query}"` : "Semua alternative";
-    }, [query]);
+    const searchLabel = query
+        ? `Hasil pencarian untuk "${query}"`
+        : "Semua alternative";
 
     return (
         <div className="p-6">
             {/* HEADER */}
-            <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                {/* TITLE */}
                 <div>
                     <h1 className="text-2xl font-semibold text-gray-800">
                         Alternative
@@ -129,79 +100,62 @@ function Index() {
                     </p>
                 </div>
 
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3 w-full sm:w-auto">
+                {/* ACTIONS */}
+                <div className="flex flex-wrap items-center gap-2">
+                    {/* DOWNLOAD TEMPLATE */}
+                    <a
+                        href={route("operator.alternative.template")}
+                        className="inline-flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                    >
+                        📄 Template
+                    </a>
+
+                    {/* IMPORT */}
+                    <button
+                        type="button"
+                        onClick={() => setShowImportModal(true)}
+                        className="inline-flex items-center gap-2 rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+                    >
+                        ⬆ Import
+                    </button>
+
+                    {/* TAMBAH */}
                     <Link
                         href={route("operator.alternative.create")}
-                        className="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 w-full sm:w-auto justify-center"
+                        className="inline-flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
                     >
-                        + Tambah Alternative
+                        + Tambah
                     </Link>
 
-                    <div className="relative w-full sm:w-64">
+                    {/* SEARCH */}
+                    <div className="relative">
                         <input
-                            id="search"
                             type="search"
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
-                            placeholder="Cari nama atau kode..."
-                            className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                            placeholder="Cari nama atau NIP..."
+                            className="w-64 rounded-md border border-gray-300 px-3 py-2 pl-9 text-sm shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                         />
-
-                        <div className="absolute inset-y-0 right-2 flex items-center">
-                            {searching ? (
-                                <svg
-                                    className="h-4 w-4 animate-spin text-gray-500"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <circle
-                                        cx="12"
-                                        cy="12"
-                                        r="10"
-                                        stroke="currentColor"
-                                        strokeWidth="3"
-                                        strokeOpacity="0.3"
-                                        fill="none"
-                                    />
-                                    <path
-                                        d="M22 12a10 10 0 00-10-10"
-                                        stroke="currentColor"
-                                        strokeWidth="3"
-                                        strokeLinecap="round"
-                                    />
-                                </svg>
-                            ) : (
-                                query && (
-                                    <button
-                                        onClick={() => setQuery("")}
-                                        className="text-gray-400 hover:text-gray-600 text-lg pb-1"
-                                    >
-                                        ✕
-                                    </button>
-                                )
-                            )}
-                        </div>
+                        <span className="pointer-events-none absolute left-3 top-2.5 text-gray-400">
+                            🔍
+                        </span>
                     </div>
                 </div>
             </div>
 
-            {/* SEARCH STATUS */}
-            <div className="mb-4">
-                <div className="text-sm text-gray-500">
-                    {searching ? "Mencari..." : searchLabel}
-                </div>
-                {flash?.message && (
-                    <div className="text-sm text-green-600 mt-1">
-                        {flash.message}
-                    </div>
+            {/* INFO */}
+            <div className="mb-4 text-sm text-gray-500">
+                {searching ? "Mencari..." : searchLabel}
+                {flash?.success && (
+                    <div className="text-green-600 mt-1">{flash.success}</div>
                 )}
             </div>
 
-            {/* TABLE / LIST */}
-            <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
-                {/* Desktop Table */}
+            {/* TABLE */}
+            <div className="overflow-hidden rounded-lg border bg-white shadow-sm">
                 <div className="overflow-x-auto hidden md:block">
-                    <table className="w-full min-w-[720px] table-auto">
-                        <thead className="bg-gray-50 text-left text-xs uppercase text-gray-500">
+                    <table className="w-full min-w-[720px]">
+                        <thead className="bg-gray-50 text-xs uppercase text-gray-500">
                             <tr>
                                 <th className="px-4 py-3">No</th>
                                 <th className="px-4 py-3">NIP</th>
@@ -211,38 +165,34 @@ function Index() {
                             </tr>
                         </thead>
 
-                        <tbody className="divide-y divide-gray-100 text-sm text-gray-700">
+                        <tbody className="divide-y text-sm">
                             {items.length === 0 && (
                                 <tr>
                                     <td
-                                        colSpan="6"
+                                        colSpan="5"
                                         className="px-4 py-6 text-center text-gray-500"
                                     >
                                         Tidak ada alternative.
                                     </td>
                                 </tr>
                             )}
+
                             {items.map((c, i) => (
-                                <tr
-                                    key={c.id}
-                                    className="hover:bg-gray-50 transition"
-                                >
-                                    <td className="px-4 py-4">
-                                        {i + 1 ?? "-"}
+                                <tr key={c.id} className="hover:bg-gray-50">
+                                    <td className="px-4 py-3">
+                                        {(alternatives.from ?? 0) + i}
                                     </td>
-                                    <td className="px-4 py-4">
-                                        {c.nip ?? "-"}
-                                    </td>
-                                    <td className="px-4 py-4">{c.name}</td>
-                                    <td className="px-4 py-4">{c.jabatan}</td>
-                                    <td className="px-4 py-4 text-right">
+                                    <td className="px-4 py-3">{c.nip}</td>
+                                    <td className="px-4 py-3">{c.name}</td>
+                                    <td className="px-4 py-3">{c.jabatan}</td>
+                                    <td className="px-4 py-3 text-right">
                                         <div className="inline-flex gap-2">
                                             <Link
                                                 href={route(
                                                     "operator.alternative.edit",
                                                     c.id,
                                                 )}
-                                                className="px-3 py-1.5 rounded-md border shadow-sm text-sm hover:bg-gray-50"
+                                                className="px-3 py-1.5 rounded-md border text-sm hover:bg-gray-50"
                                             >
                                                 Edit
                                             </Link>
@@ -263,143 +213,84 @@ function Index() {
                     </table>
                 </div>
 
-                {/* Mobile Card List */}
-                <div className="md:hidden divide-y">
-                    {items.length === 0 && (
-                        <div className="p-4 text-center text-gray-500">
-                            Tidak ada alternative.
-                        </div>
-                    )}
-
-                    {items.map((c) => (
-                        <div key={c.id} className="p-4">
-                            <div className="flex justify-between gap-4">
-                                <div className="flex gap-3">
-                                    <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center font-medium">
-                                        {String(c.name || "-")
-                                            .charAt(0)
-                                            .toUpperCase()}
-                                    </div>
-
-                                    <div>
-                                        <div className="font-medium">
-                                            {c.name}
-                                        </div>
-                                        <div className="text-xs text-gray-500">
-                                            NIP: {c.nip ?? "-"}
-                                        </div>
-                                        <div className="text-xs text-gray-500 mt-1">
-                                            Jabatan: {c.jabatan ?? "-"}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="flex flex-col gap-2">
-                                    <Link
-                                        href={route(
-                                            "operator.alternative.edit",
-                                            c.id,
-                                        )}
-                                        className="px-3 py-1.5 rounded-md border text-sm shadow-sm hover:bg-gray-50"
-                                    >
-                                        Edit
-                                    </Link>
-
-                                    <button
-                                        onClick={() =>
-                                            handleDelete(c.id, c.name)
-                                        }
-                                        className="px-3 py-1.5 rounded-md bg-red-600 text-white text-sm hover:bg-red-700"
-                                    >
-                                        Hapus
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
                 {/* FOOTER */}
                 <div className="flex items-center justify-between border-t px-4 py-3">
                     <div className="text-sm text-gray-600">
                         Total: {total} alternative
                     </div>
 
-                    {canPaginate ? (
-                        // gunakan Pagination component (mengirim links bila tersedia)
-                        rawAlternatives?.links ? (
-                            <Pagination links={rawAlternatives.links} />
-                        ) : (
-                            // fallback simple pager jika hanya meta tersedia
-                            <nav className="flex items-center gap-1">
-                                <button
-                                    onClick={() =>
-                                        changePage(meta.current_page - 1)
-                                    }
-                                    disabled={meta.current_page <= 1}
-                                    className="px-2 py-1 border rounded disabled:opacity-40"
-                                >
-                                    Prev
-                                </button>
-
-                                {/* truncated page numbers */}
-                                {Array.from(
-                                    { length: meta.last_page },
-                                    (_, i) => i + 1,
-                                )
-                                    .filter((page) => {
-                                        const current = meta.current_page;
-                                        return (
-                                            page === 1 ||
-                                            page === meta.last_page ||
-                                            (page >= current - 2 &&
-                                                page <= current + 2)
-                                        );
-                                    })
-                                    .map((page, idx, arr) => (
-                                        <React.Fragment key={page}>
-                                            {idx > 0 &&
-                                                arr[idx - 1] !== page - 1 && (
-                                                    <span className="px-2">
-                                                        …
-                                                    </span>
-                                                )}
-                                            <button
-                                                onClick={() => changePage(page)}
-                                                className={`px-2 py-1 border rounded ${
-                                                    page === meta.current_page
-                                                        ? "bg-indigo-600 text-white"
-                                                        : "bg-white"
-                                                }`}
-                                            >
-                                                {page}
-                                            </button>
-                                        </React.Fragment>
-                                    ))}
-
-                                <button
-                                    onClick={() =>
-                                        changePage(meta.current_page + 1)
-                                    }
-                                    disabled={
-                                        meta.current_page >= meta.last_page
-                                    }
-                                    className="px-2 py-1 border rounded disabled:opacity-40"
-                                >
-                                    Next
-                                </button>
-                            </nav>
-                        )
-                    ) : (
-                        <span className="text-gray-500 text-sm">—</span>
+                    {alternatives?.links && alternatives.links.length > 1 && (
+                        <Pagination links={alternatives.links} />
                     )}
                 </div>
             </div>
+            {/* IMPORT MODAL */}
+            {showImportModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+                    <div className="w-full max-w-md rounded-lg bg-white shadow-lg">
+                        {/* HEADER */}
+                        <div className="flex items-center justify-between border-b px-4 py-3">
+                            <h3 className="text-lg font-semibold text-gray-800">
+                                Import Alternative
+                            </h3>
+                            <button
+                                onClick={() => setShowImportModal(false)}
+                                className="text-gray-400 hover:text-gray-600"
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        {/* BODY */}
+                        <form
+                            onSubmit={submitImport}
+                            className="px-4 py-5 space-y-4"
+                        >
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    File Excel (.xlsx)
+                                </label>
+                                <input
+                                    type="file"
+                                    accept=".xlsx,.xls"
+                                    onChange={(e) =>
+                                        setImportFile(e.target.files[0])
+                                    }
+                                    className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                                    required
+                                />
+                                <p className="mt-1 text-xs text-gray-500">
+                                    Gunakan template yang sudah disediakan
+                                </p>
+                            </div>
+
+                            {/* ACTION */}
+                            <div className="flex justify-end gap-2 pt-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowImportModal(false)}
+                                    className="rounded-md border px-4 py-2 text-sm hover:bg-gray-50"
+                                    disabled={importing}
+                                >
+                                    Batal
+                                </button>
+
+                                <button
+                                    type="submit"
+                                    disabled={importing}
+                                    className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-60"
+                                >
+                                    {importing ? "Mengimpor..." : "Import"}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
 
-/* Wrap with AuthenticatedLayout */
 Index.layout = (page) => (
     <AuthenticatedLayout
         header={

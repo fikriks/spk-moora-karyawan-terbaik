@@ -3,32 +3,39 @@
 namespace App\Http\Controllers\Operator;
 
 use App\Http\Controllers\Controller;
+use App\Imports\AlternativeImport;
 use App\Models\Alternative;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AlternativeController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request$request)
-    {
-        $q = $request->string('q')->trim();
-        $perPage = $request->integer('per_page', 10);
+    public function index(Request $request)
+{
+    $q = $request->string('q')->trim();
+    $perPage = $request->integer('per_page', 10);
 
-        $query = Alternative::query()
-            ->when($q->isNotEmpty(), fn($qbuilder) => $qbuilder->where('name', 'like', "%{$q}%")
-                ->orWhere('nip', 'like', "%{$q}%"));
+    $alternatives = Alternative::query()
+        ->when(
+            $q->isNotEmpty(),
+            fn ($query) =>
+                $query->where('name', 'like', "%{$q}%")
+                      ->orWhere('nip', 'like', "%{$q}%")
+        )
+        ->orderBy('id', 'desc')
+        ->paginate($perPage)
+        ->withQueryString();
 
-        $alternatives = $query->orderBy('id')->orderBy('id','desc')->paginate($perPage)->withQueryString();
+    return Inertia::render('Operator/Alternative/Index', [
+        'alternatives' => $alternatives,
+        'filters' => $request->only(['q', 'per_page']),
+    ]);
+}
 
-        return Inertia::render('Operator/Alternative/Index', [
-            'alternatives' => $alternatives,
-            'filters' => $request->only(['q','per_page']),
-        ]);
-        // return Inertia::render('Operator/Alternative/Index');
-    }
 
     /**
      * Show the form for creating a new resource.
@@ -118,4 +125,37 @@ class AlternativeController extends Controller
         return redirect()->back()->with('success', 'Alternative berhasil dihapus');
 
     }
+    /**
+     * DOWNLOAD TEMPLATE DARI PUBLIC
+     */
+    public function downloadTemplate()
+    {
+        $path = public_path('templates/template-alternative.xlsx');
+
+        if (!file_exists($path)) {
+            abort(404, 'Template tidak ditemukan');
+        }
+
+        return response()->download(
+            $path,
+            'template-alternative.xlsx'
+        );
+    }
+
+    /**
+     * IMPORT EXCEL
+     */
+    public function import(Request $request)
+{
+    $request->validate([
+        'file' => ['required', 'mimes:xlsx,xls'],
+    ]);
+
+    Excel::import(
+        new AlternativeImport,
+        $request->file('file')
+    );
+
+    return back()->with('success', 'Import alternative berhasil');
+}
 }
