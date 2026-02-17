@@ -64,6 +64,11 @@
     </div>
 
     <div class="section">
+        <div class="section-title">Nilai Penyebut (√ΣX²)</div>
+        @include('reports.partials.denominator')
+    </div>
+
+    <div class="section">
         <div class="section-title">Normalisasi Data</div>
         @include('reports.partials.normalization')
     </div>

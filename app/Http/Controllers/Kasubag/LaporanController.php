@@ -32,6 +32,7 @@ class LaporanController extends Controller
 
         return Pdf::loadView('reports.kepegawaian', [
                 'decisionMatrix' => $steps['decision_matrix']->data ?? [],
+                'denominator'    => $steps['denominator']->data ?? [], // TAMBAHAN
                 'normalization'  => $steps['normalization']->data ?? [],
                 'optimization'   => $steps['optimization']->data ?? [],
                 'ranking'        => $steps['ranking']->data ?? [],

@@ -3,6 +3,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import MatrixTable from "@/Components/MatrixTable";
 import OptimizationTable from "@/Components/OptimationTable";
 import RankingTable from "@/Components/RankingTable";
+import DenominatorTable from "@/Components/DenominatorTable";
 
 export default function LaporanKepegawaian({ steps }) {
     const getStep = (name) =>
@@ -44,6 +45,11 @@ export default function LaporanKepegawaian({ steps }) {
                 {/* Matriks */}
                 <Section title="Matriks Keputusan">
                     <MatrixTable data={getStep("decision_matrix")} />
+                </Section>
+
+                {/* Denominator */}
+                <Section title="Matriks Denominator">
+                    <DenominatorTable data={getStep("denominator")} />
                 </Section>
 
                 {/* Normalisasi */}

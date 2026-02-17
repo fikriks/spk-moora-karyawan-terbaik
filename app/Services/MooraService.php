@@ -10,28 +10,46 @@ class MooraService
 {
     public function process(): array
     {
-        MooraSteps::truncate(); // reset proses lama (opsional)
+        MooraSteps::truncate();
 
+        // 1. Matriks Keputusan
         $matrix = $this->decisionMatrix();
-        $normalized = $this->normalization($matrix);
+
+        // 2. Hitung √ΣX²
+        $denominator = $this->calculateDenominator($matrix);
+
+        // 3. Matriks Normalisasi
+        $normalized = $this->normalization($matrix, $denominator);
+
+        // 4. Optimasi Yi
         $optimization = $this->optimization($normalized);
+
+        // 5. Ranking
         $ranking = $this->ranking($optimization);
 
-        return compact('matrix', 'normalized', 'optimization', 'ranking');
+        return compact(
+            'matrix',
+            'denominator',
+            'normalized',
+            'optimization',
+            'ranking'
+        );
     }
 
     /**
-     * (1) Matriks Keputusan
+     * 1️⃣ Matriks Keputusan
      */
     private function decisionMatrix(): array
     {
         $matrix = [];
 
         $alternatives = Alternative::with('nilais')->get();
+        $criterias = Criterion::pluck('id')->toArray();
 
         foreach ($alternatives as $alt) {
-            foreach ($alt->nilais as $nilai) {
-                $matrix[$alt->id][$nilai->criteria_id] = $nilai->value;
+            foreach ($criterias as $criteriaId) {
+                $nilai = $alt->nilais->firstWhere('criteria_id', $criteriaId);
+                $matrix[$alt->id][$criteriaId] = $nilai->value ?? 0;
             }
         }
 
@@ -44,13 +62,11 @@ class MooraService
     }
 
     /**
-     * (2) Normalisasi Matriks
-     * Xij* = Xij / sqrt(Σ Xij²)
+     * 2️⃣ Hitung Penyebut √ΣX²
      */
-    private function normalization(array $matrix): array
+    private function calculateDenominator(array $matrix): array
     {
         $denominator = [];
-        $normalized = [];
 
         foreach ($matrix as $values) {
             foreach ($values as $criteriaId => $value) {
@@ -60,13 +76,32 @@ class MooraService
         }
 
         foreach ($denominator as $criteriaId => $value) {
-            $denominator[$criteriaId] = sqrt($value);
+            $denominator[$criteriaId] = round(sqrt($value), 4);
         }
+
+        MooraSteps::create([
+            'step' => 'denominator',
+            'data' => $denominator
+        ]);
+
+        return $denominator;
+    }
+
+    /**
+     * 3️⃣ Matriks Normalisasi
+     * Xij* = Xij / √ΣX²
+     */
+    private function normalization(array $matrix, array $denominator): array
+    {
+        $normalized = [];
 
         foreach ($matrix as $altId => $values) {
             foreach ($values as $criteriaId => $value) {
+
                 $normalized[$altId][$criteriaId] =
-                    $value / $denominator[$criteriaId];
+                    $denominator[$criteriaId] != 0
+                        ? round($value / $denominator[$criteriaId], 4)
+                        : 0;
             }
         }
 
@@ -79,8 +114,9 @@ class MooraService
     }
 
     /**
-     * (4) Optimasi MOORA
-     * Yi = Σ(wj * x*) benefit − Σ(wj * x*) cost
+     * 4️⃣ Optimasi Multi Objektif
+     * Yi = Σ (Wj * Xij*)
+     * Jika ada cost → dikurangi
      */
     private function optimization(array $normalized): array
     {
@@ -88,20 +124,23 @@ class MooraService
         $criterias = Criterion::all()->keyBy('id');
 
         foreach ($normalized as $altId => $values) {
+
             $benefit = 0;
             $cost = 0;
 
             foreach ($values as $criteriaId => $value) {
+
                 $weight = $criterias[$criteriaId]->weight;
+                $weightedValue = round($value * $weight, 4);
 
                 if ($criterias[$criteriaId]->type === 'benefit') {
-                    $benefit += $weight * $value;
+                    $benefit += $weightedValue;
                 } else {
-                    $cost += $weight * $value;
+                    $cost += $weightedValue;
                 }
             }
 
-            $results[$altId] = $benefit - $cost;
+            $results[$altId] = round($benefit - $cost, 4);
         }
 
         MooraSteps::create([
@@ -113,7 +152,7 @@ class MooraService
     }
 
     /**
-     * Ranking Yi
+     * 5️⃣ Ranking
      */
     private function ranking(array $optimization): array
 {
@@ -129,7 +168,7 @@ class MooraService
             'rank' => $rank++,
             'alternative_id' => $altId,
             'alternative_name' => $alternatives[$altId] ?? '-',
-            'score' => round($score, 6),
+            'score' => $score,
         ];
     }
 
@@ -140,4 +179,5 @@ class MooraService
 
     return $ranked;
 }
+
 }

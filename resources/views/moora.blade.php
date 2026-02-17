@@ -119,7 +119,27 @@
         </table>
     </div>
 
-    <!-- 2. Normalisasi -->
+    <!-- 2. Nilai Penyebut -->
+    <div class="section">
+        <div class="section-title">2. Nilai Penyebut (√ΣX²)</div>
+        <table>
+            <tr>
+                @foreach($criteria as $c)
+                <th>{{ $c->code }}</th>
+                @endforeach
+            </tr>
+            <tr>
+                @foreach($criteria as $c)
+                <td>
+                    {{ number_format($denominator[$c->id] ?? 0, 6) }}
+                </td>
+                @endforeach
+            </tr>
+        </table>
+    </div>
+
+
+    <!-- 3. Normalisasi -->
     <div class="section">
         <div class="section-title">2. Normalisasi Matriks (X*)</div>
         <table>
@@ -140,7 +160,7 @@
         </table>
     </div>
 
-    <!-- 3. Nilai Optimasi -->
+    <!-- 4. Nilai Optimasi -->
     <div class="section">
         <div class="section-title">3. Nilai Optimasi (Yi)</div>
         <table>
@@ -157,7 +177,7 @@
         </table>
     </div>
 
-    <!-- 4. Ranking -->
+    <!-- 5. Ranking -->
     <div class="section">
         <div class="section-title">4. Hasil Ranking Akhir</div>
         <table>

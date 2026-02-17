@@ -3,6 +3,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import MatrixTable from "@/Components/MatrixTable";
 import OptimizationTable from "@/Components/OptimationTable";
 import RankingTable from "@/Components/RankingTable";
+import DenominatorTable from "@/Components/DenominatorTable";
 
 export default function LaporanKetuaPengadilan({ steps }) {
     const getStep = (name) =>
@@ -55,6 +56,15 @@ export default function LaporanKetuaPengadilan({ steps }) {
                         kriteria yang telah ditetapkan.
                     </p>
                     <MatrixTable data={getStep("decision_matrix")} />
+                </Section>
+
+                {/* Denominator */}
+                <Section title="Matriks Denominator">
+                    <p className="text-sm text-gray-600 mb-2">
+                        Matriks denominator digunakan untuk menghitung nilai
+                        denominator dari setiap kriteria.
+                    </p>
+                    <DenominatorTable data={getStep("denominator")} />
                 </Section>
 
                 {/* Normalisasi */}

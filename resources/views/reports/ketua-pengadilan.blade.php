@@ -66,6 +66,9 @@
     <h2>Data Penilaian Pegawai</h2>
     @include('reports.partials.decision-matrix')
 
+    <h2>Nilai Penyebut (√ΣX²)</h2>
+    @include('reports.partials.denominator')
+
     <h2>Normalisasi Data Penilaian</h2>
     @include('reports.partials.normalization')
 

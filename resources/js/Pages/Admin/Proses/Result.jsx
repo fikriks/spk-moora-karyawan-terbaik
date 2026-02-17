@@ -1,15 +1,16 @@
 import React from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import SectionProses from "@/Components/SectionProses";
 import MatrixTable from "@/Components/MatrixTable";
 import OptimizationTable from "@/Components/OptimationTable";
 import RankingTable from "@/Components/RankingTable";
+import DenominatorTable from "@/Components/DenominatorTable";
 
 export default function Process({ steps }) {
     const getStep = (name) =>
         steps.find((step) => step.step === name)?.data || [];
 
     const decisionMatrix = getStep("decision_matrix");
+    const denominator = getStep("denominator"); // TAMBAHAN
     const normalization = getStep("normalization");
     const optimization = getStep("optimization");
     const ranking = getStep("ranking");
@@ -24,8 +25,7 @@ export default function Process({ steps }) {
                             Proses Perhitungan MOORA
                         </h1>
                         <p className="text-sm text-gray-500">
-                            Tahapan perhitungan hingga penentuan ranking
-                            alternatif
+                            Tahapan perhitungan sesuai metode MOORA
                         </p>
                     </div>
 
@@ -37,23 +37,28 @@ export default function Process({ steps }) {
                     </a>
                 </div>
 
-                {/* Step 1 */}
+                {/* STEP 1 */}
                 <SectionCard step="1" title="Matriks Keputusan (X)">
-                    <MatrixTable data={decisionMatrix} />
+                    <MatrixTable data={decisionMatrix} type="decision" />
                 </SectionCard>
 
-                {/* Step 2 */}
-                <SectionCard step="2" title="Normalisasi Matriks (X*)">
-                    <MatrixTable data={normalization} />
+                {/* STEP 2 */}
+                <SectionCard step="2" title="Nilai Penyebut (√ΣX²)">
+                    <DenominatorTable data={denominator} />
                 </SectionCard>
 
-                {/* Step 3 */}
-                <SectionCard step="3" title="Nilai Optimasi (Yi)">
+                {/* STEP 3 */}
+                <SectionCard step="3" title="Matriks Normalisasi (X*)">
+                    <MatrixTable data={normalization} type="normalization" />
+                </SectionCard>
+
+                {/* STEP 4 */}
+                <SectionCard step="4" title="Nilai Optimasi (Yi)">
                     <OptimizationTable data={optimization} />
                 </SectionCard>
 
-                {/* Step 4 */}
-                <SectionCard step="4" title="Hasil Ranking Akhir">
+                {/* STEP 5 */}
+                <SectionCard step="5" title="Hasil Ranking Akhir">
                     <RankingTable data={ranking} />
                 </SectionCard>
             </div>

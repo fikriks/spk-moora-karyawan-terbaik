@@ -178,7 +178,7 @@ function Index() {
                                     <td className="px-4 py-3">{user.email}</td>
                                     <td className="px-4 py-3">
                                         <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs">
-                                            {user.role}
+                                            {user.roles}
                                         </span>
                                     </td>
                                     <td className="px-4 py-3 text-right">

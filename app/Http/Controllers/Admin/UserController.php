@@ -17,7 +17,7 @@ class UserController extends Controller
 {
     $q = trim($request->input('q', ''));
 
-    $users = User::query()
+    $users = User::with('roles') // ⬅ WAJIB
         ->when($q, function ($query, $q) {
             $query->where(function ($q2) use ($q) {
                 $q2->where('name', 'like', "%{$q}%")
@@ -27,6 +27,16 @@ class UserController extends Controller
         ->orderBy('name')
         ->paginate(10)
         ->withQueryString();
+
+    // Transform pagination data
+    $users->through(function ($user) {
+        return [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'roles' => $user->getRoleNames(), // dari Spatie
+        ];
+    });
 
     return Inertia::render('Admin/Users/Index', [
         'users' => $users,

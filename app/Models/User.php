@@ -48,8 +48,8 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    protected function role()
-    {
-        return $this->belongsToMany(Role::class);
-    }
+    // protected function role()
+    // {
+    //     return $this->belongsToMany(Role::class);
+    // }
 }
