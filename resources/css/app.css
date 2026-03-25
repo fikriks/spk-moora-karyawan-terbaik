@@ -10,4 +10,34 @@
         -ms-overflow-style: none;
         scrollbar-width: none;
     }
+
+    /* Toast Animations */
+    .animate-enter {
+        animation: enter 0.35s ease-out;
+    }
+    .animate-leave {
+        animation: leave 0.3s ease-in forwards;
+    }
+
+    @keyframes enter {
+        from {
+            transform: translateY(-20px) scale(0.95);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+    }
+
+    @keyframes leave {
+        from {
+            transform: scale(1);
+            opacity: 1;
+        }
+        to {
+            transform: scale(0.95);
+            opacity: 0;
+        }
+    }
 }

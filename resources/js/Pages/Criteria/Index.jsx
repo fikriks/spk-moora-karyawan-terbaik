@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link, usePage, router } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import Pagination from "@/Components/Pagination";
-import { confirmDialog, notifySuccess } from "@/Utils/useSweetAlert";
+import { notifySuccess } from "@/Utils/useToast";
+import { confirmAction } from "@/Utils/useConfirm";
 
 function Index() {
     const { criteria, filters = {}, flash } = usePage().props;
@@ -50,14 +51,12 @@ function Index() {
      * DELETE
      * =============================== */
     function handleDelete(id, name) {
-        confirmDialog(`Hapus kriteria "${name}"?`).then((result) => {
-            if (result.isConfirmed) {
-                router.delete(route("criteria.destroy", id), {
-                    preserveScroll: true,
-                    onSuccess: () =>
-                        notifySuccess("Kriteria berhasil dihapus!"),
-                });
-            }
+        confirmAction(`Hapus kriteria "${name}"?`, () => {
+            router.delete(route("criteria.destroy", id), {
+                preserveScroll: true,
+                onSuccess: () =>
+                    notifySuccess("Kriteria berhasil dihapus!"),
+            });
         });
     }
 

@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link, usePage, router } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import Pagination from "@/Components/Pagination";
-import { confirmDialog, notifySuccess } from "@/Utils/useSweetAlert";
+import { notifySuccess } from "@/Utils/useToast";
+import { confirmAction } from "@/Utils/useConfirm";
 
 function Index() {
     const {
@@ -84,14 +85,12 @@ function Index() {
      * DELETE
      * ========================= */
     function handleDelete(id, label) {
-        confirmDialog(`Hapus nilai ${label}?`).then((result) => {
-            if (result.isConfirmed) {
-                router.delete(route("operator.nilai.destroy", id), {
-                    preserveScroll: true,
-                    onSuccess: () =>
-                        notifySuccess("Nilai alternative berhasil dihapus"),
-                });
-            }
+        confirmAction(`Hapus nilai ${label}?`, () => {
+            router.delete(route("operator.nilai.destroy", id), {
+                preserveScroll: true,
+                onSuccess: () =>
+                    notifySuccess("Nilai alternative berhasil dihapus"),
+            });
         });
     }
 

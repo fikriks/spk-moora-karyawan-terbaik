@@ -2,7 +2,7 @@ import React from "react";
 import { Link, usePage, router } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import CriteriaForm from "@/Pages/Criteria/CriteriaForm";
-import { notifySuccess, notifyError } from "@/Utils/useSweetAlert";
+import { notifySuccess, notifyError } from "@/Utils/useToast";
 
 export default function Create() {
     const { flash } = usePage().props;

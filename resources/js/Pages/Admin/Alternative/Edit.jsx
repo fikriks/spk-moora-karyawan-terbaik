@@ -2,7 +2,7 @@ import React from "react";
 import { Head, usePage, Link } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import AlternativeForm from "./AlternativeForm";
-import { notifySuccess, notifyError } from "@/Utils/useSweetAlert";
+import { notifySuccess, notifyError } from "@/Utils/useToast";
 
 export default function Edit() {
     const { criterion, flash } = usePage().props;

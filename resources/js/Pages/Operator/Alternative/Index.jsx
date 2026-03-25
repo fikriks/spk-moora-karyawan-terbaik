@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link, usePage, router } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import Pagination from "@/Components/Pagination";
-import { confirmDialog, notifySuccess } from "@/Utils/useSweetAlert";
+import { notifySuccess } from "@/Utils/useToast";
+import { confirmAction } from "@/Utils/useConfirm";
 
 function Index() {
     const { alternatives, filters = {}, flash } = usePage().props;
@@ -71,14 +72,12 @@ function Index() {
      * DELETE
      * =============================== */
     function handleDelete(id, name) {
-        confirmDialog(`Hapus alternative "${name}"?`).then((result) => {
-            if (result.isConfirmed) {
-                router.delete(route("operator.alternative.destroy", id), {
-                    preserveScroll: true,
-                    onSuccess: () =>
-                        notifySuccess("Alternative berhasil dihapus!"),
-                });
-            }
+        confirmAction(`Hapus alternative "${name}"?`, () => {
+            router.delete(route("operator.alternative.destroy", id), {
+                preserveScroll: true,
+                onSuccess: () =>
+                    notifySuccess("Alternative berhasil dihapus!"),
+            });
         });
     }
 

@@ -2,7 +2,7 @@ import React from "react";
 import { Link, usePage, router } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import NilaiForm from "./NilaiAlternativeForm";
-import { notifySuccess } from "@/Utils/useSweetAlert";
+import { notifySuccess } from "@/Utils/useToast";
 
 export default function Create() {
     const { flash, alternatifs, kriterias } = usePage().props;

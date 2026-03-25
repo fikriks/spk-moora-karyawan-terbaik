@@ -14,35 +14,34 @@ class UserController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-{
-    $q = trim($request->input('q', ''));
+    {
+        $q = trim($request->input('q', ''));
 
-    $users = User::with('roles') // ⬅ WAJIB
-        ->when($q, function ($query, $q) {
-            $query->where(function ($q2) use ($q) {
-                $q2->where('name', 'like', "%{$q}%")
-                   ->orWhere('email', 'like', "%{$q}%");
-            });
-        })
-        ->orderBy('name')
-        ->paginate(10)
-        ->withQueryString();
+        $users = User::with('roles') // ⬅ WAJIB
+            ->when($q, function ($query, $q) {
+                $query->where(function ($q2) use ($q) {
+                    $q2->where('name', 'like', "%{$q}%")
+                        ->orWhere('email', 'like', "%{$q}%");
+                });
+            })
+            ->orderBy('name')
+            ->paginate(10)
+            ->withQueryString();
 
-    // Transform pagination data
-    $users->through(function ($user) {
-        return [
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'roles' => $user->getRoleNames(), // dari Spatie
-        ];
-    });
+        // Transform pagination data
+        $users->through(function ($user) {
+            return [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'roles' => $user->getRoleNames(), // dari Spatie
+            ];
+        });
 
-    return Inertia::render('Admin/Users/Index', [
-        'users' => $users,
-    ]);
-}
-
+        return Inertia::render('Admin/Users/Index', [
+            'users' => $users,
+        ]);
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -57,24 +56,24 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-       $validated = $request->validate([
-    'name' => 'required',
-    'email' => 'required|email|unique:users',
-    'role' => 'required|exists:roles,name',
-    'password' => 'required|min:6'
-]);
-// dd($validated);
-$user = User::create([
-    'name' => $validated['name'],
-    'email' => $validated['email'],
-    'password' => bcrypt($validated['password']),
-]);
+        $validated = $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:users',
+            'role' => 'required|exists:roles,name',
+            'password' => 'required|min:6',
+        ]);
+        // dd($validated);
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => bcrypt($validated['password']),
+        ]);
 
-$user->assignRole($validated['role']);
+        $user->assignRole($validated['role']);
 
-return redirect()
-    ->route('users.index')
-    ->with('success', 'User created');
+        return redirect()
+            ->route('users.index')
+            ->with('success', 'User created');
 
     }
 
@@ -91,46 +90,50 @@ return redirect()
      */
     public function edit(User $user)
     {
-        
         $roles = Role::all();
+
         return Inertia::render('Admin/Users/Edit', [
-        'user' => $user,
-        'roles' => $roles
-    ]);
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'roles' => $user->getRoleNames(),
+            ],
+            'roles' => $roles,
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, User $user)
-{
-    $data = $request->validate([
-        'name' => 'required',
-        'email' => 'required|email|unique:users,email,' . $user->id,
-        'role' => 'required',
-        'password' => 'nullable|min:6'
-    ]);
+    {
+        $data = $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email,'.$user->id,
+            'role' => 'required',
+            'password' => 'nullable|min:6',
+        ]);
 
-    if ($request->password) {
-        $data['password'] = bcrypt($request->password);
-    } else {
-        unset($data['password']);
+        if ($request->password) {
+            $data['password'] = bcrypt($request->password);
+        } else {
+            unset($data['password']);
+        }
+
+        $user->update($data);
+        $user->syncRoles([$data['role']]);
+
+        return redirect()->route('users.index')->with('success', 'User updated');
     }
-
-    $user->update($data);
-    $user->syncRoles([$data['role']]);
-
-    return redirect()->route('users.index')->with('success', 'User updated');
-}
-
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(User $user)
-{
-    $user->delete();
-    return redirect()->back()->with('success', 'User deleted');
-}
+    {
+        $user->delete();
 
+        return redirect()->back()->with('success', 'User deleted');
+    }
 }

@@ -1,9 +1,10 @@
 import ApplicationLogo from "@/Components/ApplicationLogo";
 import Breadcrumb from "@/Components/Breadcrumb";
-import { notifySuccess, notifyError } from "@/Utils/useSweetAlert";
+import { notifySuccess, notifyError } from "@/Utils/useToast";
 import { Link, usePage, router } from "@inertiajs/react";
 import { useEffect, useState, Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
+import { Toaster } from "react-hot-toast";
 
 // Heroicons v2
 import {
@@ -303,14 +304,10 @@ export default function AuthenticatedLayout({ header, breadcrumbs, children }) {
                 {/* Content Container */}
                 <div className="flex-1 overflow-y-auto custom-scrollbar bg-[#F9FAFB]/50">
                     <main className="p-6 lg:p-10 max-w-[1600px] mx-auto min-h-full flex flex-col">
-                        {header && (
-                            <div className="mb-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                                <Breadcrumb items={breadcrumbs} />
-                                <div className="text-2xl lg:text-3xl font-bold text-gray-800 tracking-tight">
-                                    {header}
-                                </div>
-                            </div>
-                            )}
+                        <div className="mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                            <Breadcrumb items={breadcrumbs} />
+                        </div>
+                        
                         <div className="animate-in fade-in zoom-in-95 duration-500 flex-1">
                             {children}
                         </div>
@@ -324,6 +321,7 @@ export default function AuthenticatedLayout({ header, breadcrumbs, children }) {
                     </main>
                 </div>
             </div>
+            <Toaster position="top-right" />
         </div>
     );
 }

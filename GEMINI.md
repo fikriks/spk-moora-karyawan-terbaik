@@ -13,6 +13,19 @@
     - **Style:** Flat Soft Minimalism.
     - **Primary Color:** Emerald Green (`emerald-500`).
     - **Background:** Soft Gray (`#F9FAFB`).
+    - **Page Header Pattern:**
+        - `AuthenticatedLayout` focuses on navigation; it renders `Breadcrumbs` but NO automatic page title text.
+        - Each page is responsible for its own title (`h2`) and description (`p`) below the breadcrumbs to maintain flexibility.
+    - **Component Standards:**
+        - **Radius:** `rounded-3xl` for main cards/containers, `rounded-2xl` for buttons and form inputs.
+        - **Shadows:** Use subtle shadow utilities (e.g., `shadow-sm`, `shadow-lg shadow-emerald-500/20`) for interactive elements.
+        - **Table Actions:** Action buttons in tables must use **Icon + Text** with soft-colored backgrounds (e.g., `bg-emerald-50 text-emerald-600` for Edit, `bg-red-50 text-red-600` for Delete).
+        - **Icons:** Standardized on `react-icons/hi2` (Heroicons v2).
+        - **Notifications & Alerts:**
+            - **Do NOT use SweetAlert.** It has been removed.
+            - Use `notifySuccess(message)` or `notifyError(message)` from `@/Utils/useToast` for toast notifications (top-right).
+            - Use `confirmAction(message, onConfirm, options)` from `@/Utils/useConfirm` for modal confirmations.
+            - `confirmAction` uses a callback pattern, NOT a Promise.
     - **Responsiveness:** Overhauled `AuthenticatedLayout` with a focus on mobile-first navigation, featuring a smooth mobile drawer, overlay, and optimized spacing for small screens. (Critical)
 - **Development Fixes:**
     - PHPUnit is configured with CSRF exceptions in `bootstrap/app.php` specifically for the testing environment to ensure session stability.
