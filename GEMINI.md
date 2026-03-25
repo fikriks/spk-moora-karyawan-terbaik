@@ -29,6 +29,10 @@
     - **Responsiveness:** Overhauled `AuthenticatedLayout` with a focus on mobile-first navigation, featuring a smooth mobile drawer, overlay, and optimized spacing for small screens. (Critical)
 - **Development Fixes:**
     - PHPUnit is configured with CSRF exceptions in `bootstrap/app.php` specifically for the testing environment to ensure session stability.
+    - **Alternative Seeder:** Refactored `AlternativeSeeder` to generate realistic Indonesian NIPs (18 digits following official format: Birth Date + CPNS TMT + Gender + Sequence) using `id_ID` Faker.
+- **Administrative Modules:**
+    - **Alternative Management:** Standardized `Admin/Alternative` to match the visual and structural pattern of `Admin/Users`. This includes the use of `HiOutline` icons, unified table layouts, and integrated breadcrumbs.
+    - **Search UI:** Enforced `type="text"` for all search inputs to prevent browser-native conflicts and ensure a consistent custom clear-button experience.
 
 === foundation rules ===
 
