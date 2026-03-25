@@ -1,7 +1,8 @@
 import ApplicationLogo from "@/Components/ApplicationLogo";
 import { notifySuccess, notifyError } from "@/Utils/useSweetAlert";
 import { Link, usePage, router } from "@inertiajs/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Fragment } from "react";
+import { Menu, Transition } from "@headlessui/react";
 
 // Heroicons v2
 import {
@@ -15,15 +16,15 @@ import {
     HiOutlineChartBarSquare,
     HiOutlineArrowLeftOnRectangle,
     HiOutlineBars3,
-    HiOutlineChevronLeft,
-    HiOutlineChevronRight,
+    HiOutlineChevronDown,
+    HiOutlineUser,
+    HiOutlineXMark,
 } from "react-icons/hi2";
 
 export default function AuthenticatedLayout({ header, children }) {
     const { auth, flash } = usePage().props;
     const user = auth?.user;
 
-    /* ================= ROLE ================= */
     const isAdmin = user?.roles?.includes("admin");
     const isOperator = user?.roles?.includes("operator");
     const isPenilai = user?.roles?.includes("penilai");
@@ -31,119 +32,132 @@ export default function AuthenticatedLayout({ header, children }) {
     const isKetua = user?.roles?.includes("ketua_pengadilan");
 
     const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     useEffect(() => {
         if (flash?.success) notifySuccess(flash.success);
         if (flash?.error) notifyError(flash.error);
     }, [flash]);
 
-    /* ================= MENU ================= */
     const menu = [
         {
             name: "Dashboard",
             href: route("operator.index"),
             routeName: "operator.index",
             visible: isOperator,
+            icon: HiOutlineSquares2X2,
         },
         {
             name: "Alternative",
             href: route("operator.alternative.index"),
             routeName: "operator.alternative.*",
             visible: isOperator,
+            icon: HiOutlineDocumentDuplicate,
         },
         {
             name: "Nilai Alternative",
             href: route("operator.nilai.index"),
             routeName: "operator.nilai.*",
             visible: isOperator,
+            icon: HiOutlineClipboardDocumentCheck,
         },
-
         {
             name: "Dashboard",
             href: route("penilai.index"),
             routeName: "penilai.index",
             visible: isPenilai,
+            icon: HiOutlineSquares2X2,
         },
         {
             name: "Nilai Alternative",
             href: route("penilai.nilai.index"),
             routeName: "penilai.nilai.*",
             visible: isPenilai,
+            icon: HiOutlineClipboardDocumentCheck,
         },
-
         {
             name: "Dashboard",
             href: route("kasubag.index"),
             routeName: "kasubag.index",
             visible: isKasubag,
+            icon: HiOutlineSquares2X2,
         },
         {
             name: "Nilai Alternative",
             href: route("kasubag.nilai.index"),
             routeName: "kasubag.nilai.*",
             visible: isKasubag,
+            icon: HiOutlineClipboardDocumentCheck,
         },
         {
             name: "Reports",
             href: route("kasubag.laporan.index"),
             routeName: "kasubag.laporan.*",
             visible: isKasubag,
+            icon: HiOutlineChartBarSquare,
         },
-
         {
             name: "Dashboard",
             href: route("ketua.index"),
             routeName: "ketua.index",
             visible: isKetua,
+            icon: HiOutlineSquares2X2,
         },
         {
             name: "Nilai Alternative",
             href: route("ketua.nilai.index"),
             routeName: "ketua.nilai.*",
             visible: isKetua,
+            icon: HiOutlineClipboardDocumentCheck,
         },
         {
             name: "Reports",
             href: route("ketua.laporan.index"),
             routeName: "ketua.laporan.*",
             visible: isKetua,
+            icon: HiOutlineChartBarSquare,
         },
-
         {
             name: "Dashboard",
             href: route("admin.index"),
             routeName: "admin.index",
             visible: isAdmin,
+            icon: HiOutlineSquares2X2,
         },
         {
             name: "User Management",
             href: route("users.index"),
             routeName: "users.*",
             visible: isAdmin,
+            icon: HiOutlineUserGroup,
         },
         {
             name: "Alternative",
             href: route("admin.alternative.index"),
             routeName: "admin.alternative.*",
             visible: isAdmin,
+            icon: HiOutlineDocumentDuplicate,
         },
         {
             name: "Criteria",
             href: route("criteria.index"),
             routeName: "criteria.*",
             visible: isAdmin,
+            icon: HiOutlineAdjustmentsHorizontal,
         },
         {
             name: "Moora",
             href: route("moora.index"),
             routeName: "moora.*",
             visible: isAdmin,
+            icon: HiOutlineCalculator,
         },
         {
             name: "Proses",
             href: route("moora.result"),
             routeName: "moora.result",
             visible: isAdmin,
+            icon: HiOutlineArrowPathRoundedSquare,
         },
     ];
 
@@ -155,122 +169,247 @@ export default function AuthenticatedLayout({ header, children }) {
         }
     };
 
+    const toggleSidebar = () => {
+        if (window.innerWidth < 1024) {
+            setMobileMenuOpen(!mobileMenuOpen);
+        } else {
+            setSidebarOpen(!sidebarOpen);
+        }
+    };
+
     return (
-        <div className="min-h-screen flex bg-gray-50">
-            {/* ================= SIDEBAR ================= */}
-            <aside
-                className={`hidden lg:flex flex-col bg-white border-r transition-[width] duration-300 ${
-                    sidebarOpen ? "w-64" : "w-20"
-                }`}
-            >
-                {/* LOGO (FIXED & STABLE) */}
-                <div className="h-16 flex items-center px-4 border-b shrink-0">
-                    <Link href="/" className="flex items-center gap-2">
-                        <ApplicationLogo className="w-8 h-8 shrink-0" />
-                        {sidebarOpen && (
-                            <span className="font-semibold text-lg whitespace-nowrap">
-                                SPK
-                            </span>
-                        )}
-                    </Link>
-                </div>
-
-                {/* MENU */}
-                <nav className="flex-1 px-2 py-4 space-y-1">
-                    {menu.map(
-                        (item) =>
-                            item.visible && (
-                                <Link
-                                    key={item.routeName}
-                                    href={item.href}
-                                    className={`
-                                        relative flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium
-                                        ${
-                                            isActive(item.routeName)
-                                                ? "bg-indigo-50 text-indigo-700"
-                                                : "text-gray-600 hover:bg-gray-100"
-                                        }
-                                    `}
-                                >
-                                    {isActive(item.routeName) && (
-                                        <span className="absolute left-0 top-0 h-full w-1 bg-indigo-600 rounded-r" />
-                                    )}
-
-                                    <MenuIcon
-                                        name={item.name}
-                                        active={isActive(item.routeName)}
-                                    />
-
-                                    {sidebarOpen && (
-                                        <span className="whitespace-nowrap">
-                                            {item.name}
-                                        </span>
-                                    )}
-                                </Link>
-                            ),
-                    )}
-
-                    <button
-                        onClick={() => router.post(route("logout"))}
-                        className="mt-4 flex w-full items-center gap-3 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md"
+        <div className="min-h-screen flex bg-[#F9FAFB] selection:bg-emerald-50 selection:text-emerald-700 overflow-hidden">
+            {/* Mobile Overlay */}
+            <Transition show={mobileMenuOpen} as={Fragment}>
+                <div className="fixed inset-0 z-[60] lg:hidden flex">
+                    <Transition.Child
+                        as={Fragment}
+                        enter="ease-out duration-300"
+                        enterFrom="opacity-0"
+                        enterTo="opacity-100"
+                        leave="ease-in duration-200"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
                     >
-                        <HiOutlineArrowLeftOnRectangle className="h-5 w-5" />
-                        {sidebarOpen && <span>Log Out</span>}
+                        <div 
+                            className="fixed inset-0 bg-gray-900/40 backdrop-blur-[2px]" 
+                            onClick={() => setMobileMenuOpen(false)}
+                        />
+                    </Transition.Child>
+
+                    <Transition.Child
+                        as={Fragment}
+                        enter="ease-out duration-300"
+                        enterFrom="-translate-x-full"
+                        enterTo="translate-x-0"
+                        leave="ease-in duration-200"
+                        leaveFrom="translate-x-0"
+                        leaveTo="-translate-x-full"
+                    >
+                        <div className="relative flex w-full max-w-[280px] h-full shadow-2xl shadow-gray-900/20">
+                            <SidebarContent 
+                                sidebarOpen={true} 
+                                menu={menu} 
+                                isActive={isActive} 
+                                setMobileMenuOpen={setMobileMenuOpen}
+                            />
+                        </div>
+                    </Transition.Child>
+                </div>
+            </Transition>
+
+            {/* Desktop Sidebar */}
+            <div className="hidden lg:flex shrink-0">
+                <SidebarContent 
+                    sidebarOpen={sidebarOpen} 
+                    menu={menu} 
+                    isActive={isActive} 
+                />
+            </div>
+
+            {/* Main Content Area */}
+            <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+                {/* Navbar */}
+                <header className="h-20 bg-white/80 backdrop-blur-md border-b border-gray-100/80 px-6 flex items-center justify-between sticky top-0 z-40 shrink-0">
+                    <button
+                        onClick={toggleSidebar}
+                        className="p-2.5 rounded-xl text-gray-400 hover:bg-gray-50 hover:text-emerald-500 transition-all duration-300 group"
+                    >
+                        <HiOutlineBars3 className="h-6 w-6" />
                     </button>
-                </nav>
-            </aside>
 
-            {/* TOGGLE */}
-            <button
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="hidden lg:flex h-10 w-6 items-center justify-center bg-white border border-l-0 rounded-r-md shadow-sm hover:bg-gray-50"
-            >
-                {sidebarOpen ? (
-                    <HiOutlineChevronLeft className="h-4 w-4" />
-                ) : (
-                    <HiOutlineChevronRight className="h-4 w-4" />
-                )}
-            </button>
+                    <div className="flex items-center gap-4">
+                        {/* Profile Dropdown */}
+                        <Menu as="div" className="relative">
+                            <Menu.Button className="flex items-center gap-3 p-1.5 rounded-2xl hover:bg-gray-50 transition-all duration-300 group border border-transparent hover:border-gray-100">
+                                <div className="h-9 w-9 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 font-bold text-sm border border-emerald-100/50">
+                                    {user?.name?.charAt(0).toUpperCase()}
+                                </div>
+                                <div className="hidden sm:flex flex-col items-start text-left">
+                                    <span className="text-[13px] font-bold text-gray-700 leading-none mb-1 group-hover:text-emerald-600 transition-colors">
+                                        {user?.name}
+                                    </span>
+                                    <span className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">
+                                        {user?.roles?.[0]?.replace('_', ' ')}
+                                    </span>
+                                </div>
+                                <HiOutlineChevronDown className="h-3.5 w-3.5 text-gray-400 ml-1 group-hover:text-emerald-400 transition-colors" />
+                            </Menu.Button>
 
-            {/* CONTENT */}
-            <div className="flex-1 flex flex-col">
-                <header className="lg:hidden bg-white border-b h-14 flex items-center px-4">
-                    <HiOutlineBars3 className="h-6 w-6" />
-                    <span className="ml-3 font-semibold">SPK</span>
+                            <Transition
+                                as={Fragment}
+                                enter="transition ease-out duration-100"
+                                enterFrom="transform opacity-0 scale-95"
+                                enterTo="transform opacity-100 scale-100"
+                                leave="transition ease-in duration-75"
+                                leaveFrom="transform opacity-100 scale-100"
+                                leaveTo="transform opacity-0 scale-95"
+                            >
+                                <Menu.Items className="absolute right-0 mt-3 w-56 origin-top-right bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-gray-100 p-2 focus:outline-none">
+                                    <Menu.Item>
+                                        {({ active }) => (
+                                            <Link
+                                                href={route('profile.edit')}
+                                                className={`${
+                                                    active ? 'bg-emerald-50 text-emerald-600' : 'text-gray-600'
+                                                } flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all`}
+                                            >
+                                                <HiOutlineUser className="h-4 w-4" />
+                                                Profil Saya
+                                            </Link>
+                                        )}
+                                    </Menu.Item>
+                                    <div className="my-1 border-t border-gray-50" />
+                                    <Menu.Item>
+                                        {({ active }) => (
+                                            <button
+                                                onClick={() => router.post(route('logout'))}
+                                                className={`${
+                                                    active ? 'bg-rose-50 text-rose-500' : 'text-gray-600'
+                                                } flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all w-full text-left`}
+                                            >
+                                                <HiOutlineArrowLeftOnRectangle className="h-4 w-4" />
+                                                Keluar
+                                            </button>
+                                        )}
+                                    </Menu.Item>
+                                </Menu.Items>
+                            </Transition>
+                        </Menu>
+                    </div>
                 </header>
 
-                {header && (
-                    <div className="bg-white border-b px-6 py-4">{header}</div>
-                )}
+                {/* Content Container */}
+                <div className="flex-1 overflow-y-auto custom-scrollbar bg-[#F9FAFB]/50">
+                    <main className="p-6 lg:p-10 max-w-[1600px] mx-auto min-h-full flex flex-col">
+                        {header && (
+                            <div className="mb-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                                <div className="flex items-center gap-3 mb-2.5">
+                                    <div className="h-1 w-6 bg-emerald-400 rounded-full" />
+                                    <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-[0.2em]">
+                                        Menu Navigasi
+                                    </span>
+                                </div>
+                                <div className="text-2xl lg:text-3xl font-bold text-gray-800 tracking-tight">
+                                    {header}
+                                </div>
+                            </div>
+                            )}                        <div className="animate-in fade-in zoom-in-95 duration-500 flex-1">
+                            {children}
+                        </div>
 
-                <main className="flex-1 px-6 py-6">{children}</main>
+                        {/* Footer */}
+                        <footer className="mt-20 pt-8 border-t border-gray-100/60 text-center">
+                            <p className="text-[10px] font-semibold text-gray-300 uppercase tracking-[0.25em]">
+                                &copy; {new Date().getFullYear()} Sistem Pendukung Keputusan Kinerja
+                            </p>
+                        </footer>
+                    </main>
+                </div>
             </div>
         </div>
     );
 }
 
-/* ================= ICON ================= */
-function MenuIcon({ name, active }) {
-    const cls = `h-5 w-5 ${active ? "text-indigo-600" : "text-gray-500"}`;
+function SidebarContent({ sidebarOpen, menu, isActive, setMobileMenuOpen }) {
+    return (
+        <aside
+            className={`flex flex-col bg-white border-r border-gray-100 h-full transition-all duration-300 ease-in-out ${
+                sidebarOpen ? "w-72" : "w-[88px]"
+            }`}
+        >
+            {/* Sidebar Header */}
+            <div className="h-20 flex items-center px-6 shrink-0 justify-between">
+                <Link href="/" className="flex items-center gap-3 group">
+                    <div className="bg-emerald-50 p-2 rounded-xl group-hover:bg-emerald-100 transition-colors duration-300">
+                        <ApplicationLogo className="w-7 h-7" />
+                    </div>
+                    {sidebarOpen && (
+                        <div className="flex flex-col">
+                            <span className="font-bold text-[15px] tracking-tight text-gray-800 leading-none">
+                                SPK KINERJA
+                            </span>
+                            <span className="text-[10px] font-semibold text-emerald-500 tracking-[0.15em] mt-1 uppercase">
+                                Dashboard
+                            </span>
+                        </div>
+                    )}
+                </Link>
+                {setMobileMenuOpen && (
+                    <button 
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="lg:hidden p-2 rounded-lg text-gray-400 hover:bg-gray-50 transition-colors"
+                    >
+                        <HiOutlineXMark className="h-5 w-5" />
+                    </button>
+                )}
+            </div>
 
-    switch (name) {
-        case "Dashboard":
-            return <HiOutlineSquares2X2 className={cls} />;
-        case "Alternative":
-            return <HiOutlineDocumentDuplicate className={cls} />;
-        case "Nilai Alternative":
-            return <HiOutlineClipboardDocumentCheck className={cls} />;
-        case "Criteria":
-            return <HiOutlineAdjustmentsHorizontal className={cls} />;
-        case "User Management":
-            return <HiOutlineUserGroup className={cls} />;
-        case "Moora":
-            return <HiOutlineCalculator className={cls} />;
-        case "Proses":
-            return <HiOutlineArrowPathRoundedSquare className={cls} />;
-        case "Reports":
-            return <HiOutlineChartBarSquare className={cls} />;
-        default:
-            return <HiOutlineSquares2X2 className={cls} />;
-    }
+            {/* Navigation */}
+            <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto custom-scrollbar">
+                {menu.map((item) => (
+                    item.visible && (
+                        <Link
+                            key={item.routeName}
+                            href={item.href}
+                            onClick={() => setMobileMenuOpen?.(false)}
+                            className={`
+                                group flex items-center gap-3.5 rounded-xl px-4 py-3 text-[13.5px] font-medium transition-all duration-200
+                                ${
+                                    isActive(item.routeName)
+                                        ? "bg-emerald-50 text-emerald-600 shadow-sm shadow-emerald-100/10"
+                                        : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
+                                }
+                            `}
+                        >
+                            <item.icon 
+                                className={`h-[20px] w-[20px] shrink-0 transition-colors duration-200 ${
+                                    isActive(item.routeName) ? "text-emerald-500" : "text-gray-400 group-hover:text-gray-500"
+                                }`} 
+                            />
+                            {sidebarOpen && (
+                                <span className="whitespace-nowrap tracking-wide capitalize">
+                                    {item.name.toLowerCase()}
+                                </span>
+                            )}
+                            {isActive(item.routeName) && sidebarOpen && (
+                                <div className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
+                            )}
+                        </Link>
+                    )
+                ))}
+            </nav>
+
+            {/* Sidebar Footer */}
+            <div className="p-4 border-t border-gray-50">
+                <button
+                    onClick={() => router.post(route("logout"))}
+                    className={`flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-[13.5px] font-medium text-rose-400 hover:bg-rose-50 hover:text-rose-500 transition-all duration-300 w-full ${!sidebarOpen && "justify-center"}`}
+                >
+                    <HiOutlineArrowLeftOnRectangle className="h-5 w-5 shrink-0" />
+                    {sidebarOpen && <span className="tracking-wide">Keluar Sistem</span>}
+                </button>
+            </div>
+        </aside>
+    );
 }

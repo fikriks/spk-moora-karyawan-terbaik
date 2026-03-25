@@ -13,6 +13,7 @@
     - **Style:** Flat Soft Minimalism.
     - **Primary Color:** Emerald Green (`emerald-500`).
     - **Background:** Soft Gray (`#F9FAFB`).
+    - **Responsiveness:** Overhauled `AuthenticatedLayout` with a focus on mobile-first navigation, featuring a smooth mobile drawer, overlay, and optimized spacing for small screens. (Critical)
 - **Development Fixes:**
     - PHPUnit is configured with CSRF exceptions in `bootstrap/app.php` specifically for the testing environment to ensure session stability.
 
