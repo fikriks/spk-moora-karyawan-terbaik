@@ -16,6 +16,10 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
         ]);
 
+        if (defined('PHPUNIT_COMPOSER_INSTALL') || defined('__PHPUNIT_PHAR__')) {
+            $middleware->validateCsrfTokens(except: ['*']);
+        }
+
         $middleware->alias([
         // nama => class
         'admin' => \App\Http\Middleware\IsAdmin::class,

@@ -39,7 +39,7 @@ class HandleInertiaRequests extends Middleware
                         'name' => $user->name,
                         'image' => $user->image,
                         'email' => $user->email,
-                        'roles' => $user->roles->pluck('name'), // Assuming 'name' is the column for role names
+                        'roles' => $user->roles ? $user->roles->pluck('name') : [], 
                     ];
                 }
             },

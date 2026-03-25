@@ -32,9 +32,9 @@ Route::get('/', function () {
 Route::middleware(['auth'])->group(function () {
 
     // Dashboard user biasa
-    // Route::get('/dashboard', function () {
-    //     return Inertia::render('Dashboard');
-    // })->name('dashboard');
+    Route::get('/dashboard', function () {
+        return Inertia::render('Dashboard');
+    })->middleware(['auth'])->name('dashboard');
 
     Route::resource('criteria', CriterionController::class)->middleware('permission:manage criteria');
 
