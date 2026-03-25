@@ -1,4 +1,21 @@
 <laravel-boost-guidelines>
+=== project status & updates ===
+
+# Project Status & Architectural Guidelines
+
+## Recent Updates (March 2026)
+- **Core Upgrade:** Migrated to **Laravel 12.x** and updated all ecosystem packages (Inertia v2, Sanctum v4, Breeze v2).
+- **Authentication:**
+    - **Removed:** Email Verification and Forgot Password flows.
+    - **Custom Logic:** Implemented role-based redirection in `AuthenticatedSessionController`.
+    - **Routes:** The `/dashboard` route is active but primarily serves as a fallback.
+- **UI Design:**
+    - **Style:** Flat Soft Minimalism.
+    - **Primary Color:** Emerald Green (`emerald-500`).
+    - **Background:** Soft Gray (`#F9FAFB`).
+- **Development Fixes:**
+    - PHPUnit is configured with CSRF exceptions in `bootstrap/app.php` specifically for the testing environment to ensure session stability.
+
 === foundation rules ===
 
 # Laravel Boost Guidelines

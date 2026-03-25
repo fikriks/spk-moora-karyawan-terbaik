@@ -4,7 +4,8 @@ import InputLabel from "@/Components/InputLabel";
 import PrimaryButton from "@/Components/PrimaryButton";
 import TextInput from "@/Components/TextInput";
 import GuestLayout from "@/Layouts/GuestLayout";
-import { Head, Link, useForm } from "@inertiajs/react";
+import ApplicationLogo from "@/Components/ApplicationLogo";
+import { Head, useForm, Link } from "@inertiajs/react";
 
 export default function Login({ status }) {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -22,100 +23,120 @@ export default function Login({ status }) {
 
     return (
         <GuestLayout>
-            <Head title="Login Sistem Pendukung Keputusan" />
+            <Head title="Login SPK" />
 
-            <div className="w-full max-w-md mx-auto">
-                <div className="bg-white shadow-lg rounded-xl px-8 py-6 border border-gray-100">
-                    {/* Header */}
-                    <div className="mb-6 text-center">
-                        <h1 className="text-2xl font-bold text-gray-800">
-                            Sistem Pendukung Keputusan
-                        </h1>
-                        <p className="text-sm text-gray-500 mt-1">
-                            Silakan login untuk mengakses sistem
-                        </p>
-                    </div>
+            <div className="flex flex-col items-center mb-8">
+                <Link href="/">
+                    <ApplicationLogo className="h-16 w-auto drop-shadow-sm opacity-90 transition-opacity hover:opacity-100" />
+                </Link>
+            </div>
 
-                    {status && (
-                        <div className="mb-4 rounded-md bg-green-50 px-4 py-2 text-sm text-green-700">
-                            {status}
-                        </div>
-                    )}
-
-                    <form onSubmit={submit} className="space-y-4">
-                        {/* Email */}
-                        <div>
-                            <InputLabel htmlFor="email" value="Email" />
-                            <TextInput
-                                id="email"
-                                type="email"
-                                name="email"
-                                value={data.email}
-                                className="mt-1 block w-full"
-                                autoComplete="username"
-                                isFocused
-                                onChange={(e) =>
-                                    setData("email", e.target.value)
-                                }
-                            />
-                            <InputError
-                                message={errors.email}
-                                className="mt-1"
-                            />
-                        </div>
-
-                        {/* Password */}
-                        <div>
-                            <InputLabel htmlFor="password" value="Password" />
-                            <TextInput
-                                id="password"
-                                type="password"
-                                name="password"
-                                value={data.password}
-                                className="mt-1 block w-full"
-                                autoComplete="current-password"
-                                onChange={(e) =>
-                                    setData("password", e.target.value)
-                                }
-                            />
-                            <InputError
-                                message={errors.password}
-                                className="mt-1"
-                            />
-                        </div>
-
-                        {/* Remember */}
-                        <div className="flex items-center justify-between">
-                            <label className="flex items-center">
-                                <Checkbox
-                                    name="remember"
-                                    checked={data.remember}
-                                    onChange={(e) =>
-                                        setData("remember", e.target.checked)
-                                    }
-                                />
-                                <span className="ml-2 text-sm text-gray-600">
-                                    Ingat saya
-                                </span>
-                            </label>
-                        </div>
-
-                        {/* Button */}
-                        <div className="pt-2">
-                            <PrimaryButton
-                                className="w-full justify-center"
-                                disabled={processing}
-                            >
-                                {processing ? "Memproses..." : "Login"}
-                            </PrimaryButton>
-                        </div>
-                    </form>
+            <div className="bg-white rounded-2xl border border-gray-100/80 p-10 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
+                {/* Header Section */}
+                <div className="mb-10 text-center">
+                    <h1 className="text-xl font-medium text-gray-800 tracking-tight">
+                        Selamat Datang
+                    </h1>
+                    <p className="mt-2 text-[13px] text-gray-400 leading-relaxed max-w-[220px] mx-auto">
+                        Sistem Pendukung Keputusan Penilaian Kinerja
+                    </p>
                 </div>
 
-                {/* Footer */}
-                <p className="mt-6 text-center text-xs text-gray-400">
-                    © {new Date().getFullYear()} Sistem Pendukung Keputusan
+                {status && (
+                    <div className="mb-6 rounded-lg bg-emerald-50/40 px-4 py-3 text-[13px] font-medium text-emerald-600 border border-emerald-100/30">
+                        {status}
+                    </div>
+                )}
+
+                <form onSubmit={submit} className="space-y-6">
+                    {/* Email Input */}
+                    <div>
+                        <InputLabel 
+                            htmlFor="email" 
+                            value="Email" 
+                            className="text-[11px] font-semibold text-gray-400 mb-2 uppercase tracking-[0.1em]" 
+                        />
+                        <TextInput
+                            id="email"
+                            type="email"
+                            name="email"
+                            value={data.email}
+                            className="w-full bg-gray-50/30 border-gray-100 focus:border-emerald-200 focus:ring-4 focus:ring-emerald-500/5 rounded-xl transition-all duration-300 text-sm py-3 px-4"
+                            autoComplete="username"
+                            isFocused
+                            onChange={(e) => setData("email", e.target.value)}
+                            placeholder="nama@email.com"
+                        />
+                        <InputError message={errors.email} className="mt-2 text-xs text-rose-400" />
+                    </div>
+
+                    {/* Password Input */}
+                    <div>
+                        <InputLabel 
+                            htmlFor="password" 
+                            value="Password" 
+                            className="text-[11px] font-semibold text-gray-400 mb-2 uppercase tracking-[0.1em]" 
+                        />
+                        <TextInput
+                            id="password"
+                            type="password"
+                            name="password"
+                            value={data.password}
+                            className="w-full bg-gray-50/30 border-gray-100 focus:border-emerald-200 focus:ring-4 focus:ring-emerald-500/5 rounded-xl transition-all duration-300 text-sm py-3 px-4"
+                            autoComplete="current-password"
+                            onChange={(e) => setData("password", e.target.value)}
+                            placeholder="••••••••"
+                        />
+                        <InputError message={errors.password} className="mt-2 text-xs text-rose-400" />
+                    </div>
+
+                    {/* Options Row */}
+                    <div className="flex items-center">
+                        <label className="flex items-center cursor-pointer group select-none">
+                            <Checkbox
+                                name="remember"
+                                checked={data.remember}
+                                onChange={(e) => setData("remember", e.target.checked)}
+                                className="rounded-[5px] border-gray-200 text-emerald-500 focus:ring-emerald-500/20 h-4 w-4 transition-all"
+                            />
+                            <span className="ml-2.5 text-[13px] text-gray-400 group-hover:text-gray-500 transition-colors">
+                                Ingat perangkat ini
+                            </span>
+                        </label>
+                    </div>
+
+                    {/* Action Button */}
+                    <div className="pt-2">
+                        <PrimaryButton
+                            className="w-full h-[54px] bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white rounded-xl flex items-center justify-center text-sm font-semibold transition-all duration-300 shadow-sm shadow-emerald-100/50 border-none ring-offset-2 focus:ring-2 focus:ring-emerald-500/20"
+                            disabled={processing}
+                        >
+                            {processing ? (
+                                <span className="flex items-center gap-2.5">
+                                    <svg className="animate-spin h-4 w-4 text-white/80" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Menghubungkan...
+                                </span>
+                            ) : (
+                                "Masuk ke Sistem"
+                            )}
+                        </PrimaryButton>
+                    </div>
+                </form>
+            </div>
+
+            {/* Footer */}
+            <div className="mt-10 text-center flex flex-col items-center">
+                <p className="text-[10px] text-gray-300 uppercase tracking-[0.2em] font-bold">
+                    &copy; {new Date().getFullYear()} SPK Kinerja
                 </p>
+                <div className="flex gap-2.5 mt-4">
+                    <div className="h-1 w-1 bg-gray-100 rounded-full"></div>
+                    <div className="h-4 w-[1px] bg-gray-100"></div>
+                    <div className="h-1 w-1 bg-gray-100 rounded-full"></div>
+                </div>
             </div>
         </GuestLayout>
     );
