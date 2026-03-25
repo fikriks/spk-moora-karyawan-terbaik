@@ -39,11 +39,5 @@ class RolesAndPermissionsSeeder extends Seeder
         $kasubag->givePermissionTo(['manage assessments']);
         $ketua->givePermissionTo(['approve alternatives']);
         $ketua->givePermissionTo(['manage assessments']);
-
-        // contoh assign role ke user id=1
-        $u = User::find(1);
-        if ($u) {
-            $u->assignRole('admin');
-        }
     }
 }

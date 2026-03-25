@@ -15,18 +15,38 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Admin',
-            'email' => 'admin@example.com',
-            'password' => bcrypt('Admin123'), // Ganti dengan password yang diinginkan
-        ]);
+        // Panggil seeder peran terlebih dahulu
         $this->call([
             RolesAndPermissionsSeeder::class,
             CriterionSeeder::class,
             AlternativeSeeder::class,
             NilaiSeeder::class,
         ]);
+
+        // Daftar role dan nama tampilan
+        $users = [
+            ['role' => 'admin', 'name' => 'Administrator'],
+            ['role' => 'operator', 'name' => 'Operator'],
+            ['role' => 'penilai', 'name' => 'Penilai'],
+            ['role' => 'kasubag_kepegawaian', 'name' => 'Kasubag Kepegawaian', 'email_prefix' => 'kasubag'],
+            ['role' => 'ketua_pengadilan', 'name' => 'Ketua Pengadilan', 'email_prefix' => 'ketua'],
+        ];
+
+        foreach ($users as $userData) {
+            $roleName = $userData['role'];
+            $emailPrefix = $userData['email_prefix'] ?? $roleName;
+            $password = ucfirst($emailPrefix) . '123';
+
+            $user = User::firstOrCreate(
+                ['email' => $emailPrefix . '@example.com'],
+                [
+                    'name' => $userData['name'],
+                    'password' => bcrypt($password),
+                ]
+            );
+
+            // Berikan role ke user
+            $user->syncRoles([$roleName]);
+        }
     }
 }
