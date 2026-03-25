@@ -1,75 +1,74 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Link, usePage, router } from "@inertiajs/react";
+import React, { useEffect, useMemo, useState, Fragment } from "react";
+import { Link, usePage, router, Head } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import Pagination from "@/Components/Pagination";
 import { notifySuccess } from "@/Utils/useToast";
 import { confirmAction } from "@/Utils/useConfirm";
+import { 
+    HiOutlineMagnifyingGlass, 
+    HiOutlineXMark, 
+    HiOutlineIdentification,
+    HiOutlineUserGroup,
+    HiOutlineBriefcase,
+    HiOutlinePlus,
+    HiOutlineArrowUpTray,
+    HiOutlineDocumentText,
+    HiOutlinePencilSquare,
+    HiOutlineTrash,
+    HiOutlineCheckCircle
+} from "react-icons/hi2";
+import { Dialog, Transition } from "@headlessui/react";
 
 function Index() {
-    const { alternatives, filters = {}, flash } = usePage().props;
+    const { alternatives, filters = {} } = usePage().props;
 
     /* ===============================
      * SEARCH + DEBOUNCE
      * =============================== */
-    const [query, setQuery] = useState(filters.q || "");
+    const [query, setQuery] = useState(() => {
+        try {
+            const url = new URL(window.location.href);
+            return url.searchParams.get("q") || "";
+        } catch {
+            return "";
+        }
+    });
+
     const [searching, setSearching] = useState(false);
     const DEBOUNCE_MS = 500;
     const [showImportModal, setShowImportModal] = useState(false);
     const [importFile, setImportFile] = useState(null);
     const [importing, setImporting] = useState(false);
 
-    function submitImport(e) {
-        e.preventDefault();
-
-        if (!importFile) return;
-
-        const formData = new FormData();
-        formData.append("file", importFile);
-
-        setImporting(true);
-
-        router.post(route("operator.alternative.import"), formData, {
-            forceFormData: true,
-            onSuccess: () => {
-                notifySuccess("Import alternative berhasil");
-                setShowImportModal(false);
-                setImportFile(null);
-            },
-            onFinish: () => setImporting(false),
-        });
-    }
-
     useEffect(() => {
         const timeout = setTimeout(() => {
-            router.get(
-                window.location.pathname,
-                {
-                    q: query || undefined,
-                    page: 1,
-                    per_page: filters.per_page || undefined,
-                },
-                {
-                    preserveState: true,
-                    replace: true,
-                    onStart: () => setSearching(true),
-                    onFinish: () => setSearching(false),
-                },
-            );
+            if (query !== (filters.q || "")) {
+                router.get(
+                    window.location.pathname,
+                    {
+                        q: query || undefined,
+                        page: 1,
+                    },
+                    {
+                        preserveState: true,
+                        replace: true,
+                        onStart: () => setSearching(true),
+                        onFinish: () => setSearching(false),
+                    },
+                );
+            }
         }, DEBOUNCE_MS);
 
         return () => clearTimeout(timeout);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [query]);
 
     /* ===============================
-     * DATA
+     * DATA NORMALIZATION
      * =============================== */
     const items = useMemo(() => alternatives?.data ?? [], [alternatives]);
-
     const total = alternatives?.total ?? items.length;
 
     /* ===============================
-     * DELETE
+     * ACTIONS
      * =============================== */
     function handleDelete(id, name) {
         confirmAction(`Hapus alternative "${name}"?`, () => {
@@ -81,225 +80,333 @@ function Index() {
         });
     }
 
-    const searchLabel = query
-        ? `Hasil pencarian untuk "${query}"`
-        : "Semua alternative";
+    function submitImport(e) {
+        e.preventDefault();
+        if (!importFile) return;
+
+        const formData = new FormData();
+        formData.append("file", importFile);
+
+        setImporting(true);
+        router.post(route("operator.alternative.import"), formData, {
+            forceFormData: true,
+            onSuccess: () => {
+                notifySuccess("Import alternative berhasil");
+                setShowImportModal(false);
+                setImportFile(null);
+            },
+            onFinish: () => setImporting(false),
+        });
+    }
 
     return (
-        <div className="p-6">
-            {/* HEADER */}
-            <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                {/* TITLE */}
-                <div>
-                    <h1 className="text-2xl font-semibold text-gray-800">
-                        Alternative
-                    </h1>
-                    <p className="text-sm text-gray-500">
-                        Kelola alternative SPK: lihat, tambah, edit, hapus.
-                    </p>
+        <>
+            <Head title="Kelola Alternative" />
+            
+            <div className="space-y-8">
+                {/* Header section */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                    <div className="space-y-2">
+                        <h2 className="text-3xl font-black text-gray-800 tracking-tight">
+                            Kelola <span className="text-emerald-500">Alternative</span>
+                        </h2>
+                        <p className="text-sm text-gray-500 max-w-md font-medium">
+                            Daftar pegawai yang terdaftar dalam sistem pendukung keputusan.
+                        </p>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-3">
+                        <a
+                            href={route("operator.alternative.template")}
+                            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-white border border-gray-100 text-[13px] font-bold text-gray-600 hover:bg-gray-50 hover:text-emerald-600 transition-all shadow-sm"
+                        >
+                            <HiOutlineDocumentText className="h-4 w-4" />
+                            Template
+                        </a>
+
+                        <button
+                            type="button"
+                            onClick={() => setShowImportModal(true)}
+                            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-white border border-gray-100 text-[13px] font-bold text-gray-600 hover:bg-gray-50 hover:text-emerald-600 transition-all shadow-sm"
+                        >
+                            <HiOutlineArrowUpTray className="h-4 w-4" />
+                            Import
+                        </button>
+
+                        <Link
+                            href={route("operator.alternative.create")}
+                            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-emerald-500 text-[13px] font-bold text-white hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20"
+                        >
+                            <HiOutlinePlus className="h-4 w-4" />
+                            Tambah Pegawai
+                        </Link>
+                    </div>
                 </div>
 
-                {/* ACTIONS */}
-                <div className="flex flex-wrap items-center gap-2">
-                    {/* DOWNLOAD TEMPLATE */}
-                    <a
-                        href={route("operator.alternative.template")}
-                        className="inline-flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                    >
-                        📄 Template
-                    </a>
+                {/* Table Container */}
+                <div className="bg-white rounded-[32px] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.015)] overflow-hidden">
+                    {/* Search Area */}
+                    <div className="p-6 border-b border-gray-50 bg-gray-50/30 flex items-center justify-between gap-4">
+                        <div className="relative flex-1 max-w-md group">
+                            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-emerald-500 transition-colors">
+                                <HiOutlineMagnifyingGlass className={`w-5 h-5 ${searching ? 'animate-pulse text-emerald-500' : ''}`} />
+                            </div>
+                            <input
+                                type="text"
+                                value={query}
+                                onChange={(e) => setQuery(e.target.value)}
+                                placeholder="Cari nama atau NIP pegawai..."
+                                className="w-full pl-12 pr-10 py-3 bg-white border border-gray-100 rounded-2xl text-sm focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none shadow-sm placeholder:text-gray-400"
+                            />
+                            {query && !searching && (
+                                <button 
+                                    onClick={() => setQuery("")}
+                                    className="absolute inset-y-0 right-4 flex items-center p-1 text-gray-300 hover:text-gray-500 transition-colors"
+                                >
+                                    <HiOutlineXMark className="w-4 h-4" />
+                                </button>
+                            )}
+                        </div>
+                        <div className="hidden sm:block text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">
+                            Total: <span className="text-gray-700">{total}</span> Personil
+                        </div>
+                    </div>
 
-                    {/* IMPORT */}
-                    <button
-                        type="button"
-                        onClick={() => setShowImportModal(true)}
-                        className="inline-flex items-center gap-2 rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
-                    >
-                        ⬆ Import
-                    </button>
+                    <div className="overflow-x-auto custom-scrollbar">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="bg-gray-50/50">
+                                    <th className="px-8 py-5 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] border-b border-gray-100 w-20 text-center">No</th>
+                                    <th className="px-8 py-5 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] border-b border-gray-100">Informasi Personil</th>
+                                    <th className="px-8 py-5 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] border-b border-gray-100">Jabatan</th>
+                                    <th className="px-8 py-5 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] border-b border-gray-100 text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-50">
+                                {items.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="4" className="px-8 py-20 text-center">
+                                            <div className="flex flex-col items-center justify-center text-gray-300 space-y-4">
+                                                <HiOutlineUserGroup className="w-16 h-16 opacity-10" />
+                                                <p className="text-[11px] font-bold uppercase tracking-[0.2em]">Data tidak ditemukan</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    items.map((item, i) => (
+                                        <tr key={item.id} className="group hover:bg-emerald-50/30 transition-colors">
+                                            <td className="px-8 py-6 text-sm font-bold text-gray-300 text-center">
+                                                {(alternatives.from ?? 0) + i}
+                                            </td>
+                                            <td className="px-8 py-6">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 font-bold group-hover:bg-emerald-50 group-hover:text-emerald-500 transition-all">
+                                                        {item.name.charAt(0).toUpperCase()}
+                                                    </div>
+                                                    <div className="flex flex-col">
+                                                        <span className="font-bold text-gray-700 tracking-tight group-hover:text-emerald-600 transition-colors uppercase leading-tight">
+                                                            {item.name}
+                                                        </span>
+                                                        <div className="flex items-center gap-1.5 text-gray-400 text-[11px] font-medium mt-1">
+                                                            <HiOutlineIdentification className="w-3.5 h-3.5" />
+                                                            <span>{item.nip ?? "-"}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-8 py-6">
+                                                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-50 text-gray-500 text-[11px] font-bold uppercase tracking-wider border border-gray-100/50">
+                                                    <HiOutlineBriefcase className="w-3.5 h-3.5 text-gray-400" />
+                                                    {item.jabatan ?? "-"}
+                                                </span>
+                                            </td>
+                                            <td className="px-8 py-6 text-right">
+                                                <div className="flex items-center justify-end gap-2">
+                                                    <Link
+                                                        href={route("operator.alternative.edit", item.id)}
+                                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-all text-[11px] font-bold uppercase tracking-wider shadow-sm"
+                                                    >
+                                                        <HiOutlinePencilSquare className="w-3.5 h-3.5" />
+                                                        <span>Edit</span>
+                                                    </Link>
+                                                    <button
+                                                        onClick={() => handleDelete(item.id, item.name)}
+                                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 text-rose-500 hover:bg-rose-100 transition-all text-[11px] font-bold uppercase tracking-wider shadow-sm"
+                                                    >
+                                                        <HiOutlineTrash className="w-3.5 h-3.5" />
+                                                        <span>Hapus</span>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
 
-                    {/* TAMBAH */}
-                    <Link
-                        href={route("operator.alternative.create")}
-                        className="inline-flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
-                    >
-                        + Tambah
-                    </Link>
-
-                    {/* SEARCH */}
-                    <div className="relative">
-                        <input
-                            type="search"
-                            value={query}
-                            onChange={(e) => setQuery(e.target.value)}
-                            placeholder="Cari nama atau NIP..."
-                            className="w-64 rounded-md border border-gray-300 px-3 py-2 pl-9 text-sm shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-                        />
-                        <span className="pointer-events-none absolute left-3 top-2.5 text-gray-400">
-                            🔍
-                        </span>
+                    {/* Footer / Pagination */}
+                    <div className="px-8 py-6 border-t border-gray-50 bg-gray-50/30 flex flex-col sm:flex-row items-center justify-between gap-6">
+                        <p className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em]">
+                            Menampilkan <span className="text-emerald-500">{alternatives.from ?? 0}</span> - <span className="text-emerald-500">{alternatives.to ?? 0}</span> dari <span className="text-gray-700">{total}</span> data
+                        </p>
+                        
+                        {alternatives?.links && alternatives.links.length > 3 && (
+                            <div className="flex items-center gap-2">
+                                {alternatives.links.map((link, i) => {
+                                    if (link.url === null) {
+                                        return (
+                                            <span 
+                                                key={i} 
+                                                className="px-4 py-2 text-[11px] font-bold text-gray-300 uppercase tracking-widest pointer-events-none"
+                                                dangerouslySetInnerHTML={{ __html: link.label }}
+                                            />
+                                        );
+                                    }
+                                    return (
+                                        <Link
+                                            key={i}
+                                            href={link.url}
+                                            className={`px-4 py-2 text-[11px] font-bold rounded-xl transition-all uppercase tracking-widest ${
+                                                link.active 
+                                                    ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20" 
+                                                    : "bg-white border border-gray-100 text-gray-400 hover:border-emerald-200 hover:text-emerald-500"
+                                            }`}
+                                            dangerouslySetInnerHTML={{ __html: link.label }}
+                                        />
+                                    );
+                                })}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
 
-            {/* INFO */}
-            <div className="mb-4 text-sm text-gray-500">
-                {searching ? "Mencari..." : searchLabel}
-                {flash?.success && (
-                    <div className="text-green-600 mt-1">{flash.success}</div>
-                )}
-            </div>
+            {/* IMPORT MODAL */}
+            <Transition show={showImportModal} as={Fragment}>
+                <Dialog 
+                    as="div" 
+                    className="relative z-[100]" 
+                    onClose={() => !importing && setShowImportModal(false)}
+                >
+                    <Transition.Child
+                        as={Fragment}
+                        enter="ease-out duration-300"
+                        enterFrom="opacity-0"
+                        enterTo="opacity-100"
+                        leave="ease-in duration-200"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                    >
+                        <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-[2px]" />
+                    </Transition.Child>
 
-            {/* TABLE */}
-            <div className="overflow-hidden rounded-lg border bg-white shadow-sm">
-                <div className="overflow-x-auto hidden md:block">
-                    <table className="w-full min-w-[720px]">
-                        <thead className="bg-gray-50 text-xs uppercase text-gray-500">
-                            <tr>
-                                <th className="px-4 py-3">No</th>
-                                <th className="px-4 py-3">NIP</th>
-                                <th className="px-4 py-3">Nama</th>
-                                <th className="px-4 py-3">Jabatan</th>
-                                <th className="px-4 py-3 text-right">Aksi</th>
-                            </tr>
-                        </thead>
-
-                        <tbody className="divide-y text-sm">
-                            {items.length === 0 && (
-                                <tr>
-                                    <td
-                                        colSpan="5"
-                                        className="px-4 py-6 text-center text-gray-500"
-                                    >
-                                        Tidak ada alternative.
-                                    </td>
-                                </tr>
-                            )}
-
-                            {items.map((c, i) => (
-                                <tr key={c.id} className="hover:bg-gray-50">
-                                    <td className="px-4 py-3">
-                                        {(alternatives.from ?? 0) + i}
-                                    </td>
-                                    <td className="px-4 py-3">{c.nip}</td>
-                                    <td className="px-4 py-3">{c.name}</td>
-                                    <td className="px-4 py-3">{c.jabatan}</td>
-                                    <td className="px-4 py-3 text-right">
-                                        <div className="inline-flex gap-2">
-                                            <Link
-                                                href={route(
-                                                    "operator.alternative.edit",
-                                                    c.id,
-                                                )}
-                                                className="px-3 py-1.5 rounded-md border text-sm hover:bg-gray-50"
-                                            >
-                                                Edit
-                                            </Link>
-
+                    <div className="fixed inset-0 overflow-y-auto">
+                        <div className="flex min-h-full items-center justify-center p-4">
+                            <Transition.Child
+                                as={Fragment}
+                                enter="ease-out duration-300"
+                                enterFrom="opacity-0 scale-95"
+                                enterTo="opacity-100 scale-100"
+                                leave="ease-in duration-200"
+                                leaveFrom="opacity-100 scale-100"
+                                leaveTo="opacity-0 scale-95"
+                            >
+                                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-[32px] bg-white p-8 text-left align-middle shadow-2xl transition-all border border-gray-100">
+                                    <div className="flex items-center justify-between mb-8">
+                                        <Dialog.Title as="h3" className="text-xl font-black text-gray-800 tracking-tight">
+                                            Import <span className="text-emerald-500">Alternative</span>
+                                        </Dialog.Title>
+                                        {!importing && (
                                             <button
-                                                onClick={() =>
-                                                    handleDelete(c.id, c.name)
-                                                }
-                                                className="px-3 py-1.5 rounded-md bg-red-600 text-white text-sm hover:bg-red-700"
+                                                onClick={() => setShowImportModal(false)}
+                                                className="p-2 rounded-xl text-gray-400 hover:bg-gray-50 hover:text-gray-600 transition-all"
                                             >
-                                                Hapus
+                                                <HiOutlineXMark className="h-5 w-5" />
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    <form onSubmit={submitImport} className="space-y-6">
+                                        <div className="space-y-3">
+                                            <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">
+                                                File Excel (.xlsx)
+                                            </label>
+                                            <div className="relative group">
+                                                <input
+                                                    type="file"
+                                                    accept=".xlsx,.xls"
+                                                    onChange={(e) => setImportFile(e.target.files[0])}
+                                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                                    disabled={importing}
+                                                    required
+                                                />
+                                                <div className="p-8 border-2 border-dashed border-gray-100 rounded-[24px] group-hover:border-emerald-200 group-hover:bg-emerald-50/30 transition-all text-center">
+                                                    <HiOutlineArrowUpTray className="h-8 w-8 text-gray-300 mx-auto mb-3 group-hover:text-emerald-400 transition-colors" />
+                                                    <p className="text-sm font-bold text-gray-500 group-hover:text-emerald-600 transition-colors">
+                                                        {importFile ? importFile.name : "Klik atau seret file ke sini"}
+                                                    </p>
+                                                    <p className="text-[10px] text-gray-400 mt-2 uppercase tracking-wider">
+                                                        Maksimal 2MB • XLSX/XLS
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-start gap-2 p-4 bg-amber-50 rounded-2xl border border-amber-100/50">
+                                                <HiOutlineDocumentText className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
+                                                <p className="text-[11px] font-medium text-amber-700 leading-relaxed">
+                                                    Pastikan format kolom sesuai dengan template yang telah diunduh untuk menghindari kesalahan sistem.
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-3 pt-4">
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowImportModal(false)}
+                                                className="flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-gray-50 text-[13px] font-bold text-gray-500 hover:bg-gray-100 transition-all"
+                                                disabled={importing}
+                                            >
+                                                <HiOutlineXMark className="h-4 w-4" />
+                                                <span>Batal</span>
+                                            </button>
+                                            <button
+                                                type="submit"
+                                                disabled={importing || !importFile}
+                                                className="flex-1 px-6 py-4 rounded-2xl bg-emerald-500 text-[13px] font-bold text-white hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"
+                                            >
+                                                {importing ? (
+                                                    <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                ) : (
+                                                    <HiOutlineCheckCircle className="h-4 w-4" />
+                                                )}
+                                                <span>{importing ? "Memproses..." : "Mulai Import"}</span>
                                             </button>
                                         </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-
-                {/* FOOTER */}
-                <div className="flex items-center justify-between border-t px-4 py-3">
-                    <div className="text-sm text-gray-600">
-                        Total: {total} alternative
-                    </div>
-
-                    {alternatives?.links && alternatives.links.length > 1 && (
-                        <Pagination links={alternatives.links} />
-                    )}
-                </div>
-            </div>
-            {/* IMPORT MODAL */}
-            {showImportModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-                    <div className="w-full max-w-md rounded-lg bg-white shadow-lg">
-                        {/* HEADER */}
-                        <div className="flex items-center justify-between border-b px-4 py-3">
-                            <h3 className="text-lg font-semibold text-gray-800">
-                                Import Alternative
-                            </h3>
-                            <button
-                                onClick={() => setShowImportModal(false)}
-                                className="text-gray-400 hover:text-gray-600"
-                            >
-                                ✕
-                            </button>
+                                    </form>
+                                </Dialog.Panel>
+                            </Transition.Child>
                         </div>
-
-                        {/* BODY */}
-                        <form
-                            onSubmit={submitImport}
-                            className="px-4 py-5 space-y-4"
-                        >
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    File Excel (.xlsx)
-                                </label>
-                                <input
-                                    type="file"
-                                    accept=".xlsx,.xls"
-                                    onChange={(e) =>
-                                        setImportFile(e.target.files[0])
-                                    }
-                                    className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-                                    required
-                                />
-                                <p className="mt-1 text-xs text-gray-500">
-                                    Gunakan template yang sudah disediakan
-                                </p>
-                            </div>
-
-                            {/* ACTION */}
-                            <div className="flex justify-end gap-2 pt-2">
-                                <button
-                                    type="button"
-                                    onClick={() => setShowImportModal(false)}
-                                    className="rounded-md border px-4 py-2 text-sm hover:bg-gray-50"
-                                    disabled={importing}
-                                >
-                                    Batal
-                                </button>
-
-                                <button
-                                    type="submit"
-                                    disabled={importing}
-                                    className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-60"
-                                >
-                                    {importing ? "Mengimpor..." : "Import"}
-                                </button>
-                            </div>
-                        </form>
                     </div>
-                </div>
-            )}
-        </div>
+                </Dialog>
+            </Transition>
+        </>
     );
 }
 
-Index.layout = (page) => (
-    <AuthenticatedLayout
-        header={
-            <h2 className="font-semibold text-xl text-gray-800 leading-tight">
-                Alternative
-            </h2>
-        }
-    >
-        {page}
-    </AuthenticatedLayout>
-);
+Index.layout = (page) => {
+    const breadcrumbs = [
+        { label: "Dashboard", href: route("operator.index") },
+        { label: "Alternative", active: true },
+    ];
+
+    return (
+        <AuthenticatedLayout
+            header="Alternative"
+            breadcrumbs={breadcrumbs}
+        >
+            {page}
+        </AuthenticatedLayout>
+    );
+};
 
 export default Index;

@@ -39,7 +39,7 @@ export default function Pagination({
                             const base =
                                 "relative inline-flex items-center px-3 py-1.5 border text-sm font-medium focus:z-20 focus:outline-none";
                             const activeCls =
-                                "z-10 bg-indigo-600 text-white border-indigo-600";
+                                "z-10 bg-emerald-600 text-white border-emerald-600";
                             const normalCls =
                                 "bg-white text-gray-700 border-gray-200 hover:bg-gray-50";
                             const disabledCls =

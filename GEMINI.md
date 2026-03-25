@@ -25,13 +25,18 @@
                 - Container utama `space-y-6`.
                 - Header: Judul (`h2`), deskripsi (`p`), dan area aksi (Search + Button).
                 - Search Input: `type="text"`, latar `bg-white`, ikon di kiri, tombol hapus di kanan.
+                - Card: `rounded-[32px]` dengan `shadow-[0_8px_30px_rgb(0,0,0,0.015)]`.
             - **Create/Edit Page:**
-                - Container utama `space-y-8`.
-                - Header: Navigasi "Kembali ke Daftar" menggunakan `HiOutlineChevronLeft`.
-                - Form Card: `bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden`.
-                - Form Layout: Padding `p-6 md:p-10`, `space-y-8`.
-                - Input Fields: Latar `bg-gray-50/50`, border `rounded-2xl`, ikon internal di sisi kiri.
+                - Container utama `space-y-8`. **Full width** (jangan gunakan batasan `max-w-*` pada container luar agar konsisten dengan layout dashboard).
+                - Header: Judul besar (`text-3xl font-black`) dan tombol navigasi "Kembali" (`HiOutlineArrowLeft`).
+                - Form Card: `bg-white rounded-[32px] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.015)] overflow-hidden`.
+                - Form Layout: Padding internal `p-8 md:p-12`, struktur internal `space-y-8`.
+                - Input Fields: Label kapital (`text-[10px] tracking-[0.2em]`), latar `bg-gray-50/50`, border `rounded-2xl`, ikon internal (`HiOutline...`) di sisi kiri.
                 - Action Area: `pt-6 border-t border-gray-50 flex justify-end gap-4`.
+        - **Operator Alternative Module:**
+            - **Index:** Redesigned with Admin Dashboard reference: `rounded-[32px]` cards, `HiOutline` icons, and emerald-themed hover effects.
+            - **Forms:** Unified `AlternativeForm` with internal icons (`HiOutlineIdentification`, `HiOutlineUser`, `HiOutlineBriefcase`), spacious padding, and high-affordance emerald action buttons.
+            - **Layout:** Fully integrated with `AuthenticatedLayout` breadcrumbs, ensuring consistent page titles and navigational flow.
         - **Notifications & Alerts:**
             - **Jangan gunakan SweetAlert.**
             - Gunakan `notifySuccess(message)` atau `notifyError(message)` dari `@/Utils/useToast` untuk toast (kanan atas).

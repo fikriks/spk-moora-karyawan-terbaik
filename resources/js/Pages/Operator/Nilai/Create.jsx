@@ -1,80 +1,72 @@
 import React from "react";
-import { Link, usePage, router } from "@inertiajs/react";
+import { Link, usePage, Head } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import NilaiForm from "./NilaiAlternativeForm";
-import { notifySuccess } from "@/Utils/useToast";
+import NilaiAlternativeForm from "./NilaiAlternativeForm";
+import { HiOutlineArrowLeft } from "react-icons/hi2";
 
 export default function Create() {
-    const { flash, alternatifs, kriterias } = usePage().props;
-    const user = usePage().props.auth?.user;
+    const { alternatifs, kriterias, auth } = usePage().props;
+    const user = auth?.user;
 
-    // route submit NILAI
     const submitRoute = route("operator.nilai.store");
 
-    function handleSuccess() {
-        notifySuccess("Nilai berhasil ditambahkan!");
-        router.get(route("operator.nilai.index"));
-    }
-    console.log(user?.roles.includes("operator"));
     return (
-        <div className="p-6">
-            {/* Header */}
-            <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h1 className="text-2xl font-semibold text-gray-800">
-                        Tambah Nilai
-                    </h1>
-                    <p className="text-sm text-gray-500">
-                        Tambahkan nilai alternatif terhadap kriteria (MOORA).
-                    </p>
-                </div>
+        <>
+            <Head title="Tambah Nilai Alternative" />
+            
+            <div className="space-y-8">
+                {/* Header */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                    <div className="space-y-2">
+                        <h2 className="text-3xl font-black text-gray-800 tracking-tight">
+                            Tambah <span className="text-emerald-500">Nilai</span>
+                        </h2>
+                        <p className="text-sm text-gray-500 max-w-md font-medium leading-relaxed">
+                            Tambahkan nilai alternatif terhadap kriteria untuk proses perhitungan MOORA.
+                        </p>
+                    </div>
 
-                <div className="flex items-center gap-3">
                     <Link
                         href={route("operator.nilai.index")}
-                        className="inline-flex items-center rounded-md border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+                        className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-white border border-gray-100 text-[13px] font-bold text-gray-500 hover:bg-gray-50 hover:text-emerald-600 transition-all shadow-sm"
                     >
-                        ← Kembali ke Daftar Nilai
+                        <HiOutlineArrowLeft className="h-4 w-4" />
+                        Kembali
                     </Link>
                 </div>
-            </div>
 
-            {/* Flash */}
-            {flash?.success && (
-                <div className="mb-4 rounded-md bg-emerald-50 p-4 text-sm text-emerald-800">
-                    {flash.success}
+                {/* Form Card */}
+                <div className="bg-white rounded-[32px] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.015)] overflow-hidden">
+                    <div className="p-8 md:p-12">
+                        <NilaiAlternativeForm
+                            initial={{}}
+                            alternatifs={alternatifs}
+                            kriterias={kriterias}
+                            onSubmitRoute={submitRoute}
+                            method="post"
+                            submitLabel="Simpan Nilai"
+                            role={user?.roles?.includes("operator") ? "operator" : user?.roles?.[0]}
+                        />
+                    </div>
                 </div>
-            )}
-
-            {/* Form */}
-            <div className="mx-auto max-w-3xl rounded-lg bg-white p-6 shadow-sm">
-                <NilaiForm
-                    initial={{}}
-                    alternatifs={alternatifs}
-                    kriterias={kriterias}
-                    onSubmitRoute={submitRoute}
-                    method="post"
-                    submitLabel="Simpan Nilai"
-                    role={
-                        user?.roles.includes("operator")
-                            ? "operator"
-                            : user?.roles[0]
-                    }
-                />
             </div>
-        </div>
+        </>
     );
 }
 
-/* Layout */
-Create.layout = (page) => (
-    <AuthenticatedLayout
-        header={
-            <h2 className="font-semibold text-xl text-gray-800 leading-tight">
-                Tambah Nilai
-            </h2>
-        }
-    >
-        {page}
-    </AuthenticatedLayout>
-);
+Create.layout = (page) => {
+    const breadcrumbs = [
+        { label: "Dashboard", href: route("operator.index") },
+        { label: "Nilai Alternative", href: route("operator.nilai.index") },
+        { label: "Tambah", active: true },
+    ];
+
+    return (
+        <AuthenticatedLayout
+            header="Tambah Nilai"
+            breadcrumbs={breadcrumbs}
+        >
+            {page}
+        </AuthenticatedLayout>
+    );
+};

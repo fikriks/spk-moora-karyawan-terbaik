@@ -1,73 +1,65 @@
 import React from "react";
-import { Link, usePage, router } from "@inertiajs/react";
+import { Link, Head } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import AlternativeForm from "./AlternativeForm";
-import { notifySuccess, notifyError } from "@/Utils/useToast";
+import { HiOutlineArrowLeft } from "react-icons/hi2";
 
 export default function Create() {
-    const { flash } = usePage().props;
-
-    // route untuk submit (sesuaikan nama route di Laravel)
-    const submitRoute = route("operator.alternative.store"); // atau '/criteria'
-
-    // optional: callback setelah submit via Inertia success handler
-    function handleSuccess() {
-        notifySuccess("Kriteria berhasil ditambahkan!");
-        // redirect ke index (opsional), Inertia biasanya sudah redirect sesuai server
-        router.get(route("operator.alternative.index"));
-    }
+    const submitRoute = route("operator.alternative.store");
 
     return (
-        <div className="p-6">
-            {/* Header */}
-            <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h1 className="text-2xl font-semibold text-gray-800">
-                        Tambah Alternative
-                    </h1>
-                    <p className="text-sm text-gray-500">
-                        Buat alternative baru untuk sistem SPK.
-                    </p>
-                </div>
+        <>
+            <Head title="Tambah Alternative" />
+            
+            <div className="space-y-8">
+                {/* Header */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                    <div className="space-y-2">
+                        <h2 className="text-3xl font-black text-gray-800 tracking-tight">
+                            Tambah <span className="text-emerald-500">Alternative</span>
+                        </h2>
+                        <p className="text-sm text-gray-500 max-w-md font-medium leading-relaxed">
+                            Daftarkan personil baru ke dalam sistem untuk proses penilaian kinerja.
+                        </p>
+                    </div>
 
-                <div className="flex items-center gap-3">
                     <Link
                         href={route("operator.alternative.index")}
-                        className="inline-flex items-center rounded-md border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+                        className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-white border border-gray-100 text-[13px] font-bold text-gray-500 hover:bg-gray-50 hover:text-emerald-600 transition-all shadow-sm"
                     >
-                        ← Kembali ke Daftar Alternative
+                        <HiOutlineArrowLeft className="h-4 w-4" />
+                        Kembali
                     </Link>
                 </div>
-            </div>
 
-            {/* Flash */}
-            {flash?.success && (
-                <div className="mb-4 rounded-md bg-emerald-50 p-4 text-sm text-emerald-800">
-                    {flash.success}
+                {/* Form Card */}
+                <div className="bg-white rounded-[32px] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.015)] overflow-hidden">
+                    <div className="p-8 md:p-12">
+                        <AlternativeForm
+                            onSubmitRoute={submitRoute}
+                            method="post"
+                            submitLabel="Tambah Alternative"
+                        />
+                    </div>
                 </div>
-            )}
-
-            <div className="mx-auto max-w-3xl rounded-lg bg-white p-6 shadow-sm">
-                <AlternativeForm
-                    initial={{}}
-                    onSubmitRoute={submitRoute}
-                    method="post"
-                    submitLabel="Simpan Kriteria"
-                />
             </div>
-        </div>
+        </>
     );
 }
 
-// layout wrapper
-Create.layout = (page) => (
-    <AuthenticatedLayout
-        header={
-            <h2 className="font-semibold text-xl text-gray-800 leading-tight">
-                Tambah Kriteria
-            </h2>
-        }
-    >
-        {page}
-    </AuthenticatedLayout>
-);
+Create.layout = (page) => {
+    const breadcrumbs = [
+        { label: "Dashboard", href: route("operator.index") },
+        { label: "Alternative", href: route("operator.alternative.index") },
+        { label: "Tambah", active: true },
+    ];
+
+    return (
+        <AuthenticatedLayout
+            header="Tambah Alternative"
+            breadcrumbs={breadcrumbs}
+        >
+            {page}
+        </AuthenticatedLayout>
+    );
+};

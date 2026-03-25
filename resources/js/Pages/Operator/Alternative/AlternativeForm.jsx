@@ -1,5 +1,11 @@
 import React from "react";
 import { useForm } from "@inertiajs/react";
+import { 
+    HiOutlineIdentification, 
+    HiOutlineUser, 
+    HiOutlineBriefcase,
+    HiOutlineCheckCircle
+} from "react-icons/hi2";
 
 /**
  * AlternativeForm
@@ -14,7 +20,7 @@ export default function AlternativeForm({
     initial = {},
     onSubmitRoute,
     method = "post",
-    submitLabel = "Simpan",
+    submitLabel = "Simpan Data",
 }) {
     const form = useForm({
         nip: initial.nip || "",
@@ -26,109 +32,121 @@ export default function AlternativeForm({
         e.preventDefault();
 
         const options = {
-            method,
             onSuccess: () => {
                 // optional: reset form if creating
             },
-            onError: () => {
-                // errors handled via form.errors automatically
-            },
         };
 
-        // use appropriate call depending on method
-        if (method && method.toLowerCase() === "post") {
+        if (method.toLowerCase() === "post") {
             form.post(onSubmitRoute, options);
         } else {
-            // put/patch — send method override
-            form.put(onSubmitRoute, {
-                ...options,
-                data: form.data,
-                _method: method,
-            });
+            form.put(onSubmitRoute, options);
         }
     };
 
     return (
-        <form onSubmit={submit} className="mx-auto max-w-2xl space-y-6">
-            {/* NIP */}
-            <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">
-                    NIP
-                </label>
-                <input
-                    type="text"
-                    value={form.data.nip}
-                    onChange={(e) => form.setData("nip", e.target.value)}
-                    className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none ${
-                        form.errors.nip
-                            ? "border-red-300 focus:ring-red-500"
-                            : "border-gray-200 focus:ring-indigo-500"
-                    }`}
-                    placeholder="Masukkan NIP"
-                />
-                {form.errors.nip && (
-                    <p className="mt-1 text-sm text-red-600">
-                        {form.errors.nip}
-                    </p>
-                )}
-            </div>
-            {/* Nama */}
-            <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">
-                    Nama <span className="text-red-500">*</span>
-                </label>
-                <input
-                    type="text"
-                    value={form.data.name}
-                    onChange={(e) => form.setData("name", e.target.value)}
-                    className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none ${
-                        form.errors.name
-                            ? "border-red-300 focus:ring-red-500"
-                            : "border-gray-200 focus:ring-indigo-500"
-                    }`}
-                    placeholder="Masukkan nama"
-                    required
-                    autoFocus
-                />
-                {form.errors.name && (
-                    <p className="mt-1 text-sm text-red-600">
-                        {form.errors.name}
-                    </p>
-                )}
-            </div>
-            {/* Jabatan */}
-            <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">
-                    Jabatan <span className="text-red-500">*</span>
-                </label>
-                <input
-                    type="text"
-                    value={form.data.jabatan}
-                    onChange={(e) => form.setData("jabatan", e.target.value)}
-                    className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none ${
-                        form.errors.jabatan
-                            ? "border-red-300 focus:ring-red-500"
-                            : "border-gray-200 focus:ring-indigo-500"
-                    }`}
-                    placeholder="Masukkan jabatan"
-                    required
-                    autoFocus
-                />
-                {form.errors.jabatan && (
-                    <p className="mt-1 text-sm text-red-600">
-                        {form.errors.jabatan}
-                    </p>
-                )}
+        <form onSubmit={submit} className="space-y-8">
+            <div className="grid grid-cols-1 gap-8">
+                {/* NIP */}
+                <div className="space-y-2">
+                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] ml-1">
+                        Nomor Induk Pegawai (NIP)
+                    </label>
+                    <div className="relative group">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-emerald-500 transition-colors">
+                            <HiOutlineIdentification className="w-5 h-5" />
+                        </div>
+                        <input
+                            type="text"
+                            value={form.data.nip}
+                            onChange={(e) => form.setData("nip", e.target.value)}
+                            className={`block w-full pl-12 pr-4 py-4 bg-gray-50/50 border rounded-2xl text-sm transition-all outline-none ${
+                                form.errors.nip
+                                    ? "border-rose-200 focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500"
+                                    : "border-gray-100 focus:bg-white focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
+                            }`}
+                            placeholder="Contoh: 199001012020011001"
+                        />
+                    </div>
+                    {form.errors.nip && (
+                        <p className="text-[11px] font-bold text-rose-500 uppercase tracking-wider ml-1">
+                            {form.errors.nip}
+                        </p>
+                    )}
+                </div>
+
+                {/* Nama */}
+                <div className="space-y-2">
+                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] ml-1">
+                        Nama Lengkap <span className="text-rose-500">*</span>
+                    </label>
+                    <div className="relative group">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-emerald-500 transition-colors">
+                            <HiOutlineUser className="w-5 h-5" />
+                        </div>
+                        <input
+                            type="text"
+                            value={form.data.name}
+                            onChange={(e) => form.setData("name", e.target.value)}
+                            className={`block w-full pl-12 pr-4 py-4 bg-gray-50/50 border rounded-2xl text-sm transition-all outline-none ${
+                                form.errors.name
+                                    ? "border-rose-200 focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500"
+                                    : "border-gray-100 focus:bg-white focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
+                            }`}
+                            placeholder="Masukkan nama lengkap"
+                            required
+                        />
+                    </div>
+                    {form.errors.name && (
+                        <p className="text-[11px] font-bold text-rose-500 uppercase tracking-wider ml-1">
+                            {form.errors.name}
+                        </p>
+                    )}
+                </div>
+
+                {/* Jabatan */}
+                <div className="space-y-2">
+                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] ml-1">
+                        Jabatan Saat Ini <span className="text-rose-500">*</span>
+                    </label>
+                    <div className="relative group">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-emerald-500 transition-colors">
+                            <HiOutlineBriefcase className="w-5 h-5" />
+                        </div>
+                        <input
+                            type="text"
+                            value={form.data.jabatan}
+                            onChange={(e) => form.setData("jabatan", e.target.value)}
+                            className={`block w-full pl-12 pr-4 py-4 bg-gray-50/50 border rounded-2xl text-sm transition-all outline-none ${
+                                form.errors.jabatan
+                                    ? "border-rose-200 focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500"
+                                    : "border-gray-100 focus:bg-white focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
+                            }`}
+                            placeholder="Contoh: Staff Kepegawaian"
+                            required
+                        />
+                    </div>
+                    {form.errors.jabatan && (
+                        <p className="text-[11px] font-bold text-rose-500 uppercase tracking-wider ml-1">
+                            {form.errors.jabatan}
+                        </p>
+                    )}
+                </div>
             </div>
 
             {/* Actions */}
-            <div className="flex items-center justify-end gap-3">
+            <div className="flex items-center justify-end pt-6 border-t border-gray-50">
                 <button
                     type="submit"
-                    className="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 disabled:opacity-60"
+                    className="flex items-center gap-2 px-8 py-4 rounded-2xl bg-emerald-500 text-sm font-bold text-white hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-emerald-500/20"
                     disabled={form.processing}
                 >
-                    {form.processing ? "Menyimpan..." : submitLabel}
+                    {form.processing ? (
+                        <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                        <HiOutlineCheckCircle className="h-5 w-5" />
+                    )}
+                    <span>{form.processing ? "Menyimpan..." : submitLabel}</span>
                 </button>
             </div>
         </form>
