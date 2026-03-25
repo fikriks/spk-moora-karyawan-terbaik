@@ -1,73 +1,58 @@
 import React from "react";
-import { Link, usePage, router } from "@inertiajs/react";
+import { Link, Head } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import CriteriaForm from "@/Pages/Criteria/CriteriaForm";
-import { notifySuccess, notifyError } from "@/Utils/useToast";
+import CriteriaForm from "./CriteriaForm";
+import { HiOutlineChevronLeft } from "react-icons/hi2";
 
 export default function Create() {
-    const { flash } = usePage().props;
-
-    // route untuk submit (sesuaikan nama route di Laravel)
-    const submitRoute = route("criteria.store"); // atau '/criteria'
-
-    // optional: callback setelah submit via Inertia success handler
-    function handleSuccess() {
-        notifySuccess("Kriteria berhasil ditambahkan!");
-        // redirect ke index (opsional), Inertia biasanya sudah redirect sesuai server
-        router.get(route("criteria.index"));
-    }
-
     return (
-        <div className="p-6">
-            {/* Header */}
-            <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h1 className="text-2xl font-semibold text-gray-800">
-                        Tambah Kriteria
-                    </h1>
-                    <p className="text-sm text-gray-500">
-                        Buat kriteria baru untuk sistem SPK.
-                    </p>
-                </div>
+        <>
+            <Head title="Tambah Kriteria" />
 
-                <div className="flex items-center gap-3">
+            <div className="space-y-8">
+                {/* Header Section */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="space-y-1">
+                        <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
+                            Tambah Kriteria Baru
+                        </h2>
+                        <p className="text-sm text-gray-500 font-medium">
+                            Definisikan parameter penilaian baru untuk sistem pendukung keputusan.
+                        </p>
+                    </div>
+
                     <Link
                         href={route("criteria.index")}
-                        className="inline-flex items-center rounded-md border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+                        className="inline-flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-emerald-600 transition-colors group"
                     >
-                        ← Kembali ke Daftar
+                        <HiOutlineChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                        Kembali ke Daftar
                     </Link>
                 </div>
-            </div>
 
-            {/* Flash */}
-            {flash?.success && (
-                <div className="mb-4 rounded-md bg-emerald-50 p-4 text-sm text-emerald-800">
-                    {flash.success}
+                {/* Form Card */}
+                <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+                    <CriteriaForm
+                        onSubmitRoute={route("criteria.store")}
+                        method="post"
+                        submitLabel="Simpan Kriteria"
+                    />
                 </div>
-            )}
-
-            <div className="mx-auto max-w-3xl rounded-lg bg-white p-6 shadow-sm">
-                <CriteriaForm
-                    initial={{}}
-                    onSubmitRoute={submitRoute}
-                    method="post"
-                    submitLabel="Simpan Kriteria"
-                />
             </div>
-        </div>
+        </>
     );
 }
 
-// layout wrapper
-Create.layout = (page) => (
-    <AuthenticatedLayout
-        header={
-            <h2 className="font-semibold text-xl text-gray-800 leading-tight">
-                Tambah Kriteria
-            </h2>
-        }
-    >
-        {page}
-    </AuthenticatedLayout>
-);
+Create.layout = (page) => {
+    const breadcrumbs = [
+        { label: "Dashboard", href: route("dashboard") },
+        { label: "Kriteria", href: route("criteria.index") },
+        { label: "Tambah", active: true },
+    ];
+
+    return (
+        <AuthenticatedLayout breadcrumbs={breadcrumbs}>
+            {page}
+        </AuthenticatedLayout>
+    );
+};

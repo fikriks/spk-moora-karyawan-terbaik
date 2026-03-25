@@ -13,28 +13,26 @@ class CriterionController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-{
-    $q = $request->string('q')->trim();
-    $perPage = $request->integer('per_page', 10);
+    {
+        $q = $request->string('q')->trim();
+        $perPage = $request->integer('per_page', 10);
 
-    $criteria = Criterion::query()
-        ->when(
-            $q->isNotEmpty(),
-            fn ($query) =>
-                $query->where('name', 'like', "%{$q}%")
-                      ->orWhere('code', 'like', "%{$q}%")
-        )
-        ->orderBy('order', 'asc')
-        ->orderBy('id', 'desc')
-        ->paginate($perPage)
-        ->withQueryString();
+        $criteria = Criterion::query()
+            ->when(
+                $q->isNotEmpty(),
+                fn ($query) => $query->where('name', 'like', "%{$q}%")
+                    ->orWhere('code', 'like', "%{$q}%")
+            )
+            ->orderBy('order', 'asc')
+            ->orderBy('id', 'desc')
+            ->paginate($perPage)
+            ->withQueryString();
 
-    return Inertia::render('Criteria/Index', [
-        'criteria' => $criteria,
-        'filters' => $request->only(['q', 'per_page']),
-    ]);
-}
-
+        return Inertia::render('Criteria/Index', [
+            'criteria' => $criteria,
+            'filters' => $request->only(['q', 'per_page']),
+        ]);
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -61,7 +59,7 @@ class CriterionController extends Controller
     public function show(Criterion $criterion)
     {
         return Inertia::render('Criteria/Show', [
-            'criterion' => $criterion
+            'criterion' => $criterion,
         ]);
     }
 
@@ -71,22 +69,16 @@ class CriterionController extends Controller
     public function edit(Criterion $criterion)
     {
         return Inertia::render('Criteria/Edit', [
-            'criterion' => $criterion
+            'criterion' => $criterion,
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Criterion $criterion)
+    public function update(CriterionRequest $request, Criterion $criterion)
     {
-        $criterion->update($request->validate([
-            // 'code' => 'required|string|max:10|unique:criteria,code,' . $criterion->id,
-            'name' => 'required|string|max:255',
-            'type' => 'required|in:benefit,cost',
-            'weight' => 'required|numeric|min:0',
-            'order' => 'required|integer|min:0',
-        ]));
+        $criterion->update($request->validated());
 
         return redirect()->route('criteria.index')->with('success', 'Kriteria berhasil diperbarui.');
     }

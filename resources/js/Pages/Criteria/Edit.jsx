@@ -1,79 +1,59 @@
 import React from "react";
-import { Head, usePage, Link } from "@inertiajs/react";
+import { Link, Head } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import CriteriaForm from "@/Pages/Criteria/CriteriaForm";
-import { notifySuccess, notifyError } from "@/Utils/useToast";
+import CriteriaForm from "./CriteriaForm";
+import { HiOutlineChevronLeft } from "react-icons/hi2";
 
-export default function Edit() {
-    const { criterion, flash } = usePage().props;
-
-    // route update (sesuaikan nama route di Laravel)
-    const submitRoute = route("criteria.update", criterion.id);
-
-    // optional: callback setelah sukses — CriteriaForm harus memanggil onSuccess jika tersedia
-    function handleSuccess() {
-        notifySuccess("Kriteria berhasil diperbarui!");
-        // redirect kembali ke index (opsional)
-        router.get(route("criteria.index"));
-    }
-
+export default function Edit({ criterion }) {
     return (
-        <div className="p-6">
-            <Head title={`Edit Kriteria: ${criterion?.name ?? ""}`} />
+        <>
+            <Head title={`Ubah Kriteria - ${criterion.name}`} />
 
-            {/* Header */}
-            <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h1 className="text-2xl font-semibold text-gray-800">
-                        Edit Kriteria
-                    </h1>
-                    <p className="text-sm text-gray-500">
-                        Perbarui data kriteria yang sudah ada.
-                    </p>
-                </div>
+            <div className="space-y-8">
+                {/* Header Section */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="space-y-1">
+                        <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
+                            Perbarui Informasi Kriteria
+                        </h2>
+                        <p className="text-sm text-gray-500 font-medium text-pretty">
+                            Ubah detail parameter <span className="text-emerald-600 font-bold">{criterion.name}</span> untuk menyesuaikan model perhitungan.
+                        </p>
+                    </div>
 
-                <div className="flex items-center gap-3">
                     <Link
                         href={route("criteria.index")}
-                        className="inline-flex items-center rounded-md border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+                        className="inline-flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-emerald-600 transition-colors group"
                     >
-                        ← Kembali ke Daftar
+                        <HiOutlineChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                        Kembali ke Daftar
                     </Link>
                 </div>
-            </div>
 
-            {/* Flash */}
-            {flash?.success && (
-                <div className="mb-4 rounded-md bg-emerald-50 p-4 text-sm text-emerald-800">
-                    {flash.success}
+                {/* Form Card */}
+                <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+                    <CriteriaForm
+                        initial={criterion}
+                        onSubmitRoute={route("criteria.update", criterion.id)}
+                        method="put"
+                        submitLabel="Perbarui Kriteria"
+                    />
                 </div>
-            )}
-
-            {/* Card */}
-            <div className="mx-auto max-w-3xl rounded-lg bg-white p-6 shadow-sm">
-                {/* Pass initial values and method put.
-            Note: if you want handleSuccess to run after submit, update CriteriaForm to accept an `onSuccess` prop
-            and call it inside its onSuccess handler. */}
-                <CriteriaForm
-                    initial={criterion}
-                    onSubmitRoute={submitRoute}
-                    method="put"
-                    submitLabel="Perbarui Kriteria"
-                />
             </div>
-        </div>
+        </>
     );
 }
 
-/* Wrap with AuthenticatedLayout */
-Edit.layout = (page) => (
-    <AuthenticatedLayout
-        header={
-            <h2 className="font-semibold text-xl text-gray-800 leading-tight">
-                Edit Kriteria
-            </h2>
-        }
-    >
-        {page}
-    </AuthenticatedLayout>
-);
+Edit.layout = (page) => {
+    const breadcrumbs = [
+        { label: "Dashboard", href: route("dashboard") },
+        { label: "Kriteria", href: route("criteria.index") },
+        { label: "Ubah", active: true },
+    ];
+
+    return (
+        <AuthenticatedLayout breadcrumbs={breadcrumbs}>
+            {page}
+        </AuthenticatedLayout>
+    );
+};

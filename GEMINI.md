@@ -17,15 +17,25 @@
         - `AuthenticatedLayout` focuses on navigation; it renders `Breadcrumbs` but NO automatic page title text.
         - Each page is responsible for its own title (`h2`) and description (`p`) below the breadcrumbs to maintain flexibility.
     - **Component Standards:**
-        - **Radius:** `rounded-3xl` for main cards/containers, `rounded-2xl` for buttons and form inputs.
-        - **Shadows:** Use subtle shadow utilities (e.g., `shadow-sm`, `shadow-lg shadow-emerald-500/20`) for interactive elements.
-        - **Table Actions:** Action buttons in tables must use **Icon + Text** with soft-colored backgrounds (e.g., `bg-emerald-50 text-emerald-600` for Edit, `bg-red-50 text-red-600` for Delete).
-        - **Icons:** Standardized on `react-icons/hi2` (Heroicons v2).
+        - **Radius:** `rounded-3xl` untuk card/container utama, `rounded-2xl` untuk tombol, input, dan elemen interaktif lainnya.
+        - **Shadows:** Gunakan shadow halus (e.g., `shadow-sm`, `shadow-lg shadow-emerald-500/20`).
+        - **Icons:** Standarisasi pada `react-icons/hi2` (Heroicons v2), lebih disukai versi **Outline** (`HiOutline...`).
+        - **Standard Page Patterns:**
+            - **Index Page:** 
+                - Container utama `space-y-6`.
+                - Header: Judul (`h2`), deskripsi (`p`), dan area aksi (Search + Button).
+                - Search Input: `type="text"`, latar `bg-white`, ikon di kiri, tombol hapus di kanan.
+            - **Create/Edit Page:**
+                - Container utama `space-y-8`.
+                - Header: Navigasi "Kembali ke Daftar" menggunakan `HiOutlineChevronLeft`.
+                - Form Card: `bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden`.
+                - Form Layout: Padding `p-6 md:p-10`, `space-y-8`.
+                - Input Fields: Latar `bg-gray-50/50`, border `rounded-2xl`, ikon internal di sisi kiri.
+                - Action Area: `pt-6 border-t border-gray-50 flex justify-end gap-4`.
         - **Notifications & Alerts:**
-            - **Do NOT use SweetAlert.** It has been removed.
-            - Use `notifySuccess(message)` or `notifyError(message)` from `@/Utils/useToast` for toast notifications (top-right).
-            - Use `confirmAction(message, onConfirm, options)` from `@/Utils/useConfirm` for modal confirmations.
-            - `confirmAction` uses a callback pattern, NOT a Promise.
+            - **Jangan gunakan SweetAlert.**
+            - Gunakan `notifySuccess(message)` atau `notifyError(message)` dari `@/Utils/useToast` untuk toast (kanan atas).
+            - Gunakan `confirmAction(message, onConfirm, options)` dari `@/Utils/useConfirm` untuk modal konfirmasi (pola callback).
     - **Responsiveness:** Overhauled `AuthenticatedLayout` with a focus on mobile-first navigation, featuring a smooth mobile drawer, overlay, and optimized spacing for small screens. (Critical)
 - **Development Fixes:**
     - PHPUnit is configured with CSRF exceptions in `bootstrap/app.php` specifically for the testing environment to ensure session stability.
