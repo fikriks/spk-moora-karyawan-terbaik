@@ -21,6 +21,49 @@
         - **Shadows:** Gunakan shadow halus (e.g., `shadow-sm`, `shadow-lg shadow-emerald-500/20`).
         - **Icons:** Standarisasi pada `react-icons/hi2` (Heroicons v2), lebih disukai versi **Outline** (`HiOutline...`).
         - **Standard Page Patterns:**
+            - **Dashboard Page Pattern:**
+                ```jsx
+                // resources/js/Pages/Role/Index.jsx (Dashboard)
+                import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+                import { Head, usePage, Link } from "@inertiajs/react";
+                import { HiOutlineUserGroup, HiOutlineAdjustmentsHorizontal, HiOutlineClipboardDocumentCheck, HiOutlineCheckCircle } from "react-icons/hi2";
+
+                function StatCard({ title, value, icon: Icon }) {
+                    return (
+                        <div className="bg-white rounded-[24px] border border-gray-100/80 p-6 shadow-[0_8px_30px_rgb(0,0,0,0.015)] group hover:border-emerald-100 transition-all duration-300">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="p-2.5 rounded-xl bg-gray-50 group-hover:bg-emerald-50 transition-colors duration-300">
+                                    <Icon className="w-5 h-5 text-gray-400 group-hover:text-emerald-500 transition-colors duration-300" />
+                                </div>
+                                <div className="h-1.5 w-1.5 rounded-full bg-gray-200 group-hover:bg-emerald-400 transition-colors" />
+                            </div>
+                            <div className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1">{title}</div>
+                            <div className="text-2xl font-bold text-gray-800 tracking-tight">{value}</div>
+                        </div>
+                    );
+                }
+
+                export default function Dashboard() {
+                    const { summary } = usePage().props;
+                    return (
+                        <div className="space-y-10">
+                            <Head title="Dashboard" />
+                            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                                <StatCard title="Total Data" value={summary.total} icon={HiOutlineUserGroup} />
+                                {/* ... more cards ... */}
+                            </div>
+                            {/* ... Content: ProgressBar, RankingTable with trophy icons, etc. ... */}
+                        </div>
+                    );
+                }
+
+                Dashboard.layout = (page) => (
+                    <AuthenticatedLayout header="Dashboard" breadcrumbs={[{ label: "Dashboard", active: true }]}>
+                        {page}
+                    </AuthenticatedLayout>
+                );
+                ```
+
             - **Index Page Pattern:**
                 ```jsx
                 // resources/js/Pages/Module/Index.jsx
@@ -49,11 +92,11 @@
 
                     return (
                         <div className="space-y-8">
-                            <Head title="Judul Modul" />
+                            <Head title="Kelola Data" />
                             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                                 <div className="space-y-2">
-                                    <h2 className="text-3xl font-black text-gray-800 tracking-tight">Judul <span className="text-emerald-500">Modul</span></h2>
-                                    <p className="text-sm text-gray-500 font-medium">Deskripsi singkat modul di sini.</p>
+                                    <h2 className="text-3xl font-black text-gray-800 tracking-tight">Kelola <span className="text-emerald-500">Data</span></h2>
+                                    <p className="text-sm text-gray-500 font-medium max-w-md leading-relaxed">Deskripsi operasional modul di sini.</p>
                                 </div>
                                 <Link href={route("module.create")} className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-emerald-500 text-[13px] font-bold text-white hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20 active:scale-95">
                                     <HiOutlinePlus className="h-4 w-4" /> Tambah Data
@@ -67,26 +110,50 @@
                                             <HiOutlineMagnifyingGlass className={`w-5 h-5 ${searching ? 'animate-pulse text-emerald-500' : ''}`} />
                                         </div>
                                         <input type="text" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Cari data..." className="w-full pl-12 pr-10 py-3 bg-white border border-gray-100 rounded-2xl text-sm focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none" />
-                                        {query && <button onClick={() => setQuery("")} className="absolute inset-y-0 right-4 flex items-center p-1 text-gray-300 hover:text-gray-500"><HiOutlineXMark className="w-4 h-4" /></button>}
+                                        {query && <button onClick={() => setQuery("")} className="absolute inset-y-0 right-4 flex items-center p-1 text-gray-300 hover:text-gray-500 transition-colors"><HiOutlineXMark className="w-4 h-4" /></button>}
                                     </div>
                                 </div>
                                 <div className="overflow-x-auto">
                                     <table className="w-full text-left border-collapse">
                                         <thead>
                                             <tr className="bg-gray-50/50">
-                                                <th className="px-8 py-5 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] border-b border-gray-100">Kolom</th>
+                                                <th className="px-8 py-5 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] border-b border-gray-100">Data</th>
                                                 <th className="px-8 py-5 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] border-b border-gray-100 text-right">Aksi</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-gray-50">
-                                            {/* Iterasi data dengan gaya yang sama */}
+                                            <tr className="group hover:bg-emerald-50/30 transition-colors">
+                                                <td className="px-8 py-6">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 font-bold group-hover:bg-emerald-50 group-hover:text-emerald-500 transition-all">J</div>
+                                                        <span className="font-bold text-gray-700 uppercase tracking-tight group-hover:text-emerald-600 transition-colors leading-tight">John Doe</span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-8 py-6 text-right">
+                                                    <div className="flex items-center justify-end gap-2">
+                                                        <Link href={route("module.edit", 1)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-all text-[11px] font-bold uppercase tracking-wider shadow-sm">
+                                                            <HiOutlinePencilSquare className="w-3.5 h-3.5" /> <span>Edit</span>
+                                                        </Link>
+                                                        <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 text-rose-500 hover:bg-rose-100 transition-all text-[11px] font-bold uppercase tracking-wider shadow-sm">
+                                                            <HiOutlineTrash className="w-3.5 h-3.5" /> <span>Hapus</span>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
+                                {/* Footer with custom pagination style (like Operator module) */}
                             </div>
                         </div>
                     );
                 }
+
+                Index.layout = (page) => (
+                    <AuthenticatedLayout header="Judul Modul" breadcrumbs={[{ label: "Modul", active: true }]}>
+                        {page}
+                    </AuthenticatedLayout>
+                );
                 ```
 
             - **Create/Edit Page Pattern:**
@@ -96,7 +163,6 @@
                 import { Head, usePage, Link } from "@inertiajs/react";
                 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
                 import { HiOutlineArrowLeft } from "react-icons/hi2";
-                import ModuleForm from "./Partials/ModuleForm"; // Pisahkan form jika kompleks
 
                 export default function CreateOrEdit() {
                     const { data, auth } = usePage().props;
@@ -111,7 +177,7 @@
                                         <h2 className="text-3xl font-black text-gray-800 tracking-tight">
                                             {isEdit ? 'Edit' : 'Tambah'} <span className="text-emerald-500">Data</span>
                                         </h2>
-                                        <p className="text-sm text-gray-500 max-w-md font-medium leading-relaxed">Deskripsi form di sini.</p>
+                                        <p className="text-sm text-gray-500 max-w-md font-medium leading-relaxed">Penjelasan form di sini.</p>
                                     </div>
                                     <Link href={route("module.index")} className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-white border border-gray-100 text-[13px] font-bold text-gray-500 hover:bg-gray-50 hover:text-emerald-600 transition-all shadow-sm">
                                         <HiOutlineArrowLeft className="h-4 w-4" /> Kembali
@@ -120,13 +186,19 @@
 
                                 <div className="bg-white rounded-[32px] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.015)] overflow-hidden">
                                     <div className="p-8 md:p-12">
-                                        {/* Isi Form di sini dengan gaya input standard */}
+                                        {/* Form dengan grid-cols-2 dan rounded-2xl inputs */}
                                     </div>
                                 </div>
                             </div>
                         </>
                     );
                 }
+
+                CreateOrEdit.layout = (page) => (
+                    <AuthenticatedLayout header="Modul" breadcrumbs={[{ label: "Modul", href: route("module.index") }, { label: "Aksi", active: true }]}>
+                        {page}
+                    </AuthenticatedLayout>
+                );
                 ```
         - **Operator Alternative Module:**
             - **Index:** Redesigned with Admin Dashboard reference: `rounded-[32px]` cards, `HiOutline` icons, and emerald-themed hover effects.
