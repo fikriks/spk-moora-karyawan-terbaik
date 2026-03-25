@@ -7,6 +7,39 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## UI Components
+
+### Breadcrumb Pattern
+
+The `AuthenticatedLayout` supports a breadcrumb navigation. To use it, pass a `breadcrumbs` prop to the layout.
+
+#### Data Structure
+```jsx
+const breadcrumbs = [
+    { label: "Dashboard", href: route("admin.index") },
+    { label: "Current Page", active: true },
+];
+```
+
+#### Usage in Pages
+```jsx
+export default function YourPage() {
+    const breadcrumbs = [
+        { label: "Dashboard", href: route("admin.index") },
+        { label: "Your Page Title", active: true },
+    ];
+
+    return (
+        <AuthenticatedLayout 
+            header="Your Page Title"
+            breadcrumbs={breadcrumbs}
+        >
+            {/* Page content */}
+        </AuthenticatedLayout>
+    );
+}
+```
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:

@@ -259,16 +259,20 @@ function Index() {
 /* ===============================
  * LAYOUT
  * =============================== */
-Index.layout = (page) => (
-    <AuthenticatedLayout
-        header={
-            <h2 className="font-semibold text-xl text-gray-800">
-                User Management
-            </h2>
-        }
-    >
-        {page}
-    </AuthenticatedLayout>
-);
+Index.layout = (page) => {
+    const breadcrumbs = [
+        { label: "Dashboard", href: route("admin.index") },
+        { label: "User Management", active: true },
+    ];
+
+    return (
+        <AuthenticatedLayout
+            header="User Management"
+            breadcrumbs={breadcrumbs}
+        >
+            {page}
+        </AuthenticatedLayout>
+    );
+};
 
 export default Index;

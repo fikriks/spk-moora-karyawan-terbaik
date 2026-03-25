@@ -1,4 +1,5 @@
 import ApplicationLogo from "@/Components/ApplicationLogo";
+import Breadcrumb from "@/Components/Breadcrumb";
 import { notifySuccess, notifyError } from "@/Utils/useSweetAlert";
 import { Link, usePage, router } from "@inertiajs/react";
 import { useEffect, useState, Fragment } from "react";
@@ -21,7 +22,7 @@ import {
     HiOutlineXMark,
 } from "react-icons/hi2";
 
-export default function AuthenticatedLayout({ header, children }) {
+export default function AuthenticatedLayout({ header, breadcrumbs, children }) {
     const { auth, flash } = usePage().props;
     const user = auth?.user;
 
@@ -304,17 +305,13 @@ export default function AuthenticatedLayout({ header, children }) {
                     <main className="p-6 lg:p-10 max-w-[1600px] mx-auto min-h-full flex flex-col">
                         {header && (
                             <div className="mb-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                                <div className="flex items-center gap-3 mb-2.5">
-                                    <div className="h-1 w-6 bg-emerald-400 rounded-full" />
-                                    <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-[0.2em]">
-                                        Menu Navigasi
-                                    </span>
-                                </div>
+                                <Breadcrumb items={breadcrumbs} />
                                 <div className="text-2xl lg:text-3xl font-bold text-gray-800 tracking-tight">
                                     {header}
                                 </div>
                             </div>
-                            )}                        <div className="animate-in fade-in zoom-in-95 duration-500 flex-1">
+                            )}
+                        <div className="animate-in fade-in zoom-in-95 duration-500 flex-1">
                             {children}
                         </div>
 
