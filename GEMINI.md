@@ -41,6 +41,8 @@
     - PHPUnit is configured with CSRF exceptions in `bootstrap/app.php` specifically for the testing environment to ensure session stability.
     - **Alternative Seeder:** Refactored `AlternativeSeeder` to generate realistic Indonesian NIPs (18 digits following official format: Birth Date + CPNS TMT + Gender + Sequence) using `id_ID` Faker.
 - **Administrative Modules:**
+    - **Criteria Management:** Standardized Full CRUD with Emerald theme, `CriteriaForm` component, and `CriterionRequest` validation.
+    - **MOORA Process:** Standardized calculation workflow and results visualization with modern table components (`MatrixTable`, `DenominatorTable`, `OptimizationTable`, `RankingTable`) and PDF export.
     - **Alternative Management:** Standardized `Admin/Alternative` to match the visual and structural pattern of `Admin/Users`. This includes the use of `HiOutline` icons, unified table layouts, and integrated breadcrumbs.
     - **Search UI:** Enforced `type="text"` for all search inputs to prevent browser-native conflicts and ensure a consistent custom clear-button experience.
 
