@@ -6,6 +6,7 @@ import SecondaryButton from '@/Components/SecondaryButton';
 import TextInput from '@/Components/TextInput';
 import { useForm } from '@inertiajs/react';
 import { useRef, useState } from 'react';
+import { HiOutlineTrash, HiOutlineExclamationTriangle, HiOutlineLockClosed } from 'react-icons/hi2';
 
 export default function DeleteUserForm({ className = '' }) {
     const [confirmingUserDeletion, setConfirmingUserDeletion] = useState(false);
@@ -40,77 +41,87 @@ export default function DeleteUserForm({ className = '' }) {
 
     const closeModal = () => {
         setConfirmingUserDeletion(false);
-
         clearErrors();
         reset();
     };
 
     return (
-        <section className={`space-y-6 ${className}`}>
-            <header>
-                <h2 className="text-lg font-medium text-gray-900">
-                    Delete Account
-                </h2>
+        <section className="p-6 md:p-10 space-y-8">
+            <header className="border-b border-red-50 pb-6">
+                <div className="flex items-center gap-3 text-red-600 mb-2">
+                    <HiOutlineExclamationTriangle className="h-6 w-6" />
+                    <h2 className="text-xl font-bold">
+                        Hapus Akun
+                    </h2>
+                </div>
 
-                <p className="mt-1 text-sm text-gray-600">
-                    Once your account is deleted, all of its resources and data
-                    will be permanently deleted. Before deleting your account,
-                    please download any data or information that you wish to
-                    retain.
+                <p className="mt-2 text-gray-500">
+                    Setelah akun Anda dihapus, semua sumber daya dan datanya akan dihapus secara permanen. Sebelum menghapus akun Anda, harap unduh data atau informasi apa pun yang ingin Anda simpan.
                 </p>
             </header>
 
-            <DangerButton onClick={confirmUserDeletion}>
-                Delete Account
-            </DangerButton>
+            <div className="max-w-2xl">
+                <DangerButton onClick={confirmUserDeletion}>
+                    <HiOutlineTrash className="h-5 w-5 mr-2" />
+                    Hapus Akun Permanen
+                </DangerButton>
+            </div>
 
             <Modal show={confirmingUserDeletion} onClose={closeModal}>
-                <form onSubmit={deleteUser} className="p-6">
-                    <h2 className="text-lg font-medium text-gray-900">
-                        Are you sure you want to delete your account?
-                    </h2>
+                <form onSubmit={deleteUser} className="p-8">
+                    <div className="flex items-center gap-4 text-red-600 mb-6">
+                        <div className="bg-red-50 p-3 rounded-2xl">
+                            <HiOutlineExclamationTriangle className="h-8 w-8" />
+                        </div>
+                        <div>
+                            <h2 className="text-2xl font-bold">
+                                Apakah Anda yakin?
+                            </h2>
+                            <p className="text-gray-500 mt-1">
+                                Tindakan ini tidak dapat dibatalkan.
+                            </p>
+                        </div>
+                    </div>
 
-                    <p className="mt-1 text-sm text-gray-600">
-                        Once your account is deleted, all of its resources and
-                        data will be permanently deleted. Please enter your
-                        password to confirm you would like to permanently delete
-                        your account.
+                    <p className="text-gray-600 leading-relaxed">
+                        Harap masukkan kata sandi Anda untuk mengonfirmasi bahwa Anda ingin menghapus akun Anda secara permanen.
                     </p>
 
-                    <div className="mt-6">
+                    <div className="mt-8">
                         <InputLabel
                             htmlFor="password"
-                            value="Password"
+                            value="Kata Sandi Anda"
                             className="sr-only"
                         />
 
-                        <TextInput
-                            id="password"
-                            type="password"
-                            name="password"
-                            ref={passwordInput}
-                            value={data.password}
-                            onChange={(e) =>
-                                setData('password', e.target.value)
-                            }
-                            className="mt-1 block w-3/4"
-                            isFocused
-                            placeholder="Password"
-                        />
+                        <div className="relative group">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <HiOutlineLockClosed className="h-5 w-5 text-gray-400 group-focus-within:text-red-500 transition-colors" />
+                            </div>
+                            <TextInput
+                                id="password"
+                                type="password"
+                                name="password"
+                                ref={passwordInput}
+                                value={data.password}
+                                onChange={(e) => setData('password', e.target.value)}
+                                className="pl-11 block w-full"
+                                isFocused
+                                placeholder="Masukkan kata sandi untuk konfirmasi"
+                            />
+                        </div>
 
-                        <InputError
-                            message={errors.password}
-                            className="mt-2"
-                        />
+                        <InputError message={errors.password} className="mt-2" />
                     </div>
 
-                    <div className="mt-6 flex justify-end">
-                        <SecondaryButton onClick={closeModal}>
-                            Cancel
+                    <div className="mt-10 flex justify-end gap-4 border-t border-gray-50 pt-6">
+                        <SecondaryButton onClick={closeModal} className="rounded-2xl px-6">
+                            Batal
                         </SecondaryButton>
 
-                        <DangerButton className="ms-3" disabled={processing}>
-                            Delete Account
+                        <DangerButton className="rounded-2xl px-6" disabled={processing}>
+                            <HiOutlineTrash className="h-5 w-5 mr-2" />
+                            Hapus Akun
                         </DangerButton>
                     </div>
                 </form>

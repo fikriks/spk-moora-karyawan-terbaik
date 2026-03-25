@@ -6,34 +6,47 @@ import UpdateProfileInformationForm from './Partials/UpdateProfileInformationFor
 
 export default function Edit({ mustVerifyEmail, status }) {
     return (
-        <AuthenticatedLayout
-            header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Profile
+        <div className="space-y-8">
+            {/* Header Section */}
+            <div>
+                <h2 className="text-3xl font-bold text-gray-900 tracking-tight">
+                    Profil Saya
                 </h2>
-            }
-        >
-            <Head title="Profile" />
+                <p className="mt-2 text-gray-500 text-lg font-medium max-w-2xl">
+                    Kelola informasi akun, kata sandi, dan keamanan profil Anda secara mandiri.
+                </p>
+            </div>
 
-            <div className="py-12">
-                <div className="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
-                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8">
-                        <UpdateProfileInformationForm
-                            mustVerifyEmail={mustVerifyEmail}
-                            status={status}
-                            className="max-w-xl"
-                        />
-                    </div>
+            {/* Forms Section */}
+            <div className="space-y-8 max-w-4xl pb-12">
+                <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+                    <UpdateProfileInformationForm
+                        mustVerifyEmail={mustVerifyEmail}
+                        status={status}
+                    />
+                </div>
 
-                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8">
-                        <UpdatePasswordForm className="max-w-xl" />
-                    </div>
+                <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+                    <UpdatePasswordForm />
+                </div>
 
-                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8">
-                        <DeleteUserForm className="max-w-xl" />
-                    </div>
+                <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden border-red-50/50">
+                    <DeleteUserForm />
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </div>
     );
 }
+
+Edit.layout = (page) => (
+    <AuthenticatedLayout
+        header="Profil Saya"
+        breadcrumbs={[
+            { label: 'Dashboard', href: route('dashboard') },
+            { label: 'Profil Saya' },
+        ]}
+    >
+        <Head title="Profil Saya" />
+        {page}
+    </AuthenticatedLayout>
+);
