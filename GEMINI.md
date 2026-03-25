@@ -21,18 +21,113 @@
         - **Shadows:** Gunakan shadow halus (e.g., `shadow-sm`, `shadow-lg shadow-emerald-500/20`).
         - **Icons:** Standarisasi pada `react-icons/hi2` (Heroicons v2), lebih disukai versi **Outline** (`HiOutline...`).
         - **Standard Page Patterns:**
-            - **Index Page:** 
-                - Container utama `space-y-6`.
-                - Header: Judul (`h2`), deskripsi (`p`), dan area aksi (Search + Button).
-                - Search Input: `type="text"`, latar `bg-white`, ikon di kiri, tombol hapus di kanan.
-                - Card: `rounded-[32px]` dengan `shadow-[0_8px_30px_rgb(0,0,0,0.015)]`.
-            - **Create/Edit Page:**
-                - Container utama `space-y-8`. **Full width** (jangan gunakan batasan `max-w-*` pada container luar agar konsisten dengan layout dashboard).
-                - Header: Judul besar (`text-3xl font-black`) dan tombol navigasi "Kembali" (`HiOutlineArrowLeft`).
-                - Form Card: `bg-white rounded-[32px] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.015)] overflow-hidden`.
-                - Form Layout: Padding internal `p-8 md:p-12`, struktur internal `space-y-8`.
-                - Input Fields: Label kapital (`text-[10px] tracking-[0.2em]`), latar `bg-gray-50/50`, border `rounded-2xl`, ikon internal (`HiOutline...`) di sisi kiri.
-                - Action Area: `pt-6 border-t border-gray-50 flex justify-end gap-4`.
+            - **Index Page Pattern:**
+                ```jsx
+                // resources/js/Pages/Module/Index.jsx
+                import React, { useEffect, useMemo, useState } from "react";
+                import { Link, usePage, router, Head } from "@inertiajs/react";
+                import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+                import { HiOutlinePlus, HiOutlineMagnifyingGlass, HiOutlineXMark, HiOutlinePencilSquare, HiOutlineTrash } from "react-icons/hi2";
+
+                export default function Index() {
+                    const { data: rawData, filters: initialFilters = {} } = usePage().props;
+                    const [query, setQuery] = useState(initialFilters.q || "");
+                    const [searching, setSearching] = useState(false);
+
+                    useEffect(() => {
+                        const id = setTimeout(() => {
+                            if (query !== (initialFilters.q || "")) {
+                                router.get(window.location.pathname, { q: query || undefined, page: 1 }, {
+                                    preserveState: true, replace: true,
+                                    onStart: () => setSearching(true),
+                                    onFinish: () => setSearching(false),
+                                });
+                            }
+                        }, 500);
+                        return () => clearTimeout(id);
+                    }, [query]);
+
+                    return (
+                        <div className="space-y-8">
+                            <Head title="Judul Modul" />
+                            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                                <div className="space-y-2">
+                                    <h2 className="text-3xl font-black text-gray-800 tracking-tight">Judul <span className="text-emerald-500">Modul</span></h2>
+                                    <p className="text-sm text-gray-500 font-medium">Deskripsi singkat modul di sini.</p>
+                                </div>
+                                <Link href={route("module.create")} className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-emerald-500 text-[13px] font-bold text-white hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20 active:scale-95">
+                                    <HiOutlinePlus className="h-4 w-4" /> Tambah Data
+                                </Link>
+                            </div>
+
+                            <div className="bg-white rounded-[32px] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.015)] overflow-hidden">
+                                <div className="p-6 border-b border-gray-50 bg-gray-50/30 flex items-center justify-between gap-4">
+                                    <div className="relative flex-1 max-w-md group">
+                                        <div className="absolute inset-y-0 left-4 flex items-center text-gray-400 group-focus-within:text-emerald-500 transition-colors">
+                                            <HiOutlineMagnifyingGlass className={`w-5 h-5 ${searching ? 'animate-pulse text-emerald-500' : ''}`} />
+                                        </div>
+                                        <input type="text" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Cari data..." className="w-full pl-12 pr-10 py-3 bg-white border border-gray-100 rounded-2xl text-sm focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none" />
+                                        {query && <button onClick={() => setQuery("")} className="absolute inset-y-0 right-4 flex items-center p-1 text-gray-300 hover:text-gray-500"><HiOutlineXMark className="w-4 h-4" /></button>}
+                                    </div>
+                                </div>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left border-collapse">
+                                        <thead>
+                                            <tr className="bg-gray-50/50">
+                                                <th className="px-8 py-5 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] border-b border-gray-100">Kolom</th>
+                                                <th className="px-8 py-5 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] border-b border-gray-100 text-right">Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-gray-50">
+                                            {/* Iterasi data dengan gaya yang sama */}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    );
+                }
+                ```
+
+            - **Create/Edit Page Pattern:**
+                ```jsx
+                // resources/js/Pages/Module/Create.jsx atau Edit.jsx
+                import React from "react";
+                import { Head, usePage, Link } from "@inertiajs/react";
+                import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+                import { HiOutlineArrowLeft } from "react-icons/hi2";
+                import ModuleForm from "./Partials/ModuleForm"; // Pisahkan form jika kompleks
+
+                export default function CreateOrEdit() {
+                    const { data, auth } = usePage().props;
+                    const isEdit = !!data;
+
+                    return (
+                        <>
+                            <Head title={`${isEdit ? 'Edit' : 'Tambah'} Data`} />
+                            <div className="space-y-8">
+                                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                                    <div className="space-y-2">
+                                        <h2 className="text-3xl font-black text-gray-800 tracking-tight">
+                                            {isEdit ? 'Edit' : 'Tambah'} <span className="text-emerald-500">Data</span>
+                                        </h2>
+                                        <p className="text-sm text-gray-500 max-w-md font-medium leading-relaxed">Deskripsi form di sini.</p>
+                                    </div>
+                                    <Link href={route("module.index")} className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-white border border-gray-100 text-[13px] font-bold text-gray-500 hover:bg-gray-50 hover:text-emerald-600 transition-all shadow-sm">
+                                        <HiOutlineArrowLeft className="h-4 w-4" /> Kembali
+                                    </Link>
+                                </div>
+
+                                <div className="bg-white rounded-[32px] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.015)] overflow-hidden">
+                                    <div className="p-8 md:p-12">
+                                        {/* Isi Form di sini dengan gaya input standard */}
+                                    </div>
+                                </div>
+                            </div>
+                        </>
+                    );
+                }
+                ```
         - **Operator Alternative Module:**
             - **Index:** Redesigned with Admin Dashboard reference: `rounded-[32px]` cards, `HiOutline` icons, and emerald-themed hover effects.
             - **Forms:** Unified `AlternativeForm` with internal icons (`HiOutlineIdentification`, `HiOutlineUser`, `HiOutlineBriefcase`), spacious padding, and high-affordance emerald action buttons.

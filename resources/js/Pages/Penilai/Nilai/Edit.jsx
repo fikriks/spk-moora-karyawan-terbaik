@@ -1,84 +1,76 @@
 import React from "react";
-import { Head, usePage, Link, router } from "@inertiajs/react";
+import { Head, usePage, Link } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import NilaiForm from "./NilaiAlternativeForm";
-import { notifySuccess } from "@/Utils/useToast";
+import NilaiAlternativeForm from "./NilaiAlternativeForm";
+import { HiOutlineArrowLeft } from "react-icons/hi2";
 
 export default function Edit() {
-    const { nilai, alternatifs, kriterias, flash } = usePage().props;
-    // console.log(nilai);
-    // route update NILAI
+    const { nilai, alternatifs, kriterias, auth } = usePage().props;
+    const user = auth?.user;
+
     const submitRoute = route("penilai.nilai.update", nilai.id);
 
-    function handleSuccess() {
-        notifySuccess("Nilai berhasil diperbarui!");
-        router.get(route("penilai.nilai.index"));
-    }
-
     return (
-        <div className="p-6">
-            <Head
-                title={`Edit Nilai: ${nilai?.alternative?.name ?? ""} - ${
-                    nilai?.criteria?.name ?? ""
-                }`}
-            />
+        <>
+            <Head title={`Edit Nilai: ${nilai?.alternative?.name ?? ""}`} />
+            
+            <div className="space-y-8">
+                {/* Header */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                    <div className="space-y-2">
+                        <h2 className="text-3xl font-black text-gray-800 tracking-tight">
+                            Edit <span className="text-emerald-500">Nilai</span>
+                        </h2>
+                        <p className="text-sm text-gray-500 max-w-md font-medium leading-relaxed">
+                            Perbarui nilai alternatif terhadap kriteria untuk proses perhitungan MOORA.
+                        </p>
+                    </div>
 
-            {/* Header */}
-            <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h1 className="text-2xl font-semibold text-gray-800">
-                        Edit Nilai
-                    </h1>
-                    <p className="text-sm text-gray-500">
-                        Perbarui nilai alternatif terhadap kriteria.
-                    </p>
-                </div>
-
-                <div className="flex items-center gap-3">
                     <Link
                         href={route("penilai.nilai.index")}
-                        className="inline-flex items-center rounded-md border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+                        className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-white border border-gray-100 text-[13px] font-bold text-gray-500 hover:bg-gray-50 hover:text-emerald-600 transition-all shadow-sm"
                     >
-                        ← Kembali ke Daftar Nilai
+                        <HiOutlineArrowLeft className="h-4 w-4" />
+                        Kembali
                     </Link>
                 </div>
-            </div>
 
-            {/* Flash */}
-            {flash?.success && (
-                <div className="mb-4 rounded-md bg-emerald-50 p-4 text-sm text-emerald-800">
-                    {flash.success}
+                {/* Form Card */}
+                <div className="bg-white rounded-[32px] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.015)] overflow-hidden">
+                    <div className="p-8 md:p-12">
+                        <NilaiAlternativeForm
+                            initial={{
+                                alternative_id: nilai.alternative_id,
+                                criteria_id: nilai.criteria_id,
+                                nilai: nilai.value,
+                            }}
+                            alternatifs={alternatifs}
+                            kriterias={kriterias}
+                            onSubmitRoute={submitRoute}
+                            method="put"
+                            submitLabel="Perbarui Nilai"
+                            role={user?.role}
+                        />
+                    </div>
                 </div>
-            )}
-
-            {/* Card */}
-            <div className="mx-auto max-w-3xl rounded-lg bg-white p-6 shadow-sm">
-                <NilaiForm
-                    initial={{
-                        alternative_id: nilai.alternative_id,
-                        criteria_id: nilai.criteria_id,
-                        nilai: nilai.value,
-                    }}
-                    alternatifs={alternatifs}
-                    kriterias={kriterias}
-                    onSubmitRoute={submitRoute}
-                    method="put"
-                    submitLabel="Perbarui Nilai"
-                />
             </div>
-        </div>
+        </>
     );
 }
 
-/* Layout */
-Edit.layout = (page) => (
-    <AuthenticatedLayout
-        header={
-            <h2 className="font-semibold text-xl text-gray-800 leading-tight">
-                Edit Nilai
-            </h2>
-        }
-    >
-        {page}
-    </AuthenticatedLayout>
-);
+Edit.layout = (page) => {
+    const breadcrumbs = [
+        { label: "Dashboard", href: route("penilai.index") },
+        { label: "Nilai Alternative", href: route("penilai.nilai.index") },
+        { label: "Edit", active: true },
+    ];
+
+    return (
+        <AuthenticatedLayout
+            header="Edit Nilai"
+            breadcrumbs={breadcrumbs}
+        >
+            {page}
+        </AuthenticatedLayout>
+    );
+};

@@ -1,18 +1,16 @@
 import React, { useEffect } from "react";
-import { useForm } from "@inertiajs/react";
+import { useForm, Link } from "@inertiajs/react";
+import { 
+    HiOutlineUser, 
+    HiOutlineClipboardDocumentList, 
+    HiOutlinePresentationChartLine,
+    HiOutlineCheckCircle,
+    HiOutlineArrowLeft
+} from "react-icons/hi2";
+import PrimaryButton from "@/Components/PrimaryButton";
+import InputError from "@/Components/InputError";
+import InputLabel from "@/Components/InputLabel";
 
-/**
- * NilaiForm
- *
- * props:
- * - initial: object awal (untuk edit)
- * - alternatifs: array [{id, name}]
- * - kriterias: array [{id, name}]
- * - role: string (contoh: 'operator', 'admin', dll)
- * - onSubmitRoute: route string
- * - method: 'post' | 'put' | 'patch' (default 'post')
- * - submitLabel: teks tombol submit (default: 'Simpan')
- */
 export default function NilaiForm({
     initial = {},
     alternatifs = [],
@@ -20,162 +18,153 @@ export default function NilaiForm({
     role,
     onSubmitRoute,
     method = "post",
-    submitLabel = "Simpan",
+    submitLabel = "Simpan Nilai",
+    cancelRoute,
 }) {
-    const form = useForm({
+    const { data, setData, post, put, processing, errors } = useForm({
         alternative_id: initial.alternative_id || "",
         criteria_id: initial.criteria_id || "",
         nilai: initial.nilai || "",
     });
 
-    /**
-     * Kriteria yang dibatasi
-     */
     const restrictedCriteriaNames = ["Tanggung Jawab", "Kerja Sama Tim"];
 
-    /**
-     * Filter kriteria berdasarkan role
-     */
     const filteredKriterias =
         role === "operator"
             ? kriterias.filter((k) => !restrictedCriteriaNames.includes(k.name))
             : kriterias.filter((k) => restrictedCriteriaNames.includes(k.name));
 
-    /**
-     * Reset criteria_id jika tidak valid setelah filtering
-     * (penting untuk edit data lama / role berbeda)
-     */
     useEffect(() => {
         const isValid = filteredKriterias.some(
-            (k) => String(k.id) === String(form.data.criteria_id),
+            (k) => String(k.id) === String(data.criteria_id),
         );
 
-        if (!isValid) {
-            form.setData("criteria_id", "");
+        if (!isValid && data.criteria_id !== "") {
+            setData("criteria_id", "");
         }
-    }, [role]);
+    }, [role, filteredKriterias]);
 
-    /**
-     * Submit handler
-     */
     const submit = (e) => {
         e.preventDefault();
-
         if (method.toLowerCase() === "post") {
-            form.post(onSubmitRoute);
+            post(onSubmitRoute);
         } else {
-            form.put(onSubmitRoute, {
-                _method: method,
-                data: form.data,
-            });
+            put(onSubmitRoute);
         }
     };
 
     return (
-        <form onSubmit={submit} className="mx-auto max-w-2xl space-y-6">
-            {/* Alternatif */}
-            <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">
-                    Alternatif <span className="text-red-500">*</span>
-                </label>
-                <select
-                    value={form.data.alternative_id}
-                    onChange={(e) =>
-                        form.setData("alternative_id", e.target.value)
-                    }
-                    className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-1 ${
-                        form.errors.alternative_id
-                            ? "border-red-300 focus:ring-red-500"
-                            : "border-gray-300 focus:ring-indigo-500"
-                    }`}
-                    required
-                >
-                    <option value="">-- Pilih Alternatif --</option>
-                    {alternatifs.map((a) => (
-                        <option key={a.id} value={a.id}>
-                            {a.name}
-                        </option>
-                    ))}
-                </select>
-                {form.errors.alternative_id && (
-                    <p className="mt-1 text-sm text-red-600">
-                        {form.errors.alternative_id}
-                    </p>
-                )}
-            </div>
+        <form onSubmit={submit} className="p-8 md:p-12 space-y-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Alternatif */}
+                <div className="space-y-2">
+                    <InputLabel htmlFor="alternative_id" value="Pegawai / Alternatif" className="text-[10px] tracking-[0.2em] mb-3" />
+                    <div className="relative group">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-emerald-500 transition-colors">
+                            <HiOutlineUser className="w-5 h-5" />
+                        </div>
+                        <select
+                            id="alternative_id"
+                            value={data.alternative_id}
+                            onChange={(e) => setData("alternative_id", e.target.value)}
+                            className="w-full pl-12 pr-4 py-3.5 bg-gray-50/50 border border-gray-100 rounded-2xl text-sm focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none appearance-none"
+                            required
+                        >
+                            <option value="">Pilih Pegawai</option>
+                            {alternatifs.map((a) => (
+                                <option key={a.id} value={a.id}>
+                                    {a.name}
+                                </option>
+                            ))}
+                        </select>
+                        <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-gray-400">
+                            <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                                <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <InputError message={errors.alternative_id} />
+                </div>
 
-            {/* Kriteria */}
-            <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">
-                    Kriteria <span className="text-red-500">*</span>
-                </label>
-                <select
-                    value={form.data.criteria_id}
-                    onChange={(e) =>
-                        form.setData("criteria_id", e.target.value)
-                    }
-                    className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-1 ${
-                        form.errors.criteria_id
-                            ? "border-red-300 focus:ring-red-500"
-                            : "border-gray-300 focus:ring-indigo-500"
-                    }`}
-                    required
-                >
-                    <option value="">-- Pilih Kriteria --</option>
-                    {filteredKriterias.map((k) => (
-                        <option key={k.id} value={k.id}>
-                            {k.name}
-                        </option>
-                    ))}
-                </select>
+                {/* Kriteria */}
+                <div className="space-y-2">
+                    <InputLabel htmlFor="criteria_id" value="Kriteria Penilaian" className="text-[10px] tracking-[0.2em] mb-3" />
+                    <div className="relative group">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-emerald-500 transition-colors">
+                            <HiOutlineClipboardDocumentList className="w-5 h-5" />
+                        </div>
+                        <select
+                            id="criteria_id"
+                            value={data.criteria_id}
+                            onChange={(e) => setData("criteria_id", e.target.value)}
+                            className="w-full pl-12 pr-4 py-3.5 bg-gray-50/50 border border-gray-100 rounded-2xl text-sm focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none appearance-none"
+                            required
+                        >
+                            <option value="">Pilih Kriteria</option>
+                            {filteredKriterias.map((k) => (
+                                <option key={k.id} value={k.id}>
+                                    {k.name}
+                                </option>
+                            ))}
+                        </select>
+                        <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-gray-400">
+                            <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                                <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                            </svg>
+                        </div>
+                    </div>
+                    {filteredKriterias.length === 0 && (
+                        <p className="mt-1 text-[10px] text-amber-600 font-bold uppercase tracking-wider">
+                            * Tidak ada kriteria yang tersedia untuk akses Anda.
+                        </p>
+                    )}
+                    <InputError message={errors.criteria_id} />
+                </div>
 
-                {filteredKriterias.length === 0 && (
-                    <p className="mt-1 text-sm text-yellow-600">
-                        Tidak ada kriteria yang dapat dipilih untuk role ini.
-                    </p>
-                )}
-
-                {form.errors.criteria_id && (
-                    <p className="mt-1 text-sm text-red-600">
-                        {form.errors.criteria_id}
-                    </p>
-                )}
-            </div>
-
-            {/* Nilai */}
-            <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">
-                    Nilai <span className="text-red-500">*</span>
-                </label>
-                <input
-                    type="number"
-                    step="any"
-                    value={form.data.nilai}
-                    onChange={(e) => form.setData("nilai", e.target.value)}
-                    className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-1 ${
-                        form.errors.nilai
-                            ? "border-red-300 focus:ring-red-500"
-                            : "border-gray-300 focus:ring-indigo-500"
-                    }`}
-                    placeholder="Masukkan nilai"
-                    required
-                />
-                {form.errors.nilai && (
-                    <p className="mt-1 text-sm text-red-600">
-                        {form.errors.nilai}
-                    </p>
-                )}
+                {/* Nilai */}
+                <div className="space-y-2 md:col-span-2">
+                    <InputLabel htmlFor="nilai" value="Skor / Nilai" className="text-[10px] tracking-[0.2em] mb-3" />
+                    <div className="relative group max-w-md">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-emerald-500 transition-colors">
+                            <HiOutlinePresentationChartLine className="w-5 h-5" />
+                        </div>
+                        <input
+                            id="nilai"
+                            type="number"
+                            step="any"
+                            value={data.nilai}
+                            onChange={(e) => setData("nilai", e.target.value)}
+                            placeholder="Contoh: 85"
+                            className="w-full pl-12 pr-4 py-3.5 bg-gray-50/50 border border-gray-100 rounded-2xl text-sm focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none"
+                            required
+                        />
+                    </div>
+                    <p className="text-[10px] text-gray-400 font-medium tracking-wide">Masukkan angka sesuai dengan indikator penilaian kriteria tersebut.</p>
+                    <InputError message={errors.nilai} />
+                </div>
             </div>
 
             {/* Actions */}
-            <div className="flex justify-end">
-                <button
-                    type="submit"
-                    disabled={form.processing}
-                    className="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-indigo-700 disabled:opacity-60"
+            <div className="pt-8 border-t border-gray-50 flex items-center justify-end gap-4">
+                {cancelRoute && (
+                    <Link
+                        href={cancelRoute}
+                        className="px-6 py-3 rounded-2xl text-sm font-bold text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                        Batal
+                    </Link>
+                )}
+                <PrimaryButton 
+                    className="px-8 py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 active:scale-95 transition-all flex items-center gap-2"
+                    disabled={processing}
                 >
-                    {form.processing ? "Menyimpan..." : submitLabel}
-                </button>
+                    {processing ? (
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                        <HiOutlineCheckCircle className="w-5 h-5" />
+                    )}
+                    <span>{submitLabel}</span>
+                </PrimaryButton>
             </div>
         </form>
     );
