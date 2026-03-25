@@ -170,7 +170,7 @@ function Index() {
                                             <div className="flex items-center gap-2">
                                                 <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gray-100 text-gray-600 text-xs font-semibold capitalize">
                                                     <HiOutlineShieldCheck className="w-3.5 h-3.5 text-gray-400" />
-                                                    {user.roles}
+                                                    {user.roles.join(", ")}
                                                 </span>
                                             </div>
                                         </td>
@@ -183,13 +183,15 @@ function Index() {
                                                     <HiOutlinePencilSquare className="w-4 h-4" />
                                                     <span>Edit</span>
                                                 </Link>
-                                                <button
-                                                    onClick={() => handleDelete(user.id, user.name)}
-                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 font-bold rounded-xl transition-all text-xs"
-                                                >
-                                                    <HiOutlineTrash className="w-4 h-4" />
-                                                    <span>Hapus</span>
-                                                </button>
+                                                {!user.roles.includes("admin") && (
+                                                    <button
+                                                        onClick={() => handleDelete(user.id, user.name)}
+                                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 font-bold rounded-xl transition-all text-xs"
+                                                    >
+                                                        <HiOutlineTrash className="w-4 h-4" />
+                                                        <span>Hapus</span>
+                                                    </button>
+                                                )}
                                             </div>
                                         </td>
                                     </tr>
