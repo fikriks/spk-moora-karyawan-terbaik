@@ -19,13 +19,12 @@ class AlternativeImport implements ToModel, WithHeadingRow
         }
 
         return Alternative::updateOrCreate(
-            // 🔑 Kunci pencarian (unique key)
             ['nip' => $row['nip']],
-
-            // ✏️ Data yang diupdate / diinsert
             [
-                'name'    => $row['name'],
+                'name' => $row['name'],
                 'jabatan' => $row['jabatan'] ?? null,
+                'golongan' => $row['golongan'] ?? null,
+                'jenis_ketenagakerjaan' => $row['jenis_ketenagakerjaan'] ?? null,
             ]
         );
     }

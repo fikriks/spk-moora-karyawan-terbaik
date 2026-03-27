@@ -194,12 +194,172 @@
                     );
                 }
 
-                CreateOrEdit.layout = (page) => (
+CreateOrEdit.layout = (page) => (
                     <AuthenticatedLayout header="Modul" breadcrumbs={[{ label: "Modul", href: route("module.index") }, { label: "Aksi", active: true }]}>
                         {page}
                     </AuthenticatedLayout>
                 );
                 ```
+
+            - **Nilai/Penilaian Index Pattern with Role-Based Locking:**
+                ```jsx
+                // resources/js/Pages/Kasubag/Nilai/Index.jsx or Ketua/Nilai/Index.jsx
+                const restrictedCriteriaNames = ["Tanggung Jawab", "Kerja Sama Tim"];
+
+                function canEdit(role, criteriaName) {
+                    if (!criteriaName) return false;
+                    const isRestricted = restrictedCriteriaNames.includes(criteriaName);
+                    // Kasubag/Admin manages restricted criteria; Operator manages non-restricted
+                    if (role === "operator") return !isRestricted;
+                    return isRestricted;
+                }
+
+                // In table row:
+                {allowedEdit ? (
+                    <Link href={route("module.edit", item.id)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-all text-[11px] font-bold uppercase tracking-wider shadow-sm">
+                        <HiOutlinePencilSquare className="w-3.5 h-3.5" /> <span>Edit</span>
+                    </Link>
+                ) : (
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-50 text-gray-300 border border-gray-100/50 text-[11px] font-bold uppercase tracking-wider cursor-not-allowed" title="Akses Dibatasi">
+                        <HiOutlineLockClosed className="w-3.5 h-3.5" /> <span>Locked</span>
+                    </div>
+                )}
+                ```
+
+            - **Laporan/Report Page Pattern:**
+                ```jsx
+                // resources/js/Pages/Kasubag/Laporan/Index.jsx or Ketua/Laporan/Index.jsx
+                import { HiOutlineDocumentText, HiOutlinePresentationChartLine, HiOutlineCalculator, HiOutlineArrowDownTray, HiOutlineStar, HiOutlineCheckCircle } from "react-icons/hi2";
+
+                function Section({ title, description, icon: Icon, children }) {
+                    return (
+                        <div className="space-y-6">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-emerald-500 border border-gray-100 shadow-sm">
+                                    {Icon && <Icon className="w-6 h-6" />}
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-black text-gray-800 tracking-tight">{title}</h3>
+                                    {description && <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">{description}</p>}
+                                </div>
+                            </div>
+                            <div className="overflow-x-auto custom-scrollbar">
+                                {children}
+                            </div>
+                        </div>
+                    );
+                }
+
+                export default function Laporan({ steps }) {
+                    return (
+                        <div className="space-y-8 pb-20">
+                            <Head title="Laporan Hasil Penilaian" />
+                            {/* Header with Export PDF */}
+                            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                                <div className="space-y-2">
+                                    <h2 className="text-3xl font-black text-gray-800 tracking-tight">
+                                        Laporan <span className="text-emerald-500">Hasil Penilaian</span>
+                                    </h2>
+                                    <p className="text-sm text-gray-500 max-w-md font-medium leading-relaxed">...</p>
+                                </div>
+                                <a href={route("laporan.pdf")} target="_blank" className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-emerald-500 text-[13px] font-bold text-white hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20 active:scale-95">
+                                    <HiOutlineArrowDownTray className="h-4 w-4" /> Export PDF
+                                </a>
+                            </div>
+                            {/* Content Card */}
+                            <div className="bg-white rounded-[32px] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.015)] overflow-hidden">
+                                <div className="p-8 md:p-12 space-y-12">
+                                    <Section title="Pendahuluan" icon={HiOutlineInformationCircle} description="...">
+                                        <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100/50">...</div>
+                                    </Section>
+                                    {/* More sections... */}
+                                </div>
+                            </div>
+                        </div>
+                    );
+                }
+                ```
+
+            - **WinnerCard Dashboard Component:**
+                ```jsx
+                // Used in Ketua/Index.jsx for top performer display
+                function WinnerCard({ data }) {
+                    if (!data) return null;
+                    const initials = data.name.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase();
+
+                    return (
+                        <div className="relative overflow-hidden bg-emerald-600 rounded-[32px] p-8 md:p-10 text-white shadow-xl shadow-emerald-200/50 group">
+                            <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-700">
+                                <HiOutlineTrophy className="w-48 h-48" />
+                            </div>
+                            <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-white/5 rounded-full blur-3xl" />
+                            <div className="relative z-10 flex flex-col md:flex-row md:items-center gap-8">
+                                <div className="flex-shrink-0">
+                                    <div className="w-24 h-24 rounded-[28px] bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-3xl font-black text-white shadow-inner">
+                                        {initials}
+                                    </div>
+                                </div>
+                                <div className="flex-1 space-y-4">
+                                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-400/20 border border-emerald-400/30 text-[11px] font-bold uppercase tracking-widest text-emerald-50">
+                                        <HiOutlineSparkles className="w-3.5 h-3.5" /> Rekomendasi Utama
+                                    </div>
+                                    <h3 className="text-3xl font-black tracking-tight">{data.name}</h3>
+                                    <p className="text-emerald-100/80 font-medium">{data.jabatan}</p>
+                                </div>
+                            </div>
+                        </div>
+                    );
+                }
+                ```
+
+            - **Form Component Pattern (AlternativeForm/NilaiAlternativeForm):**
+                ```jsx
+                // Standard form input with icon prefix
+                <div className="space-y-2">
+                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] ml-1">
+                        Label Name <span className="text-rose-500">*</span>
+                    </label>
+                    <div className="relative group">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-emerald-500 transition-colors">
+                            <HiOutlineUser className="w-5 h-5" />
+                        </div>
+                        <input
+                            type="text"
+                            value={form.data.field}
+                            onChange={(e) => form.setData("field", e.target.value)}
+                            className={`block w-full pl-12 pr-4 py-4 bg-gray-50/50 border rounded-2xl text-sm transition-all outline-none ${
+                                form.errors.field
+                                    ? "border-rose-200 focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500"
+                                    : "border-gray-100 focus:bg-white focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
+                            }`}
+                            placeholder="Placeholder text"
+                            required
+                        />
+                    </div>
+                    {form.errors.field && (
+                        <p className="text-[11px] font-bold text-rose-500 uppercase tracking-wider ml-1">
+                            {form.errors.field}
+                        </p>
+                    )}
+                </div>
+
+                // Standard submit button
+                <div className="flex items-center justify-end pt-6 border-t border-gray-50">
+                    <button
+                        type="submit"
+                        className="flex items-center gap-2 px-8 py-4 rounded-2xl bg-emerald-500 text-sm font-bold text-white hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-emerald-500/20"
+                        disabled={form.processing}
+                    >
+                        {form.processing ? (
+                            <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        ) : (
+                            <HiOutlineCheckCircle className="h-5 w-5" />
+                        )}
+                        <span>{form.processing ? "Menyimpan..." : "Simpan Data"}</span>
+                    </button>
+                </div>
+                ```
+
         - **Operator Alternative Module:**
             - **Index:** Redesigned with Admin Dashboard reference: `rounded-[32px]` cards, `HiOutline` icons, and emerald-themed hover effects.
             - **Forms:** Unified `AlternativeForm` with internal icons (`HiOutlineIdentification`, `HiOutlineUser`, `HiOutlineBriefcase`), spacious padding, and high-affordance emerald action buttons.
@@ -218,11 +378,41 @@
     - **MOORA Process:** Standardized calculation workflow and results visualization with modern table components (`MatrixTable`, `DenominatorTable`, `OptimizationTable`, `RankingTable`) and PDF export.
     - **Alternative Management:** Standardized `Admin/Alternative` to match the visual and structural pattern of `Admin/Users`. This includes the use of `HiOutline` icons, unified table layouts, and integrated breadcrumbs.
     - **Penilai Dashboard:** Redesigned `Penilai/Index` with Admin Dashboard reference: `StatCard` components, modern `ProgressBar`, and a limited table view (top 5 items) with "View All" functionality for better vertical spacing.
+    - **Kasubag Dashboard & Modules:** Redesigned with `StatCard`, `WinnerCard`, and `ProgressBar` components. Nilai module uses role-based edit locking where Kasubag manages restricted criteria ("Tanggung Jawab", "Kerja Sama Tim") while Operator manages other criteria.
+    - **Ketua Dashboard & Modules:** Redesigned with full emerald theming, `StatCard` components, `WinnerCard` for top performer, and comprehensive report page with Section components. Laporan module supports PDF export with professional styling.
     - **Search UI:** Enforced `type="text"` for all search inputs to prevent browser-native conflicts and ensure a consistent custom clear-button experience.
 
 - **Standard Components:**
     - **Buttons:** Standardized `PrimaryButton` (Emerald-500), `SecondaryButton` (White/Emerald focus), and `DangerButton` (Red-500) with `rounded-2xl`, bold fonts, and soft shadow utilities.
     - **Icons:** Integrated `react-icons/hi2` consistently across all buttons and input fields for better visual affordance.
+    - **Pagination:** Custom pagination styling with emerald active state:
+        ```jsx
+        {links.map((link, i) => (
+            link.url === null ? (
+                <span key={i} className="px-4 py-2 text-[11px] font-bold text-gray-300 uppercase tracking-widest pointer-events-none" dangerouslySetInnerHTML={{ __html: link.label }} />
+            ) : (
+                <Link key={i} href={link.url} className={`px-4 py-2 text-[11px] font-bold rounded-xl transition-all uppercase tracking-widest ${
+                    link.active
+                        ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20"
+                        : "bg-white border border-gray-100 text-gray-400 hover:border-emerald-200 hover:text-emerald-500"
+                }`} dangerouslySetInnerHTML={{ __html: link.label }} />
+            )
+        ))}
+        ```
+    - **Empty State:** Consistent empty state messaging:
+        ```jsx
+        {items.length === 0 ? (
+            <tr>
+                <td colSpan={numColumns} className="px-8 py-20 text-center">
+                    <div className="flex flex-col items-center justify-center text-gray-300 space-y-4">
+                        <HiOutlineClipboardDocumentCheck className="w-16 h-16 opacity-10" />
+                        <p className="text-[11px] font-bold uppercase tracking-[0.2em]">Data tidak ditemukan</p>
+                    </div>
+                </td>
+            </tr>
+        ) : ( /* render items */ )}
+        ```
+    - **Table Row Hover:** Standard row hover pattern: `className="group hover:bg-emerald-50/30 transition-colors"`
 
 === foundation rules ===
 

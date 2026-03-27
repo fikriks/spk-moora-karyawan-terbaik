@@ -26,6 +26,8 @@ export default function AlternativeForm({
         nip: initial.nip || "",
         name: initial.name || "",
         jabatan: initial.jabatan || "",
+        golongan: initial.golongan || "",
+        jenis_ketenagakerjaan: initial.jenis_ketenagakerjaan || "",
     });
 
     const submit = (e) => {
@@ -129,6 +131,62 @@ export default function AlternativeForm({
                     {form.errors.jabatan && (
                         <p className="text-[11px] font-bold text-rose-500 uppercase tracking-wider ml-1">
                             {form.errors.jabatan}
+                        </p>
+                    )}
+                </div>
+
+                {/* Golongan */}
+                <div className="space-y-2">
+                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] ml-1">
+                        Golongan
+                    </label>
+                    <div className="relative group">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-emerald-500 transition-colors">
+                            <HiOutlineIdentification className="w-5 h-5" />
+                        </div>
+                        <input
+                            type="text"
+                            value={form.data.golongan}
+                            onChange={(e) => form.setData("golongan", e.target.value)}
+                            className={`block w-full pl-12 pr-4 py-4 bg-gray-50/50 border rounded-2xl text-sm transition-all outline-none ${
+                                form.errors.golongan
+                                    ? "border-rose-200 focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500"
+                                    : "border-gray-100 focus:bg-white focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
+                            }`}
+                            placeholder="Contoh: III/a, IV/b"
+                        />
+                    </div>
+                    {form.errors.golongan && (
+                        <p className="text-[11px] font-bold text-rose-500 uppercase tracking-wider ml-1">
+                            {form.errors.golongan}
+                        </p>
+                    )}
+                </div>
+
+                {/* Jenis Ketenagakerjaan */}
+                <div className="space-y-2">
+                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] ml-1">
+                        Jenis Ketenagakerjaan
+                    </label>
+                    <div className="relative group">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-emerald-500 transition-colors">
+                            <HiOutlineBriefcase className="w-5 h-5" />
+                        </div>
+                        <input
+                            type="text"
+                            value={form.data.jenis_ketenagakerjaan}
+                            onChange={(e) => form.setData("jenis_ketenagakerjaan", e.target.value)}
+                            className={`block w-full pl-12 pr-4 py-4 bg-gray-50/50 border rounded-2xl text-sm transition-all outline-none ${
+                                form.errors.jenis_ketenagakerjaan
+                                    ? "border-rose-200 focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500"
+                                    : "border-gray-100 focus:bg-white focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
+                            }`}
+                            placeholder="Contoh: Tenaga Kesehatan D3"
+                        />
+                    </div>
+                    {form.errors.jenis_ketenagakerjaan && (
+                        <p className="text-[11px] font-bold text-rose-500 uppercase tracking-wider ml-1">
+                            {form.errors.jenis_ketenagakerjaan}
                         </p>
                     )}
                 </div>

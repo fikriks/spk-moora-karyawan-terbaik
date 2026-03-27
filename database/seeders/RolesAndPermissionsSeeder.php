@@ -2,8 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -15,7 +13,7 @@ class RolesAndPermissionsSeeder extends Seeder
      */
     public function run(): void
     {
-         // permissions (contoh)
+        // permissions (contoh)
         Permission::firstOrCreate(['name' => 'manage users']);
         Permission::firstOrCreate(['name' => 'approve alternatives']);
         Permission::firstOrCreate(['name' => 'manage criteria']);
@@ -24,13 +22,13 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // roles
         $admin = Role::firstOrCreate(['name' => 'admin']);
-        $operator = Role::firstOrCreate(['name' => 'operator']);
-        $penilai  = Role::firstOrCreate(['name' => 'penilai']);
-        $kasubag  = Role::firstOrCreate(['name' => 'kasubag_kepegawaian']);
-        $ketua  = Role::firstOrCreate(['name' => 'ketua_pengadilan']);
+        $operator = Role::firstOrCreate(['name' => 'operator_simpeg']);
+        $penilai = Role::firstOrCreate(['name' => 'pengelola_jkn']);
+        $kasubag = Role::firstOrCreate(['name' => 'kasubag_tu']);
+        $ketua = Role::firstOrCreate(['name' => 'bendahara_pengeluaran']);
 
         // assign permission ke role
-        $admin->givePermissionTo(['manage users','manage criteria','approve alternatives']);
+        $admin->givePermissionTo(['manage users', 'manage criteria', 'approve alternatives']);
         $operator->givePermissionTo(['manage alternatives']);
         $penilai->givePermissionTo(['manage assessments']);
         $penilai->givePermissionTo(['manage alternatives']);

@@ -26,19 +26,19 @@ class DatabaseSeeder extends Seeder
         // Daftar role dan nama tampilan
         $users = [
             ['role' => 'admin', 'name' => 'Administrator'],
-            ['role' => 'operator', 'name' => 'Operator'],
-            ['role' => 'penilai', 'name' => 'Penilai'],
-            ['role' => 'kasubag_kepegawaian', 'name' => 'Kasubag Kepegawaian', 'email_prefix' => 'kasubag'],
-            ['role' => 'ketua_pengadilan', 'name' => 'Ketua Pengadilan', 'email_prefix' => 'ketua'],
+            ['role' => 'operator_simpeg', 'name' => 'Operator SIMPEG'],
+            ['role' => 'pengelola_jkn', 'name' => 'Pengelola JKN'],
+            ['role' => 'kasubag_tu', 'name' => 'Kasubag TU', 'email_prefix' => 'kasubag'],
+            ['role' => 'bendahara_pengeluaran', 'name' => 'Bendahara Pengeluaran', 'email_prefix' => 'bendahara'],
         ];
 
         foreach ($users as $userData) {
             $roleName = $userData['role'];
             $emailPrefix = $userData['email_prefix'] ?? $roleName;
-            $password = ucfirst($emailPrefix) . '123';
+            $password = ucfirst($emailPrefix).'123';
 
             $user = User::firstOrCreate(
-                ['email' => $emailPrefix . '@example.com'],
+                ['email' => $emailPrefix.'@example.com'],
                 [
                     'name' => $userData['name'],
                     'password' => bcrypt($password),

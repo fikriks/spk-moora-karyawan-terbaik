@@ -15,27 +15,25 @@ class AlternativeController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-{
-    $q = $request->string('q')->trim();
-    $perPage = $request->integer('per_page', 10);
+    {
+        $q = $request->string('q')->trim();
+        $perPage = $request->integer('per_page', 10);
 
-    $alternatives = Alternative::query()
-        ->when(
-            $q->isNotEmpty(),
-            fn ($query) =>
-                $query->where('name', 'like', "%{$q}%")
-                      ->orWhere('nip', 'like', "%{$q}%")
-        )
-        ->orderBy('id', 'desc')
-        ->paginate($perPage)
-        ->withQueryString();
+        $alternatives = Alternative::query()
+            ->when(
+                $q->isNotEmpty(),
+                fn ($query) => $query->where('name', 'like', "%{$q}%")
+                    ->orWhere('nip', 'like', "%{$q}%")
+            )
+            ->orderBy('id', 'desc')
+            ->paginate($perPage)
+            ->withQueryString();
 
-    return Inertia::render('Operator/Alternative/Index', [
-        'alternatives' => $alternatives,
-        'filters' => $request->only(['q', 'per_page']),
-    ]);
-}
-
+        return Inertia::render('Operator/Alternative/Index', [
+            'alternatives' => $alternatives,
+            'filters' => $request->only(['q', 'per_page']),
+        ]);
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -55,6 +53,8 @@ class AlternativeController extends Controller
             'nip' => 'required|unique:alternative,nip',
             'name' => 'required|string|max:255',
             'jabatan' => 'required|string|max:255',
+            'golongan' => 'nullable|string|max:50',
+            'jenis_ketenagakerjaan' => 'nullable|string|max:255',
         ]);
         // dd($validated);
 
@@ -63,10 +63,13 @@ class AlternativeController extends Controller
                 'nip' => $validated['nip'],
                 'name' => $validated['name'],
                 'jabatan' => $validated['jabatan'],
+                'golongan' => $validated['golongan'] ?? null,
+                'jenis_ketenagakerjaan' => $validated['jenis_ketenagakerjaan'] ?? null,
             ]);
+
             return redirect()->route('operator.alternative.index')->with('success', 'Alternative berhasil ditambahkan.');
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan saat menyimpan data.' . $e])->withInput();
+            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan saat menyimpan data.'.$e])->withInput();
         }
     }
 
@@ -84,7 +87,7 @@ class AlternativeController extends Controller
     public function edit(Alternative $alternative)
     {
         return Inertia::render('Operator/Alternative/Edit', [
-            'alternative' => $alternative
+            'alternative' => $alternative,
         ]);
     }
 
@@ -96,12 +99,14 @@ class AlternativeController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'jabatan' => 'required|string|max:255',
+            'golongan' => 'nullable|string|max:50',
+            'jenis_ketenagakerjaan' => 'nullable|string|max:255',
         ]);
-        if($request->nip !== $alternative->nip){
+        if ($request->nip !== $alternative->nip) {
             $validated['nip'] = $request->validate([
                 'nip' => 'required|unique:alternative,nip',
             ])['nip'];
-        }else{
+        } else {
             $validated['nip'] = $alternative->nip;
         }
         try {
@@ -109,10 +114,13 @@ class AlternativeController extends Controller
                 'nip' => $validated['nip'],
                 'name' => $validated['name'],
                 'jabatan' => $validated['jabatan'],
+                'golongan' => $validated['golongan'] ?? null,
+                'jenis_ketenagakerjaan' => $validated['jenis_ketenagakerjaan'] ?? null,
             ]);
+
             return redirect()->route('operator.alternative.index')->with('success', 'Alternative berhasil diperbarui.');
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan saat memperbarui data.' . $e])->withInput();
+            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan saat memperbarui data.'.$e])->withInput();
         }
     }
 
@@ -122,9 +130,11 @@ class AlternativeController extends Controller
     public function destroy(Alternative $alternative)
     {
         $alternative->delete();
+
         return redirect()->back()->with('success', 'Alternative berhasil dihapus');
 
     }
+
     /**
      * DOWNLOAD TEMPLATE DARI PUBLIC
      */
@@ -132,7 +142,7 @@ class AlternativeController extends Controller
     {
         $path = public_path('templates/template-alternative.xlsx');
 
-        if (!file_exists($path)) {
+        if (! file_exists($path)) {
             abort(404, 'Template tidak ditemukan');
         }
 
@@ -146,16 +156,16 @@ class AlternativeController extends Controller
      * IMPORT EXCEL
      */
     public function import(Request $request)
-{
-    $request->validate([
-        'file' => ['required', 'mimes:xlsx,xls'],
-    ]);
+    {
+        $request->validate([
+            'file' => ['required', 'mimes:xlsx,xls'],
+        ]);
 
-    Excel::import(
-        new AlternativeImport,
-        $request->file('file')
-    );
+        Excel::import(
+            new AlternativeImport,
+            $request->file('file')
+        );
 
-    return back()->with('success', 'Import alternative berhasil');
-}
+        return back()->with('success', 'Import alternative berhasil');
+    }
 }
