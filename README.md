@@ -79,6 +79,7 @@ Aplikasi Sistem Pendukung Keputusan (SPK) untuk penilaian kinerja pegawai menggu
 
 Proyek ini mengikuti standar desain **Flat Soft Minimalism**:
 - **Warna Utama:** Emerald Green (`emerald-500`)
+- **Branding:** Menggunakan logo dan favicon dalam format PNG (`/logo.png`, `/favicon.png`) untuk transparansi dan kualitas visual yang lebih baik.
 - **Radius:** `rounded-3xl` untuk container utama, `rounded-2xl` untuk elemen interaktif.
 - **Layout:** Menggunakan `AuthenticatedLayout` dengan pola breadcrumbs yang konsisten.
 - **Pesan:** Menggunakan toast notifikasi (`notifySuccess`, `notifyError`) dan modal konfirmasi kustom.
