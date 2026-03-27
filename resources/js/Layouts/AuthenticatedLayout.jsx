@@ -142,7 +142,7 @@ export default function AuthenticatedLayout({ header, breadcrumbs, children }) {
             icon: HiOutlineSquares2X2,
         },
         {
-            name: "User Management",
+            name: "Manajemen Pengguna",
             href: route("users.index"),
             routeName: "users.*",
             visible: isAdmin,
@@ -208,8 +208,8 @@ export default function AuthenticatedLayout({ header, breadcrumbs, children }) {
                         leaveFrom="opacity-100"
                         leaveTo="opacity-0"
                     >
-                        <div 
-                            className="fixed inset-0 bg-gray-900/40 backdrop-blur-[2px]" 
+                        <div
+                            className="fixed inset-0 bg-gray-900/40 backdrop-blur-[2px]"
                             onClick={() => setMobileMenuOpen(false)}
                         />
                     </Transition.Child>
@@ -224,10 +224,10 @@ export default function AuthenticatedLayout({ header, breadcrumbs, children }) {
                         leaveTo="-translate-x-full"
                     >
                         <div className="relative flex w-full max-w-[280px] h-full shadow-2xl shadow-gray-900/20">
-                            <SidebarContent 
-                                sidebarOpen={true} 
-                                menu={menu} 
-                                isActive={isActive} 
+                            <SidebarContent
+                                sidebarOpen={true}
+                                menu={menu}
+                                isActive={isActive}
                                 setMobileMenuOpen={setMobileMenuOpen}
                             />
                         </div>
@@ -237,10 +237,10 @@ export default function AuthenticatedLayout({ header, breadcrumbs, children }) {
 
             {/* Desktop Sidebar */}
             <div className="hidden lg:flex shrink-0">
-                <SidebarContent 
-                    sidebarOpen={sidebarOpen} 
-                    menu={menu} 
-                    isActive={isActive} 
+                <SidebarContent
+                    sidebarOpen={sidebarOpen}
+                    menu={menu}
+                    isActive={isActive}
                 />
             </div>
 
@@ -267,7 +267,7 @@ export default function AuthenticatedLayout({ header, breadcrumbs, children }) {
                                         {user?.name}
                                     </span>
                                     <span className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">
-                                        {user?.roles?.[0]?.replace('_', ' ')}
+                                        {user?.roles?.[0]?.replace("_", " ")}
                                     </span>
                                 </div>
                                 <HiOutlineChevronDown className="h-3.5 w-3.5 text-gray-400 ml-1 group-hover:text-emerald-400 transition-colors" />
@@ -286,9 +286,11 @@ export default function AuthenticatedLayout({ header, breadcrumbs, children }) {
                                     <Menu.Item>
                                         {({ active }) => (
                                             <Link
-                                                href={route('profile.edit')}
+                                                href={route("profile.edit")}
                                                 className={`${
-                                                    active ? 'bg-emerald-50 text-emerald-600' : 'text-gray-600'
+                                                    active
+                                                        ? "bg-emerald-50 text-emerald-600"
+                                                        : "text-gray-600"
                                                 } flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all`}
                                             >
                                                 <HiOutlineUser className="h-4 w-4" />
@@ -300,9 +302,13 @@ export default function AuthenticatedLayout({ header, breadcrumbs, children }) {
                                     <Menu.Item>
                                         {({ active }) => (
                                             <button
-                                                onClick={() => router.post(route('logout'))}
+                                                onClick={() =>
+                                                    router.post(route("logout"))
+                                                }
                                                 className={`${
-                                                    active ? 'bg-rose-50 text-rose-500' : 'text-gray-600'
+                                                    active
+                                                        ? "bg-rose-50 text-rose-500"
+                                                        : "text-gray-600"
                                                 } flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all w-full text-left`}
                                             >
                                                 <HiOutlineArrowLeftOnRectangle className="h-4 w-4" />
@@ -322,7 +328,7 @@ export default function AuthenticatedLayout({ header, breadcrumbs, children }) {
                         <div className="mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
                             <Breadcrumb items={breadcrumbs} />
                         </div>
-                        
+
                         <div className="animate-in fade-in zoom-in-95 duration-500 flex-1">
                             {children}
                         </div>
@@ -330,7 +336,8 @@ export default function AuthenticatedLayout({ header, breadcrumbs, children }) {
                         {/* Footer */}
                         <footer className="mt-20 pt-8 border-t border-gray-100/60 text-center">
                             <p className="text-[10px] font-semibold text-gray-300 uppercase tracking-[0.25em]">
-                                &copy; {new Date().getFullYear()} Sistem Pendukung Keputusan Kinerja
+                                &copy; {new Date().getFullYear()} Sistem
+                                Pendukung Keputusan Kinerja
                             </p>
                         </footer>
                     </main>
@@ -349,26 +356,23 @@ function SidebarContent({ sidebarOpen, menu, isActive, setMobileMenuOpen }) {
             }`}
         >
             {/* Sidebar Header */}
-            <div className="h-20 flex items-center px-6 shrink-0 justify-between">
-                <Link href="/" className="flex items-center gap-3 group">
-                    <div className="bg-emerald-50 p-2 rounded-xl group-hover:bg-emerald-100 transition-colors duration-300">
-                        <ApplicationLogo className="w-7 h-7" />
+            <div
+                className={`flex flex-col items-center px-6 pb-4 shrink-0 relative ${!sidebarOpen && "px-2"}`}
+            >
+                <Link href="/" className="flex flex-col items-center group">
+                    <div className="p-3 rounded-2xl group-hover:bg-emerald-100 transition-colors duration-300">
+                        <ApplicationLogo />
                     </div>
                     {sidebarOpen && (
-                        <div className="flex flex-col">
-                            <span className="font-bold text-[15px] tracking-tight text-gray-800 leading-none">
-                                SPK KINERJA
-                            </span>
-                            <span className="text-[10px] font-semibold text-emerald-500 tracking-[0.15em] mt-1 uppercase">
-                                Dashboard
-                            </span>
-                        </div>
+                        <span className="font-black text-[13px] tracking-[0.2em] text-gray-800 uppercase text-center">
+                            SPK Kinerja
+                        </span>
                     )}
                 </Link>
                 {setMobileMenuOpen && (
-                    <button 
+                    <button
                         onClick={() => setMobileMenuOpen(false)}
-                        className="lg:hidden p-2 rounded-lg text-gray-400 hover:bg-gray-50 transition-colors"
+                        className="absolute top-6 right-4 lg:hidden p-2 rounded-lg text-gray-400 hover:bg-gray-50 transition-colors"
                     >
                         <HiOutlineXMark className="h-5 w-5" />
                     </button>
@@ -377,13 +381,14 @@ function SidebarContent({ sidebarOpen, menu, isActive, setMobileMenuOpen }) {
 
             {/* Navigation */}
             <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto custom-scrollbar">
-                {menu.map((item) => (
-                    item.visible && (
-                        <Link
-                            key={item.routeName}
-                            href={item.href}
-                            onClick={() => setMobileMenuOpen?.(false)}
-                            className={`
+                {menu.map(
+                    (item) =>
+                        item.visible && (
+                            <Link
+                                key={item.routeName}
+                                href={item.href}
+                                onClick={() => setMobileMenuOpen?.(false)}
+                                className={`
                                 group flex items-center gap-3.5 rounded-xl px-4 py-3 text-[13.5px] font-medium transition-all duration-200
                                 ${
                                     isActive(item.routeName)
@@ -391,23 +396,25 @@ function SidebarContent({ sidebarOpen, menu, isActive, setMobileMenuOpen }) {
                                         : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
                                 }
                             `}
-                        >
-                            <item.icon 
-                                className={`h-[20px] w-[20px] shrink-0 transition-colors duration-200 ${
-                                    isActive(item.routeName) ? "text-emerald-500" : "text-gray-400 group-hover:text-gray-500"
-                                }`} 
-                            />
-                            {sidebarOpen && (
-                                <span className="whitespace-nowrap tracking-wide capitalize">
-                                    {item.name.toLowerCase()}
-                                </span>
-                            )}
-                            {isActive(item.routeName) && sidebarOpen && (
-                                <div className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
-                            )}
-                        </Link>
-                    )
-                ))}
+                            >
+                                <item.icon
+                                    className={`h-[20px] w-[20px] shrink-0 transition-colors duration-200 ${
+                                        isActive(item.routeName)
+                                            ? "text-emerald-500"
+                                            : "text-gray-400 group-hover:text-gray-500"
+                                    }`}
+                                />
+                                {sidebarOpen && (
+                                    <span className="whitespace-nowrap tracking-wide capitalize">
+                                        {item.name.toLowerCase()}
+                                    </span>
+                                )}
+                                {isActive(item.routeName) && sidebarOpen && (
+                                    <div className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
+                                )}
+                            </Link>
+                        ),
+                )}
             </nav>
 
             {/* Sidebar Footer */}
@@ -417,7 +424,9 @@ function SidebarContent({ sidebarOpen, menu, isActive, setMobileMenuOpen }) {
                     className={`flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-[13.5px] font-medium text-rose-400 hover:bg-rose-50 hover:text-rose-500 transition-all duration-300 w-full ${!sidebarOpen && "justify-center"}`}
                 >
                     <HiOutlineArrowLeftOnRectangle className="h-5 w-5 shrink-0" />
-                    {sidebarOpen && <span className="tracking-wide">Keluar Sistem</span>}
+                    {sidebarOpen && (
+                        <span className="tracking-wide">Keluar Sistem</span>
+                    )}
                 </button>
             </div>
         </aside>

@@ -3,16 +3,16 @@ import { Link, usePage, router, Head } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { notifySuccess } from "@/Utils/useToast";
 import { confirmAction } from "@/Utils/useConfirm";
-import { 
-    HiOutlinePlus, 
-    HiOutlineMagnifyingGlass, 
-    HiOutlineXMark, 
-    HiOutlinePencilSquare, 
+import {
+    HiOutlinePlus,
+    HiOutlineMagnifyingGlass,
+    HiOutlineXMark,
+    HiOutlinePencilSquare,
     HiOutlineTrash,
     HiOutlineEnvelope,
     HiOutlineShieldCheck,
     HiOutlineUser,
-    HiOutlineCheckCircle
+    HiOutlineCheckCircle,
 } from "react-icons/hi2";
 
 function Index() {
@@ -76,23 +76,25 @@ function Index() {
             {
                 title: "Hapus Pengguna",
                 confirmText: "Ya, Hapus",
-                type: "danger"
-            }
+                type: "danger",
+            },
         );
     }
 
     return (
         <div className="space-y-8">
-            <Head title="Manajemen User" />
+            <Head title="Manajemen Pengguna" />
 
             {/* Header section with Actions */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div className="space-y-2">
                     <h2 className="text-3xl font-black text-gray-800 tracking-tight">
-                        Manajemen <span className="text-emerald-500">User</span>
+                        Manajemen{" "}
+                        <span className="text-emerald-500">Pengguna</span>
                     </h2>
                     <p className="text-sm text-gray-500 max-w-md font-medium leading-relaxed">
-                        Kelola data pengguna sistem, perbarui profil, dan atur hak akses peran secara efisien.
+                        Kelola data pengguna sistem, perbarui profil, dan atur
+                        hak akses peran secara efisien.
                     </p>
                 </div>
 
@@ -113,7 +115,9 @@ function Index() {
                 <div className="p-6 border-b border-gray-50 bg-gray-50/30 flex items-center justify-between gap-4">
                     <div className="relative flex-1 max-w-md group">
                         <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-emerald-500 transition-colors">
-                            <HiOutlineMagnifyingGlass className={`w-5 h-5 ${searching ? 'animate-pulse text-emerald-500' : ''}`} />
+                            <HiOutlineMagnifyingGlass
+                                className={`w-5 h-5 ${searching ? "animate-pulse text-emerald-500" : ""}`}
+                            />
                         </div>
                         <input
                             type="text"
@@ -123,7 +127,7 @@ function Index() {
                             className="w-full pl-12 pr-10 py-3 bg-white border border-gray-100 rounded-2xl text-sm focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none shadow-sm placeholder:text-gray-400"
                         />
                         {query && !searching && (
-                            <button 
+                            <button
                                 onClick={() => setQuery("")}
                                 className="absolute inset-y-0 right-4 flex items-center p-1 text-gray-300 hover:text-gray-500 transition-colors"
                             >
@@ -132,7 +136,8 @@ function Index() {
                         )}
                     </div>
                     <div className="hidden sm:block text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">
-                        Total: <span className="text-gray-700">{total}</span> Pengguna
+                        Total: <span className="text-gray-700">{total}</span>{" "}
+                        Pengguna
                     </div>
                 </div>
 
@@ -140,28 +145,44 @@ function Index() {
                     <table className="w-full text-left border-collapse">
                         <thead>
                             <tr className="bg-gray-50/50">
-                                <th className="px-8 py-5 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] border-b border-gray-100">Informasi User</th>
-                                <th className="px-8 py-5 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] border-b border-gray-100">Akses & Role</th>
-                                <th className="px-8 py-5 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] border-b border-gray-100 text-right">Aksi</th>
+                                <th className="px-8 py-5 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] border-b border-gray-100">
+                                    Informasi User
+                                </th>
+                                <th className="px-8 py-5 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] border-b border-gray-100">
+                                    Akses & Role
+                                </th>
+                                <th className="px-8 py-5 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] border-b border-gray-100 text-right">
+                                    Aksi
+                                </th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
                             {items.length === 0 ? (
                                 <tr>
-                                    <td colSpan="3" className="px-8 py-20 text-center">
+                                    <td
+                                        colSpan="3"
+                                        className="px-8 py-20 text-center"
+                                    >
                                         <div className="flex flex-col items-center justify-center text-gray-300 space-y-4">
                                             <HiOutlineUser className="w-16 h-16 opacity-10" />
-                                            <p className="text-[11px] font-bold uppercase tracking-[0.2em]">Data tidak ditemukan</p>
+                                            <p className="text-[11px] font-bold uppercase tracking-[0.2em]">
+                                                Data tidak ditemukan
+                                            </p>
                                         </div>
                                     </td>
                                 </tr>
                             ) : (
                                 items.map((user) => (
-                                    <tr key={user.id} className="group hover:bg-emerald-50/30 transition-colors">
+                                    <tr
+                                        key={user.id}
+                                        className="group hover:bg-emerald-50/30 transition-colors"
+                                    >
                                         <td className="px-8 py-6">
                                             <div className="flex items-center gap-4">
                                                 <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 font-bold group-hover:bg-emerald-50 group-hover:text-emerald-500 transition-all">
-                                                    {user.name.charAt(0).toUpperCase()}
+                                                    {user.name
+                                                        .charAt(0)
+                                                        .toUpperCase()}
                                                 </div>
                                                 <div className="flex flex-col">
                                                     <span className="font-bold text-gray-700 tracking-tight group-hover:text-emerald-600 transition-colors uppercase leading-tight">
@@ -169,7 +190,9 @@ function Index() {
                                                     </span>
                                                     <div className="flex items-center gap-1.5 text-gray-400 text-[11px] font-medium mt-1">
                                                         <HiOutlineEnvelope className="w-3.5 h-3.5" />
-                                                        <span>{user.email}</span>
+                                                        <span>
+                                                            {user.email}
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -177,9 +200,12 @@ function Index() {
                                         <td className="px-8 py-6">
                                             <div className="flex flex-wrap gap-2">
                                                 {user.roles.map((role, idx) => (
-                                                    <span key={idx} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-50 text-gray-500 text-[11px] font-bold uppercase tracking-wider border border-gray-100/50">
+                                                    <span
+                                                        key={idx}
+                                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-50 text-gray-500 text-[11px] font-bold uppercase tracking-wider border border-gray-100/50"
+                                                    >
                                                         <HiOutlineShieldCheck className="w-3.5 h-3.5 text-gray-400" />
-                                                        {role.replace('_', ' ')}
+                                                        {role.replace("_", " ")}
                                                     </span>
                                                 ))}
                                             </div>
@@ -193,9 +219,16 @@ function Index() {
                                                     <HiOutlinePencilSquare className="w-3.5 h-3.5" />
                                                     <span>Edit</span>
                                                 </Link>
-                                                {!user.roles.includes("admin") && (
+                                                {!user.roles.includes(
+                                                    "admin",
+                                                ) && (
                                                     <button
-                                                        onClick={() => handleDelete(user.id, user.name)}
+                                                        onClick={() =>
+                                                            handleDelete(
+                                                                user.id,
+                                                                user.name,
+                                                            )
+                                                        }
                                                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 text-rose-500 hover:bg-rose-100 transition-all text-[11px] font-bold uppercase tracking-wider shadow-sm"
                                                     >
                                                         <HiOutlineTrash className="w-3.5 h-3.5" />
@@ -214,18 +247,28 @@ function Index() {
                 {/* Footer / Pagination */}
                 <div className="px-8 py-6 border-t border-gray-50 bg-gray-50/30 flex flex-col sm:flex-row items-center justify-between gap-6">
                     <p className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em]">
-                        Menampilkan <span className="text-emerald-500">{users.from ?? 0}</span> - <span className="text-emerald-500">{users.to ?? 0}</span> dari <span className="text-gray-700">{total}</span> data
+                        Menampilkan{" "}
+                        <span className="text-emerald-500">
+                            {users.from ?? 0}
+                        </span>{" "}
+                        -{" "}
+                        <span className="text-emerald-500">
+                            {users.to ?? 0}
+                        </span>{" "}
+                        dari <span className="text-gray-700">{total}</span> data
                     </p>
-                    
+
                     {users?.links && users.links.length > 3 && (
                         <div className="flex items-center gap-2">
                             {users.links.map((link, i) => {
                                 if (link.url === null) {
                                     return (
-                                        <span 
-                                            key={i} 
+                                        <span
+                                            key={i}
                                             className="px-4 py-2 text-[11px] font-bold text-gray-300 uppercase tracking-widest pointer-events-none"
-                                            dangerouslySetInnerHTML={{ __html: link.label }}
+                                            dangerouslySetInnerHTML={{
+                                                __html: link.label,
+                                            }}
                                         />
                                     );
                                 }
@@ -234,11 +277,13 @@ function Index() {
                                         key={i}
                                         href={link.url}
                                         className={`px-4 py-2 text-[11px] font-bold rounded-xl transition-all uppercase tracking-widest ${
-                                            link.active 
-                                                ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20" 
+                                            link.active
+                                                ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20"
                                                 : "bg-white border border-gray-100 text-gray-400 hover:border-emerald-200 hover:text-emerald-500"
                                         }`}
-                                        dangerouslySetInnerHTML={{ __html: link.label }}
+                                        dangerouslySetInnerHTML={{
+                                            __html: link.label,
+                                        }}
                                     />
                                 );
                             })}
@@ -257,10 +302,7 @@ Index.layout = (page) => {
     ];
 
     return (
-        <AuthenticatedLayout
-            header="Manajemen User"
-            breadcrumbs={breadcrumbs}
-        >
+        <AuthenticatedLayout header="Manajemen User" breadcrumbs={breadcrumbs}>
             {page}
         </AuthenticatedLayout>
     );

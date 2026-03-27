@@ -1,3 +1,3 @@
 export default function ApplicationLogo(props) {
-    return <img src="/logo.svg" alt="Logo SPK" {...props} />;
+    return <img src="/logo.png" alt="Logo SPK" {...props} />;
 }

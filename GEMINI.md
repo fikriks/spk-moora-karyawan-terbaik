@@ -28,6 +28,8 @@
         - **Laporan Page Pattern:** (Using `Section` component and `MatrixTable`, `RankingTable`, etc.)
     - **Component Standards:**
         - **Radius:** `rounded-3xl` untuk card/container utama, `rounded-2xl` untuk tombol, input, dan elemen interaktif lainnya.
+        - **Branding:** Logo aplikasi menggunakan format PNG (`/logo.png`) untuk mendukung transparansi dan detail visual yang lebih baik.
+        - **Sidebar Header:** Menggunakan tata letak vertikal terpusat dengan logo berukuran menengah (`h-10`) dan teks "SPK Kinerja" di bawahnya dengan gaya font hitam (`font-black`) dan spasi lebar (`tracking-[0.2em]`).
         - **Shadows:** Gunakan shadow halus (e.g., `shadow-sm`, `shadow-lg shadow-emerald-500/20`).
         - **Icons:** Standarisasi pada `react-icons/hi2` (Heroicons v2), lebih disukai versi **Outline** (`HiOutline...`).
 - **Development Fixes:**
