@@ -36,7 +36,7 @@ class DatabaseSeeder extends Seeder
         foreach ($users as $userData) {
             $roleName = $userData['role'];
             $emailPrefix = $userData['email_prefix'] ?? $roleName;
-            $password = ucfirst($emailPrefix).'123';
+            $password = '1234567890';
 
             $user = User::firstOrCreate(
                 ['email' => $emailPrefix.'@example.com'],
