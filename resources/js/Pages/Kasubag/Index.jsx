@@ -37,7 +37,7 @@ export default function Index() {
     const { summary, statusPegawai, topRanking } = usePage().props;
 
     const breadcrumbs = [
-        { label: "Dashboard Kasubag", active: true },
+        { label: "Dashboard Kasubag TU", active: true },
     ];
 
     const progressPercent = summary.nilaiIdeal > 0 
@@ -51,10 +51,10 @@ export default function Index() {
 
     return (
         <AuthenticatedLayout
-            header="Dashboard Kasubag"
+            header="Dashboard Kasubag TU"
             breadcrumbs={breadcrumbs}
         >
-            <Head title="Dashboard Kasubag" />
+            <Head title="Dashboard Kasubag TU" />
 
             <div className="space-y-10">
                 {/* ===== SUMMARY STATS ===== */}

@@ -28,10 +28,11 @@ export default function AuthenticatedLayout({ header, breadcrumbs, children }) {
     const user = auth?.user;
 
     const isAdmin = user?.roles?.includes("admin");
-    const isOperator = user?.roles?.includes("operator");
-    const isPenilai = user?.roles?.includes("penilai");
-    const isKasubag = user?.roles?.includes("kasubag_kepegawaian");
-    const isKetua = user?.roles?.includes("ketua_pengadilan");
+    const isOperator = user?.roles?.includes("operator_simpeg");
+    const isPenilai = user?.roles?.includes("pengelola_jkn");
+    const isKasubag = user?.roles?.includes("kasubag_tu");
+    const isKetua = user?.roles?.includes("bendahara_pengeluaran");
+    const isKepala = user?.roles?.includes("kepala_puskesmas");
 
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -117,6 +118,20 @@ export default function AuthenticatedLayout({ header, breadcrumbs, children }) {
             href: route("ketua.laporan.index"),
             routeName: "ketua.laporan.*",
             visible: isKetua,
+            icon: HiOutlineChartBarSquare,
+        },
+        {
+            name: "Dashboard",
+            href: route("kepala-puskesmas.index"),
+            routeName: "kepala-puskesmas.index",
+            visible: isKepala,
+            icon: HiOutlineSquares2X2,
+        },
+        {
+            name: "Reports",
+            href: route("kepala-puskesmas.laporan.index"),
+            routeName: "kepala-puskesmas.laporan.*",
+            visible: isKepala,
             icon: HiOutlineChartBarSquare,
         },
         {

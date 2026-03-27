@@ -53,8 +53,7 @@
 
     <h2>Pendahuluan</h2>
     <p>
-        Laporan ini disusun sebagai bahan pertimbangan Kepala Sub Bagian
-        Kepegawaian dalam pengambilan keputusan penilaian pegawai secara
+        Laporan ini disusun sebagai bahan pertimbangan Kasubag TU dalam pengambilan keputusan penilaian pegawai secara
         objektif dan terukur.
     </p>
 
@@ -90,7 +89,7 @@
         <tr>
             <td style="border:none"></td>
             <td style="border:none" align="center">
-                Kepala Sub Bagian Kepegawaian<br><br><br><br>
+                Kasubag TU<br><br><br><br>
                 <strong>( ____________________ )</strong>
             </td>
         </tr>

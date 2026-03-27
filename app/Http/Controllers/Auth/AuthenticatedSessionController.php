@@ -35,13 +35,15 @@ class AuthenticatedSessionController extends Controller
 
         if ($user->hasRole('admin')) {
             return redirect()->route('admin.index');
-        } elseif ($user->hasRole('ketua_pengadilan')) {
+        } elseif ($user->hasRole('kepala_puskesmas')) {
+            return redirect()->route('kepala-puskesmas.index');
+        } elseif ($user->hasRole('bendahara_pengeluaran')) {
             return redirect()->route('ketua.index');
-        } elseif ($user->hasRole('kasubag_kepegawaian')) {
+        } elseif ($user->hasRole('kasubag_tu')) {
             return redirect()->route('kasubag.index');
-        } elseif ($user->hasRole('penilai')) {
+        } elseif ($user->hasRole('pengelola_jkn')) {
             return redirect()->route('penilai.index');
-        } elseif ($user->hasRole('operator')) {
+        } elseif ($user->hasRole('operator_simpeg')) {
             return redirect()->route('operator.index');
         }
 

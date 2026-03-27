@@ -14,19 +14,19 @@ import {
     HiOutlineStar
 } from "react-icons/hi2";
 
-export default function LaporanKepegawaian({ steps }) {
+export default function LaporanKasubagTU({ steps }) {
     const getStep = (name) =>
         steps.find((step) => step.step === name)?.data || [];
 
     return (
         <div className="space-y-8 pb-20">
-            <Head title="Laporan Kepegawaian" />
+            <Head title="Laporan Kasubag TU" />
 
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div className="space-y-2">
                     <h2 className="text-3xl font-black text-gray-800 tracking-tight">
-                        Laporan <span className="text-emerald-500">Kepegawaian</span>
+                        Laporan <span className="text-emerald-500">Kasubag TU</span>
                     </h2>
                     <p className="text-sm text-gray-500 max-w-md font-medium leading-relaxed">
                         Analisis hasil penilaian pegawai menggunakan metode MOORA untuk pendukung keputusan objektif.
@@ -34,7 +34,7 @@ export default function LaporanKepegawaian({ steps }) {
                 </div>
                 <div className="flex items-center gap-3">
                     <a
-                        href={route("laporan.kepegawaian.pdf")}
+                        href={route("laporan.kasubag_tu.pdf")}
                         target="_blank"
                         className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-emerald-500 text-[13px] font-bold text-white hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20 active:scale-95"
                     >
@@ -53,7 +53,7 @@ export default function LaporanKepegawaian({ steps }) {
                     >
                         <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100/50">
                             <p className="text-sm text-gray-600 leading-relaxed font-medium">
-                                Laporan ini disusun sebagai bahan pertimbangan Kepala Sub Bagian Kepegawaian dalam 
+                                Laporan ini disusun sebagai bahan pertimbangan Kasubag TU dalam 
                                 pengambilan keputusan penilaian pegawai secara objektif dan terukur. Seluruh data 
                                 diproses menggunakan parameter kriteria yang telah ditetapkan oleh organisasi.
                             </p>
@@ -147,10 +147,11 @@ function Section({ title, description, icon: Icon, children }) {
 // Global UI Helper: HiOutlineCheckCircle used in Penutup
 import { HiOutlineCheckCircle } from "react-icons/hi2";
 
-LaporanKepegawaian.layout = (page) => (
+LaporanKasubagTU.layout = (page) => (
     <AuthenticatedLayout 
-        header="Laporan Kepegawaian" 
+        header="Kasubag TU" 
         breadcrumbs={[
+            { label: "Dashboard", href: route("kasubag.index") },
             { label: "Laporan", active: true }
         ]}
     >

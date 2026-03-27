@@ -59,7 +59,7 @@ Edit.layout = (page) => {
 
     return (
         <AuthenticatedLayout
-            header="Edit Alternative"
+            header="Operator SIMPEG"
             breadcrumbs={breadcrumbs}
         >
             {page}

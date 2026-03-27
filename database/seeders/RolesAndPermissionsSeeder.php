@@ -26,6 +26,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $penilai = Role::firstOrCreate(['name' => 'pengelola_jkn']);
         $kasubag = Role::firstOrCreate(['name' => 'kasubag_tu']);
         $ketua = Role::firstOrCreate(['name' => 'bendahara_pengeluaran']);
+        $kepala = Role::firstOrCreate(['name' => 'kepala_puskesmas']);
 
         // assign permission ke role
         $admin->givePermissionTo(['manage users', 'manage criteria', 'approve alternatives']);
@@ -37,5 +38,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $kasubag->givePermissionTo(['manage assessments']);
         $ketua->givePermissionTo(['approve alternatives']);
         $ketua->givePermissionTo(['manage assessments']);
+        $kepala->givePermissionTo(['approve alternatives']); // Biar bisa lihat hasil akhir / approve
+        $kepala->givePermissionTo(['manage assessments']); // Menyesuaikan agar bisa akses laporan yang mungkin butuh permission ini
     }
 }

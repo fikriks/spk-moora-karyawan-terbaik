@@ -30,7 +30,7 @@ export default function NilaiForm({
     const restrictedCriteriaNames = ["Tanggung Jawab", "Kerja Sama Tim"];
 
     const filteredKriterias =
-        role === "operator"
+        role === "operator_simpeg"
             ? kriterias.filter((k) => !restrictedCriteriaNames.includes(k.name))
             : kriterias.filter((k) => restrictedCriteriaNames.includes(k.name));
 

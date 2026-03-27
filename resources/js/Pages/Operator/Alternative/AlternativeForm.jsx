@@ -124,7 +124,7 @@ export default function AlternativeForm({
                                     ? "border-rose-200 focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500"
                                     : "border-gray-100 focus:bg-white focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
                             }`}
-                            placeholder="Contoh: Staff Kepegawaian"
+                            placeholder="Contoh: Staff TU"
                             required
                         />
                     </div>

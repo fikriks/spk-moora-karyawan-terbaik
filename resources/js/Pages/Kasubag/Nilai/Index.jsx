@@ -20,7 +20,7 @@ function Index() {
         auth 
     } = usePage().props;
 
-    const userRole = auth?.user?.role;
+    const userRole = auth?.user?.roles?.[0];
 
     /* ===============================
      * SEARCH + DEBOUNCE
@@ -68,7 +68,7 @@ function Index() {
         if (!criteriaName) return false;
         const isRestricted = restrictedCriteriaNames.includes(criteriaName);
         // Kasubag (non-operator) manages restricted criteria
-        if (role === "operator") return !isRestricted;
+        if (role === "operator_simpeg") return !isRestricted;
         return isRestricted;
     }
 
@@ -255,12 +255,13 @@ function Index() {
 
 Index.layout = (page) => {
     const breadcrumbs = [
-        { label: "Data Penilaian", active: true },
+        { label: "Dashboard", href: route("kasubag.index") },
+        { label: "Nilai Alternative", active: true },
     ];
 
     return (
         <AuthenticatedLayout
-            header="Data Penilaian"
+            header="Kasubag TU"
             breadcrumbs={breadcrumbs}
         >
             {page}

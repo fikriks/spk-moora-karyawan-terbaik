@@ -36,7 +36,7 @@ export default function Index() {
     const { summary, statusPegawai } = usePage().props;
 
     const breadcrumbs = [
-        { label: "Dashboard Penilai", active: true },
+        { label: "Dashboard Pengelola JKN", active: true },
     ];
 
     const progressPercent = summary.nilaiIdeal > 0 
@@ -50,10 +50,10 @@ export default function Index() {
 
     return (
         <AuthenticatedLayout
-            header="Dashboard Penilai"
+            header="Dashboard Pengelola JKN"
             breadcrumbs={breadcrumbs}
         >
-            <Head title="Dashboard Penilai" />
+            <Head title="Dashboard Pengelola JKN" />
 
             <div className="space-y-10">
                 {/* ===== SUMMARY STATS ===== */}
@@ -219,7 +219,7 @@ export default function Index() {
                                 <div className="p-3 rounded-2xl bg-white/10 w-fit mb-8">
                                     <HiOutlinePencilSquare className="w-8 h-8 text-white" />
                                 </div>
-                                <h3 className="text-2xl font-bold tracking-tight mb-4">Aksi Cepat Penilai</h3>
+                                <h3 className="text-2xl font-bold tracking-tight mb-4">Aksi Cepat Pengelola JKN</h3>
                                 <p className="text-emerald-50/80 text-sm leading-relaxed mb-10">
                                     Segera selesaikan penilaian untuk seluruh pegawai agar proses perhitungan MOORA dapat dilanjutkan oleh Admin.
                                 </p>

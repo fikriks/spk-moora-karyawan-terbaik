@@ -14,7 +14,7 @@ import {
  * - initial: object awal (untuk edit)
  * - alternatifs: array [{id, name}]
  * - kriterias: array [{id, name}]
- * - role: string (contoh: 'operator', 'admin')
+ * - role: string (contoh: 'operator_simpeg', 'admin')
  * - onSubmitRoute: route string
  * - method: 'post' | 'put' | 'patch'
  * - submitLabel: teks tombol submit
@@ -37,7 +37,7 @@ export default function NilaiAlternativeForm({
     const restrictedCriteriaNames = ["Tanggung Jawab", "Kerja Sama Tim"];
 
     const filteredKriterias = useMemo(() => {
-        if (role === "operator") {
+        if (role === "operator_simpeg") {
             return kriterias.filter((k) => restrictedCriteriaNames.includes(k.name));
         }
         return kriterias.filter((k) => !restrictedCriteriaNames.includes(k.name));

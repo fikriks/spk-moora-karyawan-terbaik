@@ -81,7 +81,7 @@ function WinnerCard({ data }) {
 
                 <div className="flex-shrink-0">
                     <Link
-                        href={route("ketua.laporan.index")}
+                        href={route("kepala-puskesmas.laporan.index")}
                         className="inline-flex items-center gap-2 px-6 py-4 rounded-2xl bg-white text-emerald-600 text-sm font-bold hover:shadow-lg hover:scale-[1.02] transition-all active:scale-95"
                     >
                         Lihat Detail Laporan <HiOutlineArrowRight className="w-4 h-4" />
@@ -101,13 +101,13 @@ export default function Index() {
 
     return (
         <div className="space-y-10 pb-20">
-            <Head title="Dashboard Bendahara Pengeluaran" />
+            <Head title="Dashboard Kepala Puskesmas" />
 
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div className="space-y-2">
                     <h2 className="text-3xl font-black text-gray-800 tracking-tight">
-                        Selamat Datang, <span className="text-emerald-500">Bendahara Pengeluaran</span>
+                        Selamat Datang, <span className="text-emerald-500">Kepala Puskesmas</span>
                     </h2>
                     <p className="text-sm text-gray-500 max-w-md font-medium leading-relaxed">
                         Tinjau hasil penilaian kinerja pegawai secara objektif melalui metode MOORA.
@@ -160,7 +160,7 @@ export default function Index() {
                         <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">Urutan berdasarkan nilai optimasi tertinggi</p>
                     </div>
                     <Link 
-                        href={route("ketua.laporan.index")} 
+                        href={route("kepala-puskesmas.laporan.index")} 
                         className="inline-flex items-center gap-2 text-[13px] font-bold text-emerald-600 hover:text-emerald-700 transition-colors group"
                     >
                         Lihat Semua Laporan <HiOutlineChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -239,7 +239,7 @@ export default function Index() {
 
 Index.layout = (page) => (
     <AuthenticatedLayout 
-        header="Dashboard Bendahara Pengeluaran" 
+        header="Dashboard Kepala Puskesmas" 
         breadcrumbs={[
             { label: "Dashboard", active: true }
         ]}

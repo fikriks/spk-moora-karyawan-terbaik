@@ -29,7 +29,7 @@ export default function NilaiAlternativeForm({
 
     const filteredKriterias = useMemo(() => {
         // Jika operator, hanya bisa lihat kriteria yang TIDAK restricted
-        if (role === "operator") {
+        if (role === "operator_simpeg") {
             return kriterias.filter((k) => !restrictedCriteriaNames.includes(k.name));
         }
         // Jika Kasubag/Admin, hanya bisa lihat kriteria yang restricted

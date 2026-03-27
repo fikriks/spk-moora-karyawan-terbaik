@@ -45,7 +45,7 @@ export default function Create() {
                             onSubmitRoute={submitRoute}
                             method="post"
                             submitLabel="Simpan Data Penilaian"
-                            role={user?.role === "operator" ? "operator" : user?.role}
+                            role={user?.roles?.includes("operator_simpeg") ? "operator_simpeg" : user?.roles?.[0]}
                         />
                     </div>
                 </div>
@@ -56,13 +56,14 @@ export default function Create() {
 
 Create.layout = (page) => {
     const breadcrumbs = [
-        { label: "Data Penilaian", href: route("kasubag.nilai.index") },
+        { label: "Dashboard", href: route("kasubag.index") },
+        { label: "Nilai Alternative", href: route("kasubag.nilai.index") },
         { label: "Tambah", active: true },
     ];
 
     return (
         <AuthenticatedLayout
-            header="Tambah Penilaian"
+            header="Kasubag TU"
             breadcrumbs={breadcrumbs}
         >
             {page}

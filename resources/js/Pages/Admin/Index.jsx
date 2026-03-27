@@ -128,7 +128,7 @@ export default function Index() {
                                     />
                                 </div>
                                 <p className="text-[12px] text-gray-400 leading-relaxed mt-4">
-                                    Total nilai yang telah diinputkan oleh penilai dibandingkan dengan target keseluruhan alternatif.
+                                    Total nilai yang telah diinputkan oleh Pengelola JKN dibandingkan dengan target keseluruhan alternatif.
                                 </p>
                             </div>
                         </section>

@@ -12,10 +12,10 @@ import {
 } from "react-icons/hi2";
 
 export default function Edit({ user }) {
-    const { data, setData, put, processing, errors } = useForm({
-        name: user.name || "",
-        email: user.email || "",
-        role: user.roles?.[0] || "penilai",
+    const { data, setData, patch, processing, errors } = useForm({
+        name: user.name,
+        email: user.email,
+        role: user.roles?.[0] || "pengelola_jkn",
         password: "",
     });
     const { roles } = usePage().props;
@@ -121,11 +121,12 @@ export default function Edit({ user }) {
                                             : "border-gray-100 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
                                     }`}
                                 >
-                                    {roles?.map((role) => (
-                                        <option key={role.name} value={role.name}>
-                                            {role.name.charAt(0).toUpperCase() + role.name.slice(1).replace('_', ' ')}
-                                        </option>
-                                    ))}
+                                    <option value="operator_simpeg">Operator SIMPEG</option>
+                                    <option value="pengelola_jkn">Pengelola JKN</option>
+                                    <option value="kasubag_tu">Kasubag TU</option>
+                                    <option value="bendahara_pengeluaran">Bendahara Pengeluaran</option>
+                                    <option value="kepala_puskesmas">Kepala Puskesmas</option>
+                                    <option value="admin">Admin</option>
                                 </select>
                             </div>
                             {errors.role && (

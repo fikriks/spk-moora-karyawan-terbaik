@@ -56,7 +56,7 @@ Create.layout = (page) => {
 
     return (
         <AuthenticatedLayout
-            header="Tambah Alternative"
+            header="Operator SIMPEG"
             breadcrumbs={breadcrumbs}
         >
             {page}

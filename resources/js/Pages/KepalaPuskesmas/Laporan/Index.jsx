@@ -15,7 +15,7 @@ import {
     HiOutlineCheckCircle
 } from "react-icons/hi2";
 
-export default function LaporanBendaharaPengeluaran({ steps }) {
+export default function LaporanKepalaPuskesmas({ steps }) {
     const getStep = (name) =>
         steps.find((step) => step.step === name)?.data || [];
 
@@ -30,12 +30,12 @@ export default function LaporanBendaharaPengeluaran({ steps }) {
                         Laporan <span className="text-emerald-500">Hasil Penilaian</span>
                     </h2>
                     <p className="text-sm text-gray-500 max-w-md font-medium leading-relaxed">
-                        Analisis komprehensif kinerja pegawai menggunakan metode MOORA untuk pertimbangan manajerial Bendahara Pengeluaran.
+                        Analisis komprehensif kinerja pegawai menggunakan metode MOORA untuk pertimbangan manajerial Kepala Puskesmas.
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
                     <a
-                        href={route("laporan.bendahara_pengeluaran.pdf")}
+                        href={route("kepala-puskesmas.laporan.pdf")}
                         target="_blank"
                         className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-emerald-500 text-[13px] font-bold text-white hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20 active:scale-95"
                     >
@@ -54,7 +54,7 @@ export default function LaporanBendaharaPengeluaran({ steps }) {
                     >
                         <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100/50">
                             <p className="text-sm text-gray-600 leading-relaxed font-medium">
-                                Laporan ini disusun sebagai bahan pertimbangan Bendahara Pengeluaran dalam pelaksanaan fungsi 
+                                Laporan ini disusun sebagai bahan pertimbangan Kepala Puskesmas dalam pelaksanaan fungsi 
                                 pembinaan, pengawasan, dan pengambilan keputusan manajerial terhadap kinerja pegawai. 
                                 Seluruh penilaian diproses secara objektif menggunakan metode 
                                 <strong> Multi-Objective Optimization on the Basis of Ratio Analysis (MOORA)</strong>.
@@ -114,7 +114,7 @@ export default function LaporanBendaharaPengeluaran({ steps }) {
                         <div className="bg-emerald-50/30 rounded-2xl p-6 border border-emerald-100/50">
                             <p className="text-sm text-emerald-700 leading-relaxed font-bold italic">
                                 "Berdasarkan hasil penilaian yang telah dilakukan, laporan ini diharapkan dapat menjadi 
-                                bahan pendukung bagi Bendahara Pengeluaran dalam pengambilan keputusan yang objektif, 
+                                bahan pendukung bagi Kepala Puskesmas dalam pengambilan keputusan yang objektif, 
                                 transparan, dan dapat dipertanggungjawabkan."
                             </p>
                         </div>
@@ -147,11 +147,10 @@ function Section({ title, description, icon: Icon, children }) {
     );
 }
 
-LaporanBendaharaPengeluaran.layout = (page) => (
+LaporanKepalaPuskesmas.layout = (page) => (
     <AuthenticatedLayout 
-        header="Bendahara Pengeluaran" 
+        header="Laporan Penilaian" 
         breadcrumbs={[
-            { label: "Dashboard", href: route("ketua.index") },
             { label: "Laporan", active: true }
         ]}
     >

@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
             ['role' => 'pengelola_jkn', 'name' => 'Pengelola JKN'],
             ['role' => 'kasubag_tu', 'name' => 'Kasubag TU', 'email_prefix' => 'kasubag'],
             ['role' => 'bendahara_pengeluaran', 'name' => 'Bendahara Pengeluaran', 'email_prefix' => 'bendahara'],
+            ['role' => 'kepala_puskesmas', 'name' => 'Kepala Puskesmas', 'email_prefix' => 'kepala'],
         ];
 
         foreach ($users as $userData) {

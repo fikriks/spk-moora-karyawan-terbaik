@@ -80,7 +80,7 @@ function Index() {
     function canEdit(role, criteriaName) {
         if (!criteriaName) return false;
         const isRestricted = restrictedCriteriaNames.includes(criteriaName);
-        if (role.includes("operator")) {
+        if (role.includes("operator_simpeg")) {
             return isRestricted;
         }
         return !isRestricted;
@@ -297,7 +297,7 @@ Index.layout = (page) => {
 
     return (
         <AuthenticatedLayout
-            header="Nilai Alternative"
+            header="Operator SIMPEG"
             breadcrumbs={breadcrumbs}
         >
             {page}

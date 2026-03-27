@@ -45,7 +45,7 @@ Route::middleware(['auth'])->group(function () {
      * - Untuk proteksi lebih granular (mis. manage users), kita tambahkan permission middleware
      *   pada resource users. Jika kamu ingin admin tetap bisa semua aksi, cukup pakai role:admin.
      */
-    Route::middleware(['role:operator'])->prefix('operator')->group(function () {
+    Route::middleware(['role:operator_simpeg'])->prefix('operator')->group(function () {
 
         Route::get('/', [DashboardOperatorController::class, 'index'])->name('operator.index');
         Route::resource('/alternative', AlternativeController::class)->names('operator.alternative');
@@ -54,28 +54,34 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('/nilai', NilaiController::class)->names('operator.nilai');
     });
 
-    Route::middleware(['role:penilai'])->prefix('penilai')->group(function () {
+    Route::middleware(['role:pengelola_jkn'])->prefix('penilai')->group(function () {
 
         Route::get('/', [DashboardPenilaiController::class, 'index'])->name('penilai.index');
         Route::resource('/nilai', PenilaiNilaiController::class)->names('penilai.nilai');
     });
 
-    Route::middleware(['role:kasubag_kepegawaian'])->prefix('kasubag')->group(function () {
+    Route::middleware(['role:kasubag_tu'])->prefix('kasubag')->group(function () {
 
         Route::get('/', [DashboardKasubagController::class, 'index'])->name('kasubag.index');
         Route::resource('/nilai', KasubagNilaiController::class)->names('kasubag.nilai');
         Route::get('/laporan', [LaporanController::class, 'index'])->name('kasubag.laporan.index');
-        Route::get('/laporan/penilaian-pegawai/pdf', [LaporanController::class, 'exportPdf'])
-        ->name('laporan.kepegawaian.pdf');
+        Route::get('/laporan/kasubag-tu/pdf', [LaporanController::class, 'exportPdf'])
+        ->name('laporan.kasubag_tu.pdf');
     });
 
-    Route::middleware(['role:ketua_pengadilan'])->prefix('ketua')->group(function () {
+    Route::middleware(['role:bendahara_pengeluaran'])->prefix('ketua')->group(function () {
 
         Route::get('/', [DashboardKetuaController::class, 'index'])->name('ketua.index');
         Route::resource('/nilai', KetuaNilaiController::class)->names('ketua.nilai');
         Route::get('/laporan', [KetuaLaporanController::class, 'index'])->name('ketua.laporan.index');
-        Route::get('/laporan/ketua-pengadilan/pdf', [KetuaLaporanController::class, 'exportPdf'])
-        ->name('laporan.ketua-pengadilan.pdf');
+        Route::get('/laporan/bendahara-pengeluaran/pdf', [KetuaLaporanController::class, 'exportPdf'])
+        ->name('laporan.bendahara_pengeluaran.pdf');
+    });
+
+    Route::middleware(['role:kepala_puskesmas'])->prefix('kepala-puskesmas')->group(function () {
+        Route::get('/', [\App\Http\Controllers\KepalaPuskesmas\DashboardController::class, 'index'])->name('kepala-puskesmas.index');
+        Route::get('/laporan', [\App\Http\Controllers\KepalaPuskesmas\LaporanController::class, 'index'])->name('kepala-puskesmas.laporan.index');
+        Route::get('/laporan/pdf', [\App\Http\Controllers\KepalaPuskesmas\LaporanController::class, 'exportPdf'])->name('kepala-puskesmas.laporan.pdf');
     });
     
     Route::middleware(['role:admin'])->prefix('admin')->group(function () {

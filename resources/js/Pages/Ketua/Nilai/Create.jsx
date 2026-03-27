@@ -33,7 +33,7 @@ export default function Create() {
                     <NilaiAlternativeForm
                         alternatifs={alternatifs}
                         kriterias={kriterias}
-                        role={auth?.user?.role}
+                        role={auth?.user?.roles?.[0]}
                         onSubmitRoute={route("ketua.nilai.store")}
                         method="post"
                         submitLabel="Simpan Penilaian"

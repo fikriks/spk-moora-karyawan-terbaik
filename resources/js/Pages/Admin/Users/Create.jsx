@@ -15,7 +15,7 @@ export default function Create() {
     const { data, setData, post, processing, errors } = useForm({
         name: "",
         email: "",
-        role: "penilai",
+        role: "pengelola_jkn",
         password: "",
     });
 
@@ -121,10 +121,11 @@ export default function Create() {
                                             : "border-gray-100 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
                                     }`}
                                 >
-                                    <option value="operator">Operator</option>
-                                    <option value="penilai">Penilai</option>
-                                    <option value="kasubag_kepegawaian">Kasubag Kepegawaian</option>
-                                    <option value="ketua_pengadilan">Ketua Pengadilan</option>
+                                    <option value="operator_simpeg">Operator SIMPEG</option>
+                                    <option value="pengelola_jkn">Pengelola JKN</option>
+                                    <option value="kasubag_tu">Kasubag TU</option>
+                                    <option value="bendahara_pengeluaran">Bendahara Pengeluaran</option>
+                                    <option value="kepala_puskesmas">Kepala Puskesmas</option>
                                     <option value="admin">Admin</option>
                                 </select>
                             </div>

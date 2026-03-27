@@ -51,13 +51,13 @@ export default function Index() {
 
     return (
         <div className="space-y-10">
-            <Head title="Dashboard Operator" />
+            <Head title="Dashboard Operator SIMPEG" />
 
             {/* ===== SUMMARY STATS ===== */}
             <section>
                 <div className="flex items-center gap-3 mb-6">
                     <div className="h-1 w-4 bg-emerald-400 rounded-full" />
-                    <h3 className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em]">Ringkasan Operator</h3>
+                    <h3 className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em]">Ringkasan Operator SIMPEG</h3>
                 </div>
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                     <StatCard
@@ -124,7 +124,7 @@ export default function Index() {
                         <div className="p-3 rounded-2xl bg-white/10 w-fit mb-8">
                             <HiOutlineSquares2X2 className="w-8 h-8 text-white" />
                         </div>
-                        <h3 className="text-2xl font-bold tracking-tight mb-4">Aksi Cepat Operator</h3>
+                        <h3 className="text-2xl font-bold tracking-tight mb-4">Aksi Cepat Operator SIMPEG</h3>
                         <p className="text-emerald-50/80 text-sm leading-relaxed mb-10 max-w-sm font-medium">
                             Lakukan pengelolaan data pegawai atau input nilai alternatif untuk kriteria yang menjadi tanggung jawab Anda.
                         </p>
@@ -239,7 +239,7 @@ function ActionLink({ href, label }) {
 Index.layout = (page) => (
     <AuthenticatedLayout
         children={page}
-        breadcrumbs={[{ label: "Dashboard Operator", active: true }]}
+        breadcrumbs={[{ label: "Dashboard Operator SIMPEG", active: true }]}
     />
 );
 

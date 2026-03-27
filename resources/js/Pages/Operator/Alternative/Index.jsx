@@ -401,7 +401,7 @@ Index.layout = (page) => {
 
     return (
         <AuthenticatedLayout
-            header="Alternative"
+            header="Operator SIMPEG"
             breadcrumbs={breadcrumbs}
         >
             {page}

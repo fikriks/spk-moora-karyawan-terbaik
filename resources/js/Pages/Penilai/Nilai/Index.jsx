@@ -20,7 +20,7 @@ function Index() {
         auth,
     } = usePage().props;
 
-    const role = auth?.user?.role;
+    const role = auth?.user?.roles?.[0];
 
     /* =========================
      * SEARCH + DEBOUNCE
@@ -84,7 +84,7 @@ function Index() {
         // penilai/operator (menyesuaikan logika lama):
         // jika role operator, !isRestricted (edit kriteria umum)
         // jika role lain (penilai), isRestricted (edit kriteria khusus)
-        if (role === "operator") {
+        if (role === "operator_simpeg") {
             return !isRestricted;
         }
         return isRestricted;
@@ -301,7 +301,7 @@ Index.layout = (page) => {
 
     return (
         <AuthenticatedLayout
-            header="Nilai Alternative"
+            header="Pengelola JKN"
             breadcrumbs={breadcrumbs}
         >
             {page}

@@ -35,7 +35,7 @@ export default function NilaiAlternativeForm({
      * Filter kriteria berdasarkan role
      */
     const filteredKriterias =
-        role === "operator"
+        role === "operator_simpeg"
             ? kriterias.filter((k) => !restrictedCriteriaNames.includes(k.name))
             : kriterias.filter((k) => restrictedCriteriaNames.includes(k.name));
 

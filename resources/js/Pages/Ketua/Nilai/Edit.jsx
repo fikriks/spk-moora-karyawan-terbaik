@@ -38,7 +38,7 @@ export default function Edit() {
                         }}
                         alternatifs={alternatifs}
                         kriterias={kriterias}
-                        role={auth?.user?.role}
+                        role={auth?.user?.roles?.[0]}
                         onSubmitRoute={route("ketua.nilai.update", nilai.id)}
                         method="put"
                         submitLabel="Perbarui Penilaian"

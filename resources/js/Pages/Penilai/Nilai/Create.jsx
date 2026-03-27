@@ -45,7 +45,7 @@ export default function Create() {
                             onSubmitRoute={submitRoute}
                             method="post"
                             submitLabel="Simpan Nilai"
-                            role={user?.role}
+                            role={user?.roles?.[0]}
                         />
                     </div>
                 </div>
@@ -63,7 +63,7 @@ Create.layout = (page) => {
 
     return (
         <AuthenticatedLayout
-            header="Tambah Nilai"
+            header="Pengelola JKN"
             breadcrumbs={breadcrumbs}
         >
             {page}

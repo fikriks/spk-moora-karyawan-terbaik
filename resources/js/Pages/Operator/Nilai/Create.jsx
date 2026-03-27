@@ -45,7 +45,7 @@ export default function Create() {
                             onSubmitRoute={submitRoute}
                             method="post"
                             submitLabel="Simpan Nilai"
-                            role={user?.roles?.includes("operator") ? "operator" : user?.roles?.[0]}
+                            role={user?.roles?.includes("operator_simpeg") ? "operator_simpeg" : user?.roles?.[0]}
                         />
                     </div>
                 </div>
@@ -63,7 +63,7 @@ Create.layout = (page) => {
 
     return (
         <AuthenticatedLayout
-            header="Tambah Nilai"
+            header="Operator SIMPEG"
             breadcrumbs={breadcrumbs}
         >
             {page}

@@ -49,7 +49,7 @@ export default function Edit() {
                             onSubmitRoute={submitRoute}
                             method="put"
                             submitLabel="Perbarui Nilai"
-                            role={user?.role}
+                            role={user?.roles?.[0]}
                         />
                     </div>
                 </div>
@@ -67,7 +67,7 @@ Edit.layout = (page) => {
 
     return (
         <AuthenticatedLayout
-            header="Edit Nilai"
+            header="Pengelola JKN"
             breadcrumbs={breadcrumbs}
         >
             {page}

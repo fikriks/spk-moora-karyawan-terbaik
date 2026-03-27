@@ -49,14 +49,14 @@
 
     <h1>LAPORAN HASIL PENILAIAN PEGAWAI</h1>
     <div class="sub">
-        Disampaikan kepada Ketua Pengadilan<br>
+        Disampaikan kepada Bendahara Pengeluaran<br>
         Metode Multi-Objective Optimization on the Basis of Ratio Analysis (MOORA)<br>
         Tanggal: {{ $tanggal }}
     </div>
 
     <h2>Pendahuluan</h2>
     <p style="text-align: justify;">
-        Laporan ini disusun sebagai bahan pertimbangan Ketua Pengadilan
+        Laporan ini disusun sebagai bahan pertimbangan Bendahara Pengeluaran
         dalam rangka pelaksanaan fungsi pembinaan, pengawasan, serta
         pengambilan keputusan manajerial terhadap kinerja pegawai.
         Penilaian dilakukan secara objektif dan terukur berdasarkan
@@ -84,7 +84,7 @@
         <tr>
             <td style="border:none"></td>
             <td style="border:none" align="center">
-                Ketua Pengadilan<br><br><br><br>
+                Bendahara Pengeluaran<br><br><br><br>
                 <strong>( ____________________ )</strong>
             </td>
         </tr>

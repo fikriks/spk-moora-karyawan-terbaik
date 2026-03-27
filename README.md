@@ -1,92 +1,87 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistem Pendukung Keputusan (SPK) Penilaian Kinerja Pegawai
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi Sistem Pendukung Keputusan (SPK) untuk penilaian kinerja pegawai menggunakan metode **Multi-Objective Optimization on the Basis of Ratio Analysis (MOORA)**. Dibangun dengan Laravel 12, Inertia.js v2, dan React 18.
 
-## UI Components
+## Fitur Utama
 
-### Breadcrumb Pattern
+- **Metode MOORA:** Implementasi lengkap tahapan MOORA (Matriks Keputusan, Normalisasi, Optimasi, hingga Perangkingan).
+- **Multi-Role System:** Hak akses yang terbagi secara spesifik sesuai fungsi organisasi.
+- **Reporting:** Export laporan penilaian ke format PDF dengan desain profesional.
+- **Modern UI:** Antarmuka berbasis *Flat Soft Minimalism* dengan tema Emerald Green.
+- **Responsive:** Optimal digunakan di perangkat desktop maupun mobile.
 
-The `AuthenticatedLayout` supports a breadcrumb navigation. To use it, pass a `breadcrumbs` prop to the layout.
+## Struktur Peran & Akses
 
-#### Data Structure
-```jsx
-const breadcrumbs = [
-    { label: "Dashboard", href: route("admin.index") },
-    { label: "Current Page", active: true },
-];
-```
+| Peran | Label Antarmuka | Deskripsi Fungsi |
+|-------|-----------------|------------------|
+| **Admin** | Administrator | Manajemen user, kriteria, dan pemicu proses MOORA. |
+| **Operator SIMPEG** | Operator SIMPEG | Manajemen data alternatif (pegawai) dan input nilai kriteria umum. |
+| **Pengelola JKN** | Pengelola JKN | Input nilai penilaian kinerja pegawai. |
+| **Kasubag TU** | Kasubag TU | Verifikasi penilaian, manajemen kriteria khusus, dan akses laporan. |
+| **Bendahara Pengeluaran** | Bendahara Pengeluaran | Monitoring hasil penilaian dan akses laporan manajerial. |
+| **Kepala Puskesmas** | Kepala Puskesmas | Review hasil akhir penilaian dan laporan perangkingan. |
 
-#### Usage in Pages
-```jsx
-export default function YourPage() {
-    const breadcrumbs = [
-        { label: "Dashboard", href: route("admin.index") },
-        { label: "Your Page Title", active: true },
-    ];
+## Teknologi
 
-    return (
-        <AuthenticatedLayout 
-            header="Your Page Title"
-            breadcrumbs={breadcrumbs}
-        >
-            {/* Page content */}
-        </AuthenticatedLayout>
-    );
-}
-```
+- **Backend:** Laravel 12.x (PHP 8.4)
+- **Frontend:** React 18, Inertia.js v2, Tailwind CSS v3
+- **Icons:** React Icons / Heroicons v2 (Outline)
+- **Database:** MySQL / PostgreSQL / SQLite
+- **PDF Export:** Barryvdh Laravel DOMPDF
 
-## About Laravel
+## Instalasi
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+1. Clone repositori:
+   ```bash
+   git clone <repository-url>
+   cd spk-app
+   ```
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+2. Instal dependensi PHP:
+   ```bash
+   composer install
+   ```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+3. Instal dependensi JavaScript:
+   ```bash
+   npm install
+   ```
 
-## Learning Laravel
+4. Konfigurasi Environment:
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+5. Migrasi dan Seeding Database:
+   ```bash
+   php artisan migrate:refresh --seed
+   ```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+6. Jalankan Server:
+   ```bash
+   # Terminal 1
+   php artisan serve
+   
+   # Terminal 2
+   npm run dev
+   ```
 
-## Laravel Sponsors
+## Akun Demo Default
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- **Admin:** admin@example.com / Admin123
+- **Operator:** operator@example.com / Operator123
+- **Pengelola JKN:** pengelola@example.com / Pengelola123
+- **Kasubag TU:** kasubag@example.com / Kasubag123
+- **Kepala Puskesmas:** kepala@example.com / Kepala123
 
-### Premium Partners
+## Standar Pengembangan
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Proyek ini mengikuti standar desain **Flat Soft Minimalism**:
+- **Warna Utama:** Emerald Green (`emerald-500`)
+- **Radius:** `rounded-3xl` untuk container utama, `rounded-2xl` untuk elemen interaktif.
+- **Layout:** Menggunakan `AuthenticatedLayout` dengan pola breadcrumbs yang konsisten.
+- **Pesan:** Menggunakan toast notifikasi (`notifySuccess`, `notifyError`) dan modal konfirmasi kustom.
 
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+© 2026 - Sistem Pendukung Keputusan Penilaian Kinerja

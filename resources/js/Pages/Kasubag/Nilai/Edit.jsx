@@ -49,7 +49,7 @@ export default function Edit() {
                             onSubmitRoute={submitRoute}
                             method="put"
                             submitLabel="Perbarui Data Penilaian"
-                            role={user?.role === "operator" ? "operator" : user?.role}
+                            role={user?.roles?.includes("operator_simpeg") ? "operator_simpeg" : user?.roles?.[0]}
                         />
                     </div>
                 </div>
@@ -60,13 +60,14 @@ export default function Edit() {
 
 Edit.layout = (page) => {
     const breadcrumbs = [
-        { label: "Data Penilaian", href: route("kasubag.nilai.index") },
+        { label: "Dashboard", href: route("kasubag.index") },
+        { label: "Nilai Alternative", href: route("kasubag.nilai.index") },
         { label: "Edit", active: true },
     ];
 
     return (
         <AuthenticatedLayout
-            header="Edit Penilaian"
+            header="Kasubag TU"
             breadcrumbs={breadcrumbs}
         >
             {page}

@@ -37,7 +37,7 @@ class AuthenticationTest extends TestCase
     public function test_operator_can_authenticate_and_redirect_to_operator_index(): void
     {
         $user = User::factory()->create();
-        $user->assignRole('operator');
+        $user->assignRole('operator_simpeg');
 
         $response = $this->post('/login', [
             'email' => $user->email,
