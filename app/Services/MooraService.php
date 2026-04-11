@@ -62,7 +62,7 @@ class MooraService
     }
 
     /**
-     * 2️⃣ Hitung Penyebut √ΣX²
+     * 2️⃣ Hitung Penyebut (√ΣX²)
      */
     private function calculateDenominator(array $matrix): array
     {
@@ -76,7 +76,7 @@ class MooraService
         }
 
         foreach ($denominator as $criteriaId => $value) {
-            $denominator[$criteriaId] = round(sqrt($value), 4);
+            $denominator[$criteriaId] = sqrt((float) $value);
         }
 
         MooraSteps::create([
@@ -100,7 +100,7 @@ class MooraService
 
                 $normalized[$altId][$criteriaId] =
                     $denominator[$criteriaId] != 0
-                        ? round($value / $denominator[$criteriaId], 4)
+                        ? $value / $denominator[$criteriaId]
                         : 0;
             }
         }
@@ -131,7 +131,7 @@ class MooraService
             foreach ($values as $criteriaId => $value) {
 
                 $weight = $criterias[$criteriaId]->weight;
-                $weightedValue = round($value * $weight, 4);
+                $weightedValue = $value * $weight;
 
                 if ($criterias[$criteriaId]->type === 'benefit') {
                     $benefit += $weightedValue;
@@ -140,7 +140,7 @@ class MooraService
                 }
             }
 
-            $results[$altId] = round($benefit - $cost, 4);
+            $results[$altId] = $benefit - $cost;
         }
 
         MooraSteps::create([
