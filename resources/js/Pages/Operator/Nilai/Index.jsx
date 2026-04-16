@@ -75,15 +75,10 @@ function Index() {
     /* =========================
      * canEdit
      * ========================= */
-    const restrictedCriteriaNames = ["Tanggung Jawab", "Kerja Sama Tim"];
-
     function canEdit(role, criteriaName) {
-        if (!criteriaName) return false;
-        const isRestricted = restrictedCriteriaNames.includes(criteriaName);
-        if (role.includes("operator_simpeg")) {
-            return isRestricted;
-        }
-        return !isRestricted;
+        // Karena kriteria sekarang bisa dipilih semua oleh operator, 
+        // maka kita izinkan edit untuk semua kriteria yang terlihat di sini.
+        return true;
     }
 
     /* =========================

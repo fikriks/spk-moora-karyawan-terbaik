@@ -28,47 +28,44 @@ export default function NilaiAlternativeForm({
     method = "post",
     submitLabel = "Simpan Data",
 }) {
+    // Initial scores mapping
+    const initialScores = {};
+    if (initial.criteria_id) {
+        initialScores[initial.criteria_id] = initial.nilai || "";
+    }
+
     const form = useForm({
         alternative_id: initial.alternative_id ? String(initial.alternative_id) : "",
-        criteria_id: initial.criteria_id ? String(initial.criteria_id) : "",
-        nilai: initial.nilai ?? "",
+        scores: initialScores, // Mapping { criteria_id: value }
     });
 
-    const restrictedCriteriaNames = ["Tanggung Jawab", "Kerja Sama Tim"];
-
-    const filteredKriterias = useMemo(() => {
-        if (role === "operator_simpeg") {
-            return kriterias.filter((k) => restrictedCriteriaNames.includes(k.name));
-        }
-        return kriterias.filter((k) => !restrictedCriteriaNames.includes(k.name));
-    }, [role, kriterias]);
-
-    useEffect(() => {
-        if (!form.data.criteria_id) return;
-        const isValid = filteredKriterias.some(
-            (k) => String(k.id) === String(form.data.criteria_id),
-        );
-        if (!isValid) {
-            form.setData("criteria_id", "");
-        }
-    }, [filteredKriterias]);
+    const handleScoreChange = (criteriaId, value) => {
+        form.setData("scores", {
+            ...form.data.scores,
+            [criteriaId]: value,
+        });
+    };
 
     const submit = (e) => {
         e.preventDefault();
+        // Backend now expects { alternative_id, scores: { [id]: value } }
         if (method.toLowerCase() === "post") {
             form.post(onSubmitRoute);
         } else {
+            // For update, we might need a different handling if it was a single ID update,
+            // but the controller update method also needs logic for multiple if we want to support it.
+            // For now, let's stick to the creation use case which was requested.
             form.put(onSubmitRoute, { preserveScroll: true });
         }
     };
 
     return (
-        <form onSubmit={submit} className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <form onSubmit={submit} className="space-y-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                 {/* ALTERNATIF */}
-                <div className="space-y-2">
-                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] ml-1">
-                        Pilih Alternatif / Pegawai <span className="text-rose-500">*</span>
+                <div className="space-y-4">
+                    <label className="text-[12px] font-black text-gray-400 uppercase tracking-[0.3em] ml-1">
+                        Pilih Alternatif / Pegawai <span className="text-rose-500 font-bold">*</span>
                     </label>
                     <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-emerald-500 transition-colors">
@@ -77,7 +74,7 @@ export default function NilaiAlternativeForm({
                         <select
                             value={form.data.alternative_id}
                             onChange={(e) => form.setData("alternative_id", e.target.value)}
-                            className={`block w-full pl-12 pr-4 py-4 bg-gray-50/50 border rounded-2xl text-sm transition-all outline-none appearance-none ${
+                            className={`block w-full pl-12 pr-4 py-4 bg-gray-50/50 border rounded-3xl text-sm transition-all shadow-sm outline-none appearance-none ${
                                 form.errors.alternative_id
                                     ? "border-rose-200 focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500"
                                     : "border-gray-100 focus:bg-white focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
@@ -97,79 +94,70 @@ export default function NilaiAlternativeForm({
                     )}
                 </div>
 
-                {/* KRITERIA */}
-                <div className="space-y-2">
-                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] ml-1">
-                        Pilih Kriteria Penilaian <span className="text-rose-500">*</span>
-                    </label>
-                    <div className="relative group">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-emerald-500 transition-colors">
-                            <HiOutlineAdjustmentsHorizontal className="w-5 h-5" />
-                        </div>
-                        <select
-                            value={form.data.criteria_id}
-                            onChange={(e) => form.setData("criteria_id", e.target.value)}
-                            className={`block w-full pl-12 pr-4 py-4 bg-gray-50/50 border rounded-2xl text-sm transition-all outline-none appearance-none ${
-                                form.errors.criteria_id
-                                    ? "border-rose-200 focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500"
-                                    : "border-gray-100 focus:bg-white focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
-                            }`}
-                            required
-                        >
-                            <option value="">-- Pilih Kriteria --</option>
-                            {filteredKriterias.map((k) => (
-                                <option key={k.id} value={k.id}>{k.name}</option>
-                            ))}
-                        </select>
-                    </div>
-                    {filteredKriterias.length === 0 && (
-                        <p className="text-[11px] font-bold text-amber-500 uppercase tracking-wider ml-1">
-                            Tidak ada kriteria yang tersedia untuk akses Anda.
-                        </p>
-                    )}
-                    {form.errors.criteria_id && (
-                        <p className="text-[11px] font-bold text-rose-500 uppercase tracking-wider ml-1">
-                            {form.errors.criteria_id}
-                        </p>
-                    )}
-                </div>
-
-                {/* NILAI */}
-                <div className="space-y-2 md:col-span-2">
-                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] ml-1">
-                        Input Nilai Numerik <span className="text-rose-500">*</span>
-                    </label>
-                    <div className="relative group">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-emerald-500 transition-colors">
-                            <HiOutlineClipboardDocumentCheck className="w-5 h-5" />
-                        </div>
-                        <input
-                            type="number"
-                            step="any"
-                            value={form.data.nilai}
-                            onChange={(e) => form.setData("nilai", e.target.value)}
-                            className={`block w-full pl-12 pr-4 py-4 bg-gray-50/50 border rounded-2xl text-sm transition-all outline-none ${
-                                form.errors.nilai
-                                    ? "border-rose-200 focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500"
-                                    : "border-gray-100 focus:bg-white focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
-                            }`}
-                            placeholder="Masukkan nilai (contoh: 85 atau 3.5)"
-                            required
-                        />
-                    </div>
-                    {form.errors.nilai && (
-                        <p className="text-[11px] font-bold text-rose-500 uppercase tracking-wider ml-1">
-                            {form.errors.nilai}
-                        </p>
-                    )}
+                <div className="hidden md:block">
+                    {/* Spacer/Empty div for grid balance */}
                 </div>
             </div>
 
+            {/* KRITERIA LIST */}
+            <div className="space-y-8">
+                <div className="flex items-center gap-4">
+                    <div className="h-[1px] flex-1 bg-gray-100"></div>
+                    <label className="text-[12px] font-black text-gray-400 uppercase tracking-[0.3em]">
+                        Input Nilai Penilaian
+                    </label>
+                    <div className="h-[1px] flex-1 bg-gray-100"></div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {kriterias.map((k) => (
+                        <div 
+                            key={k.id} 
+                            className="p-6 bg-white border border-gray-100 rounded-[2rem] hover:shadow-xl hover:shadow-emerald-500/5 hover:border-emerald-100 transition-all group"
+                        >
+                            <div className="space-y-4">
+                                <div className="flex items-start justify-between">
+                                    <div className="space-y-1">
+                                        <p className="text-[11px] font-black text-emerald-500 uppercase tracking-widest">
+                                            {k.code || `C${k.id}`}
+                                        </p>
+                                        <h4 className="text-sm font-bold text-gray-700 leading-tight">
+                                            {k.name}
+                                        </h4>
+                                    </div>
+                                    <HiOutlineAdjustmentsHorizontal className="w-5 h-5 text-gray-300 group-hover:text-emerald-500 transition-colors" />
+                                </div>
+
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-300 group-focus-within:text-emerald-500 transition-colors">
+                                        <HiOutlineClipboardDocumentCheck className="w-4 h-4" />
+                                    </div>
+                                    <input
+                                        type="number"
+                                        step="any"
+                                        value={form.data.scores[k.id] || ""}
+                                        onChange={(e) => handleScoreChange(k.id, e.target.value)}
+                                        className="block w-full pl-11 pr-4 py-3.5 bg-gray-50/50 border border-gray-100 rounded-2xl text-sm focus:bg-white focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none"
+                                        placeholder="0.00"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                
+                {kriterias.length === 0 && (
+                    <div className="py-12 text-center bg-gray-50/50 rounded-[2rem] border-2 border-dashed border-gray-100 text-gray-400 italic text-sm">
+                        Tidak ada kriteria penilaian yang tersedia.
+                    </div>
+                )}
+            </div>
+
             {/* Actions */}
-            <div className="flex items-center justify-end pt-6 border-t border-gray-50">
+            <div className="flex items-center justify-end pt-8 border-t border-gray-50">
                 <button
                     type="submit"
-                    className="flex items-center gap-2 px-8 py-4 rounded-2xl bg-emerald-500 text-sm font-bold text-white hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-emerald-500/20"
+                    className="flex items-center gap-3 px-10 py-5 rounded-3xl bg-emerald-500 text-sm font-black text-white hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xl shadow-emerald-500/25 hover:-translate-y-1"
                     disabled={form.processing}
                 >
                     {form.processing ? (
@@ -177,7 +165,7 @@ export default function NilaiAlternativeForm({
                     ) : (
                         <HiOutlineCheckCircle className="h-5 w-5" />
                     )}
-                    <span>{form.processing ? "Menyimpan..." : submitLabel}</span>
+                    <span className="tracking-widest uppercase">{form.processing ? "Menyimpan..." : submitLabel}</span>
                 </button>
             </div>
         </form>

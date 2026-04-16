@@ -66,23 +66,35 @@ class NilaiController extends Controller
      */
     public function store(Request $request)
     {
-        $validated =$request->validate([
+        $validated = $request->validate([
             'alternative_id' => 'required|exists:alternative,id',
-            'criteria_id' => 'required|exists:criteria,id',
-            'nilai' => 'required|numeric',
+            'scores'         => 'required|array',
+            'scores.*'       => 'nullable|numeric',
         ]);
 
-        // dd($validated);
-
         try {
-            Nilai::create([
-                'alternative_id' => $validated['alternative_id'],
-                'criteria_id' => $validated['criteria_id'],
-                'value' => $validated['nilai'],
-            ]);
-            return redirect()->route('operator.nilai.index')->with('success', 'Nilai berhasil ditambahkan.');
+            DB::beginTransaction();
+
+            foreach ($validated['scores'] as $criteriaId => $value) {
+                if ($value === null || $value === '') continue;
+
+                Nilai::updateOrCreate(
+                    [
+                        'alternative_id' => $validated['alternative_id'],
+                        'criteria_id'    => $criteriaId,
+                    ],
+                    [
+                        'value' => $value,
+                    ]
+                );
+            }
+
+            DB::commit();
+
+            return redirect()->route('operator.nilai.index')->with('success', 'Nilai berhasil disimpan.');
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan saat menyimpan data.' . $e])->withInput();
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage()])->withInput();
         }
     }
 
@@ -119,34 +131,27 @@ class NilaiController extends Controller
     public function update(Request $request, Nilai $nilai)
 {
     try {
-        // VALIDASI
         $validated = $request->validate([
             'alternative_id' => 'required|exists:alternative,id',
-            'criteria_id'   => 'required|exists:criteria,id',
-            'nilai'         => 'required|numeric',
+            'scores'         => 'required|array',
+            'scores.*'       => 'nullable|numeric',
         ]);
-        // dd($validated);
 
         DB::beginTransaction();
 
-        // CEK DUPLIKASI alternatif + kriteria (kecuali data ini)
-        $exists = Nilai::where('alternative_id', $validated['alternative_id'])
-            ->where('criteria_id', $validated['criteria_id'])
-            ->where('id', '!=', $nilai->id)
-            ->exists();
+        foreach ($validated['scores'] as $criteriaId => $value) {
+            if ($value === null || $value === '') continue;
 
-        if ($exists) {
-            throw ValidationException::withMessages([
-                'criteria_id' => 'Nilai untuk alternatif dan kriteria ini sudah ada.',
-            ]);
+            Nilai::updateOrCreate(
+                [
+                    'alternative_id' => $validated['alternative_id'],
+                    'criteria_id'    => $criteriaId,
+                ],
+                [
+                    'value' => $value,
+                ]
+            );
         }
-
-        // UPDATE
-        $nilai->update([
-            'alternative_id' => $validated['alternative_id'],
-            'criteria_id'   => $validated['criteria_id'],
-            'value'         => $validated['nilai'],
-        ]);
 
         DB::commit();
 
@@ -156,15 +161,12 @@ class NilaiController extends Controller
 
     } catch (ValidationException $e) {
         DB::rollBack();
-        throw $e; // biarkan Inertia handle error validasi
-
+        throw $e;
     } catch (\Throwable $e) {
         DB::rollBack();
-
-        report($e); // log error
-
+        report($e);
         return back()->withErrors([
-            'error' => 'Terjadi kesalahan saat memperbarui data. Silakan coba lagi.',
+            'error' => 'Terjadi kesalahan saat memperbarui data: ' . $e->getMessage(),
         ]);
     }
 }
