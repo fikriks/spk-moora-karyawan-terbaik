@@ -163,14 +163,14 @@ export default function AuthenticatedLayout({ header, breadcrumbs, children }) {
             icon: HiOutlineAdjustmentsHorizontal,
         },
         {
-            name: "Moora",
+            name: "Proses Perhitungan Moora",
             href: route("moora.index"),
             routeName: "moora.*",
             visible: isAdmin,
             icon: HiOutlineCalculator,
         },
         {
-            name: "Proses",
+            name: "Laporan Hasil Perhitungan Moora",
             href: route("moora.result"),
             routeName: "moora.result",
             visible: isAdmin,

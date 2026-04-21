@@ -20,7 +20,7 @@ export default function Index() {
 
     return (
         <>
-            <Head title="Proses Perhitungan" />
+            <Head title="Proses Perhitungan Moora" />
 
             <div className="space-y-8 max-w-5xl mx-auto">
                 {/* Header Section */}
@@ -30,7 +30,7 @@ export default function Index() {
                     </div>
                     <div className="space-y-1">
                         <h2 className="text-3xl font-bold text-gray-900 tracking-tight">
-                            Mulai Perhitungan MOORA
+                            Proses Perhitungan Moora
                         </h2>
                         <p className="text-base text-gray-500 font-medium max-w-2xl mx-auto">
                             Sistem akan melakukan kalkulasi otomatis berdasarkan data alternatif, kriteria, dan bobot yang telah Anda tentukan sebelumnya.
@@ -123,7 +123,7 @@ function StepCard({ number, title, desc }) {
 Index.layout = (page) => {
     const breadcrumbs = [
         { label: "Dashboard", href: route("dashboard") },
-        { label: "Proses Perhitungan", active: true },
+        { label: "Proses Perhitungan Moora", active: true },
     ];
 
     return (

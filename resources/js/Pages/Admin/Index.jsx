@@ -161,7 +161,7 @@ export default function Index() {
                             </div>
                             <h3 className="text-2xl font-bold tracking-tight mb-4">Aksi Cepat Admin</h3>
                             <p className="text-emerald-50/80 text-sm leading-relaxed mb-10 max-w-sm">
-                                Kelola data master, konfigurasi kriteria penilaian, atau jalankan proses perhitungan MOORA secara langsung.
+                                Kelola data master, konfigurasi kriteria penilaian, atau jalankan proses perhitungan Moora secara langsung.
                             </p>
 
                             <div className="grid grid-cols-1 gap-3">
@@ -176,7 +176,7 @@ export default function Index() {
                                             : "bg-emerald-600/50 text-white/50 cursor-not-allowed border border-white/10"
                                     }`}
                                 >
-                                    <span>Jalankan Proses MOORA</span>
+                                    <span>Proses Perhitungan Moora</span>
                                     <HiOutlineArrowRight className="w-5 h-5" />
                                 </Link>
                             </div>

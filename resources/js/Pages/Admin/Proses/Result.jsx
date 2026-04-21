@@ -23,7 +23,7 @@ export default function Result({ steps }) {
 
     return (
         <>
-            <Head title="Hasil Perhitungan MOORA" />
+            <Head title="Laporan Hasil Perhitungan Moora" />
 
             <div className="space-y-8 pb-20">
                 {/* Header Section */}
@@ -34,7 +34,7 @@ export default function Result({ steps }) {
                         </div>
                         <div className="space-y-1">
                             <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
-                                Hasil Perhitungan MOORA
+                                Laporan Hasil Perhitungan Moora
                             </h2>
                             <p className="text-sm text-gray-500 font-medium max-w-xl">
                                 Berikut adalah detail tahapan kalkulasi yang dilakukan sistem untuk menghasilkan peringkat personil terbaik.
@@ -114,8 +114,8 @@ function SectionCard({ step, title, description, children }) {
 Result.layout = (page) => {
     const breadcrumbs = [
         { label: "Dashboard", href: route("dashboard") },
-        { label: "Proses", href: route("moora.index") },
-        { label: "Hasil Perhitungan", active: true },
+        { label: "Proses Perhitungan Moora", href: route("moora.index") },
+        { label: "Laporan Hasil Perhitungan Moora", active: true },
     ];
 
     return (

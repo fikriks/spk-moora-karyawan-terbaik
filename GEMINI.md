@@ -3,6 +3,12 @@
 
 # Project Status & Architectural Guidelines
 
+## Recent Updates (April 2026)
+- **UI Label Standardization:**
+    - **Renamed:** "Proses Perhitungan" -> "Proses Perhitungan Moora" (Sidebar menu, breadcrumbs, and page titles).
+    - **Renamed:** "Hasil Moora" / "Laporan Hasil Perhitungan" -> "Laporan Hasil Perhitungan Moora" (Sidebar menu, breadcrumbs, and PDF header).
+    - **Consistency:** Updated various action buttons and descriptions to use consistent "Moora" casing and descriptive labels.
+
 ## Recent Updates (March 2026)
 - **Core Upgrade:** Migrated to **Laravel 12.x** and updated all ecosystem packages (Inertia v2, Sanctum v4, Breeze v2).
 - **Role Refactoring & Addition:**

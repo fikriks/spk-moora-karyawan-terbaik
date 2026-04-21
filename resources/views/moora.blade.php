@@ -94,7 +94,7 @@
 
     <!-- HEADER -->
     <div class="header">
-        <h2>LAPORAN HASIL PERHITUNGAN METODE MOORA</h2>
+        <h2>LAPORAN HASIL PERHITUNGAN MOORA</h2>
         <p>Sistem Pendukung Keputusan</p>
     </div>
 
