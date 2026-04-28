@@ -4,6 +4,14 @@
 # Project Status & Architectural Guidelines
 
 ## Recent Updates (April 2026)
+- **Alternative Management (Pegawai):**
+    - **Admin CRUD:** Implemented full CRUD capabilities for Admin to manage Alternatives (Pegawai), including Create, Edit, and Delete.
+    - **Standardized Forms:** Created `AlternativeForm.jsx` for Admin to ensure UI consistency with the Operator module.
+    - **Bug Fixes:** Fixed search debounce issues in the Admin Alternative index.
+- **Template & Import System:**
+    - **Static Template Generation:** Switched to a more reliable static file download for the Alternative Excel template to prevent blank page issues.
+    - **Dynamic Export Class:** Implemented `AlternativeTemplateExport` to ensure Excel structure always matches the latest database schema.
+    - **Universal Access:** Enabled Template download and Excel Import features for both Admin and Operator SIMPEG roles.
 - **UI Label Standardization:**
     - **Renamed:** "Proses Perhitungan" -> "Proses Perhitungan Moora" (Sidebar menu, breadcrumbs, and page titles).
     - **Renamed:** "Hasil Moora" / "Laporan Hasil Perhitungan" -> "Laporan Hasil Perhitungan Moora" (Sidebar menu, breadcrumbs, and PDF header).

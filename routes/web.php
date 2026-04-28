@@ -96,6 +96,8 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('users', UserController::class)
             ->middleware(['permission:manage users']);
         Route::resource('alternative', AdminAlternativeController::class)->names('admin.alternative');
+        Route::post('alternative/import', [AdminAlternativeController::class, 'import'])->name('admin.alternative.import');
+        Route::get('alternative/template', [AdminAlternativeController::class, 'downloadTemplate'])->name('admin.alternative.template');
         // halaman tombol / index
     Route::get('/moora', [MooraController::class, 'index'])
         ->name('moora.index');

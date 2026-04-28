@@ -117,7 +117,8 @@ function Index() {
 
                     <div className="flex flex-wrap items-center gap-3">
                         <a
-                            href={route("operator.alternative.template")}
+                            href="/storage/templates/template-alternative.xlsx"
+                            download
                             className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-white border border-gray-100 text-[13px] font-bold text-gray-600 hover:bg-gray-50 hover:text-emerald-600 transition-all shadow-sm"
                         >
                             <HiOutlineDocumentText className="h-4 w-4" />

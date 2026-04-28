@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Operator;
 
 use App\Http\Controllers\Controller;
 use App\Imports\AlternativeImport;
+use App\Exports\AlternativeTemplateExport;
 use App\Models\Alternative;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -136,20 +137,21 @@ class AlternativeController extends Controller
     }
 
     /**
-     * DOWNLOAD TEMPLATE DARI PUBLIC
+     * DOWNLOAD TEMPLATE DINAMIS
      */
     public function downloadTemplate()
     {
-        $path = public_path('templates/template-alternative.xlsx');
+        $export = new AlternativeTemplateExport;
+        $fileName = 'template-alternative-' . time() . '.xlsx';
+        $tempPath = 'temp/' . $fileName;
+        
+        // Simpan ke disk local (default Laravel 12 di app/private)
+        Excel::store($export, $tempPath, 'local');
 
-        if (! file_exists($path)) {
-            abort(404, 'Template tidak ditemukan');
-        }
+        // Ambil path lengkap file yang baru disimpan
+        $fullPath = storage_path('app/private/' . $tempPath);
 
-        return response()->download(
-            $path,
-            'template-alternative.xlsx'
-        );
+        return response()->download($fullPath)->deleteFileAfterSend(true);
     }
 
     /**
