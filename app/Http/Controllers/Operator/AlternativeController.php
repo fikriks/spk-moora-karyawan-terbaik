@@ -141,17 +141,15 @@ class AlternativeController extends Controller
      */
     public function downloadTemplate()
     {
-        $export = new AlternativeTemplateExport;
-        $fileName = 'template-alternative-' . time() . '.xlsx';
-        $tempPath = 'temp/' . $fileName;
-        
-        // Simpan ke disk local (default Laravel 12 di app/private)
-        Excel::store($export, $tempPath, 'local');
+        $path = public_path('templates/template-alternative.xlsx');
 
-        // Ambil path lengkap file yang baru disimpan
-        $fullPath = storage_path('app/private/' . $tempPath);
+        if (!file_exists($path)) {
+            // Jika belum ada, kita generate secara dinamis ke folder public
+            $export = new AlternativeTemplateExport;
+            Excel::store($export, 'templates/template-alternative.xlsx', 'public_root');
+        }
 
-        return response()->download($fullPath)->deleteFileAfterSend(true);
+        return response()->download($path);
     }
 
     /**
