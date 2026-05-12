@@ -12,12 +12,12 @@ function DenominatorTable({ data = {} }) {
     const criteriaIds = Object.keys(data);
 
     return (
-        <div className="relative overflow-hidden rounded-2xl border border-gray-100 shadow-sm">
+        <div className="relative overflow-x-auto rounded-2xl border border-gray-100 shadow-sm custom-scrollbar">
             <table className="w-full text-sm text-left">
                 <thead>
                     <tr className="bg-gray-50/80 border-b border-gray-100">
                         {criteriaIds.map((cid) => (
-                            <th key={cid} className="px-6 py-4 font-bold text-gray-900 uppercase tracking-wider text-[11px] text-center border-r border-gray-100 last:border-r-0">
+                            <th key={cid} className="px-6 py-4 font-bold text-gray-900 uppercase tracking-wider text-[11px] text-center border-r border-gray-100 last:border-r-0 whitespace-nowrap">
                                 C{cid}
                             </th>
                         ))}
@@ -26,7 +26,7 @@ function DenominatorTable({ data = {} }) {
                 <tbody className="divide-y divide-gray-50">
                     <tr className="bg-white hover:bg-emerald-50/30 transition-colors">
                         {criteriaIds.map((cid) => (
-                            <td key={cid} className="px-6 py-4 text-center font-bold text-emerald-600 border-r border-gray-100 last:border-r-0 font-mono">
+                            <td key={cid} className="px-6 py-4 text-center font-bold text-emerald-600 border-r border-gray-100 last:border-r-0 font-mono whitespace-nowrap">
                                 {Number(data[cid]).toFixed(6)}
                             </td>
                         ))}

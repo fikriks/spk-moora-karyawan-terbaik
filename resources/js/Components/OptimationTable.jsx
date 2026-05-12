@@ -10,7 +10,7 @@ function OptimizationTable({ data }) {
     }
 
     return (
-        <div className="relative overflow-hidden rounded-2xl border border-gray-100 shadow-sm max-w-lg mx-auto">
+        <div className="relative overflow-x-auto rounded-2xl border border-gray-100 shadow-sm max-w-lg mx-auto custom-scrollbar">
             <table className="w-full text-sm text-left">
                 <thead>
                     <tr className="bg-gray-50/80 border-b border-gray-100">
