@@ -19,33 +19,31 @@ class NilaiController extends Controller
     public function index(Request $request)
     {
         $q = $request->string('q')->trim();
-    $perPage = $request->integer('per_page', 10);
+        $perPage = $request->integer('per_page', 10);
 
-    $query = Nilai::with([
-            'alternative:id,name',
-            'criteria:id,name'
-        ])
-        ->when(
-            $q->isNotEmpty(),
-            function ($qb) use ($q) {
-                $qb->whereHas('alternative', function ($sub) use ($q) {
-                    $sub->where('name', 'like', "%{$q}%");
-                })
-                ->orWhereHas('criteria', function ($sub) use ($q) {
-                    $sub->where('name', 'like', "%{$q}%");
-                });
-            }
-        );
+        // Ambil kriteria untuk header tabel
+        $kriterias = Criterion::orderBy('id')->get();
 
-    $nilai = $query
-        ->orderByDesc('id')
-        ->paginate($perPage)
-        ->withQueryString();
+        // Query Alternatif yang memiliki nilai (atau semua alternatif jika ingin matrix penuh)
+        // Kita gunakan Alternatif sebagai base agar bisa grouping per orang
+        $query = Alternative::with(['nilais.criteria'])
+            ->when(
+                $q->isNotEmpty(),
+                function ($qb) use ($q) {
+                    $qb->where('name', 'like', "%{$q}%");
+                }
+            );
 
-    return Inertia::render('Penilai/Nilai/Index', [
-        'nilaiAlternatives' => $nilai,
-        'filters' => $request->only(['q', 'per_page']),
-    ]);
+        $alternatifs = $query
+            ->orderBy('name')
+            ->paginate($perPage)
+            ->withQueryString();
+
+        return Inertia::render('Penilai/Nilai/Index', [
+            'alternatifs' => $alternatifs,
+            'kriterias' => $kriterias,
+            'filters' => $request->only(['q', 'per_page']),
+        ]);
     }
 
     /**
@@ -70,17 +68,32 @@ class NilaiController extends Controller
             'nilai' => 'required|numeric',
         ]);
 
-        // dd($validated);
-
         try {
-            Nilai::create([
-                'alternative_id' => $validated['alternative_id'],
-                'criteria_id' => $validated['criteria_id'],
-                'value' => $validated['nilai'],
-            ]);
-            return redirect()->route('penilai.nilai.index')->with('success', 'Nilai berhasil ditambahkan.');
+            DB::beginTransaction();
+
+            Nilai::updateOrCreate(
+                [
+                    'alternative_id' => $validated['alternative_id'],
+                    'criteria_id'    => $validated['criteria_id'],
+                ],
+                [
+                    'value' => $validated['nilai'],
+                ]
+            );
+
+            DB::commit();
+
+            return redirect()
+                ->route('penilai.nilai.index')
+                ->with('success', 'Nilai berhasil disimpan.');
+
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan saat menyimpan data.' . $e])->withInput();
+            DB::rollBack();
+            report($e);
+            return redirect()
+                ->back()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage())
+                ->withInput();
         }
     }
 
@@ -95,101 +108,83 @@ class NilaiController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Nilai $nilai)
+    public function edit($id)
     {
-        $nilai->load([
-        'alternative:id,name',
-        'criteria:id,name'
-    ]);
-    // dd($nilai);
-
-    return Inertia::render('Penilai/Nilai/Edit', [
-        'nilai' => $nilai,
-        'alternatifs' => Alternative::select('id', 'name')->get(),
-        'kriterias' => Criterion::select('id', 'name')->get(),
-    ]);
+        $alternative = Alternative::with('nilais')->findOrFail($id);
+        
+        return Inertia::render('Penilai/Nilai/Edit', [
+            'alternative' => $alternative,
+            'alternatifs' => Alternative::select('id', 'name')->get(),
+            'kriterias'   => Criterion::select('id', 'name')->get(),
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Nilai $nilai)
-{
-    try {
-        // VALIDASI
+    public function update(Request $request, $id)
+    {
         $validated = $request->validate([
-            'alternative_id' => 'required|exists:alternative,id',
-            'criteria_id'   => 'required|exists:criteria,id',
-            'nilai'         => 'required|numeric',
+            'scores'   => 'required|array',
+            'scores.*' => 'nullable|numeric',
         ]);
-        // dd($validated);
 
-        DB::beginTransaction();
+        try {
+            DB::beginTransaction();
 
-        // CEK DUPLIKASI alternatif + kriteria (kecuali data ini)
-        $exists = Nilai::where('alternative_id', $validated['alternative_id'])
-            ->where('criteria_id', $validated['criteria_id'])
-            ->where('id', '!=', $nilai->id)
-            ->exists();
+            foreach ($validated['scores'] as $criteriaId => $value) {
+                if ($value === null || $value === '') continue;
 
-        if ($exists) {
-            throw ValidationException::withMessages([
-                'criteria_id' => 'Nilai untuk alternatif dan kriteria ini sudah ada.',
-            ]);
+                Nilai::updateOrCreate(
+                    [
+                        'alternative_id' => $id,
+                        'criteria_id'    => $criteriaId,
+                    ],
+                    [
+                        'value' => $value,
+                    ]
+                );
+            }
+
+            DB::commit();
+
+            return redirect()
+                ->route('penilai.nilai.index')
+                ->with('success', 'Nilai berhasil diperbarui.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            report($e);
+            return redirect()
+                ->back()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-
-        // UPDATE
-        $nilai->update([
-            'alternative_id' => $validated['alternative_id'],
-            'criteria_id'   => $validated['criteria_id'],
-            'value'         => $validated['nilai'],
-        ]);
-
-        DB::commit();
-
-        return redirect()
-            ->route('penilai.nilai.index')
-            ->with('success', 'Nilai berhasil diperbarui');
-
-    } catch (ValidationException $e) {
-        DB::rollBack();
-        throw $e; // biarkan Inertia handle error validasi
-
-    } catch (\Throwable $e) {
-        DB::rollBack();
-
-        report($e); // log error
-
-        return back()->withErrors([
-            'error' => 'Terjadi kesalahan saat memperbarui data. Silakan coba lagi.',
-        ]);
     }
-}
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Nilai $nilai)
-{
-    try {
-        DB::beginTransaction();
+    public function destroy(Request $request, $id)
+    {
+        try {
+            DB::beginTransaction();
 
-        $nilai->delete();
+            // Jika dipanggil dari index baru (grouping), $id adalah alternative_id
+            // Kita hapus semua nilai untuk alternatif tersebut
+            Nilai::where('alternative_id', $id)->delete();
 
-        DB::commit();
+            DB::commit();
 
-        return redirect()
-            ->route('penilai.nilai.index')
-            ->with('success', 'Nilai berhasil dihapus');
+            return redirect()
+                ->route('penilai.nilai.index')
+                ->with('success', 'Seluruh nilai alternatif berhasil dihapus.');
 
-    } catch (\Throwable $e) {
-        DB::rollBack();
-
-        report($e); // log error
-
-        return back()->withErrors([
-            'error' => 'Terjadi kesalahan saat menghapus data. Silakan coba lagi.',
-        ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            report($e);
+            return redirect()
+                ->back()
+                ->with('error', 'Terjadi kesalahan saat menghapus data.');
+        }
     }
-}
 }

@@ -24,7 +24,7 @@ import {
 } from "react-icons/hi2";
 
 export default function AuthenticatedLayout({ header, breadcrumbs, children }) {
-    const { auth, flash } = usePage().props;
+    const { auth, flash, errors } = usePage().props;
     const user = auth?.user;
 
     const isAdmin = user?.roles?.includes("admin");
@@ -41,6 +41,17 @@ export default function AuthenticatedLayout({ header, breadcrumbs, children }) {
         if (flash?.success) notifySuccess(flash.success);
         if (flash?.error) notifyError(flash.error);
     }, [flash]);
+
+    useEffect(() => {
+        if (errors && Object.keys(errors).length > 0) {
+            // Tampilkan toast jika ada error validasi global
+            if (errors.error) {
+                notifyError(errors.error);
+            } else {
+                notifyError("Terdapat kesalahan pada input data Anda.");
+            }
+        }
+    }, [errors]);
 
     const menu = [
         {

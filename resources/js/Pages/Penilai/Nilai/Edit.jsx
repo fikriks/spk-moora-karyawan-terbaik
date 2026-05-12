@@ -5,14 +5,14 @@ import NilaiAlternativeForm from "./NilaiAlternativeForm";
 import { HiOutlineArrowLeft } from "react-icons/hi2";
 
 export default function Edit() {
-    const { nilai, alternatifs, kriterias, auth } = usePage().props;
+    const { alternative, alternatifs, kriterias, auth } = usePage().props;
     const user = auth?.user;
 
-    const submitRoute = route("penilai.nilai.update", nilai.id);
+    const submitRoute = route("penilai.nilai.update", alternative.id);
 
     return (
         <>
-            <Head title={`Edit Nilai: ${nilai?.alternative?.name ?? ""}`} />
+            <Head title={`Edit Nilai: ${alternative?.name ?? ""}`} />
             
             <div className="space-y-8">
                 {/* Header */}
@@ -22,7 +22,7 @@ export default function Edit() {
                             Edit <span className="text-emerald-500">Nilai</span>
                         </h2>
                         <p className="text-sm text-gray-500 max-w-md font-medium leading-relaxed">
-                            Perbarui nilai alternatif terhadap kriteria untuk proses perhitungan MOORA.
+                            Perbarui skor penilaian untuk pegawai ini pada seluruh kriteria yang tersedia.
                         </p>
                     </div>
 
@@ -37,19 +37,16 @@ export default function Edit() {
 
                 {/* Form Card */}
                 <div className="bg-white rounded-[32px] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.015)] overflow-hidden">
-                    <div className="p-8 md:p-12">
+                    <div className="p-2">
                         <NilaiAlternativeForm
-                            initial={{
-                                alternative_id: nilai.alternative_id,
-                                criteria_id: nilai.criteria_id,
-                                nilai: nilai.value,
-                            }}
+                            initial={alternative}
                             alternatifs={alternatifs}
                             kriterias={kriterias}
                             onSubmitRoute={submitRoute}
                             method="put"
-                            submitLabel="Perbarui Nilai"
+                            submitLabel="Perbarui Semua Nilai"
                             role={user?.roles?.[0]}
+                            cancelRoute={route("penilai.nilai.index")}
                         />
                     </div>
                 </div>

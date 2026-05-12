@@ -37,15 +37,16 @@ export default function Create() {
 
                 {/* Form Card */}
                 <div className="bg-white rounded-[32px] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.015)] overflow-hidden">
-                    <div className="p-8 md:p-12">
+                    <div className="p-2">
                         <NilaiAlternativeForm
                             initial={{}}
                             alternatifs={alternatifs}
                             kriterias={kriterias}
                             onSubmitRoute={submitRoute}
                             method="post"
-                            submitLabel="Simpan Nilai"
+                            submitLabel="Simpan Semua Nilai"
                             role={user?.roles?.[0]}
+                            cancelRoute={route("penilai.nilai.index")}
                         />
                     </div>
                 </div>
